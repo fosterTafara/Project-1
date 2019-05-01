@@ -48,10 +48,9 @@ ALTER TABLE Device AUTO_INCREMENT=1051;
 CREATE TABLE IF NOT EXISTS CheckingSystem (
 userId INT,
 deviceId INT,
-borrowDate DATE, -- CONSIDER DATETIME FORMAT OR TIMESTAMP
-borrowTime TIME,
-returnDate DATE,
-returnTime TIME,
+borrowDate DATETIME, 
+dueDate DATETIME,
+returnDate DATETIME,
 -- project varchar (50), 
 foreign key (deviceId) references Device (deviceId),
 foreign key (userId) references Users (userId)
@@ -122,11 +121,11 @@ INSERT INTO Users (userId, firstName, lastName, email, locationId, permissionId)
 ("3", "Amol", "Downey", "amol.downey@gamer.com", "O2", "User")
 ;
 
-INSERT INTO checkingsystem (userId, deviceId, borrowDate, borrowTime, returnDate, returnTime) VALUES
-("1", "1001","2019-05-01","23:59:59","2019-05-01","23:59:59"),
-("2", "1002","2019-05-01","23:59:59","2019-05-01","23:59:59"),
-("3", "1003","2019-05-01","23:59:59","2019-05-01","23:59:59"),
-("1", "1004","2019-05-01","23:59:59","2019-05-01","23:59:59"),
-("2", "1005","2019-05-01","23:59:59","2019-05-01","23:59:59"),
-("3", "1006","2019-05-01","23:59:59","2019-05-01","23:59:59")
+INSERT INTO checkingsystem (userId, deviceId, borrowDate, dueDate, returnDate) VALUES
+("1", "1001","2019-05-01 23:59:59","2019-05-04 23:59:59",''),
+("2", "1002","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
+("3", "1003","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
+("1", "1004","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
+("2", "1005","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
+("3", "1006","2019-05-01 23:59:59","2019-05-04 23:59:59",'')
 ;
