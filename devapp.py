@@ -8,19 +8,20 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+
+
+  passwd="password",
   database="project"
 )
 
-#admin retrive all info	
 @app.route('/device-list')
 def devicelist():
-	mycursor = mydb.cursor()
-	mycursor.execute("select * from device")
-	device_details = mycursor.fetchall()
-	return render_template('admin.html', device_details = device_details)
-
-#return device function	
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT * FROM device")
+        device_details = mycursor.fetchall()
+        return render_template('devicelist.html', device_details = device_details)
+      
+ #return device function	
 @app.route('/return', methods=['GET', 'POST'])
 def returndevice():
 	mycursor = mydb.cursor()
@@ -42,7 +43,19 @@ def returndevice():
 	
 	return render_template('return.html', user_list = user_list)
 
+
+
+##put: devicechoice = request.args.get("DevID") into the check-out definition to capture the Device ID
+
+
+###admin retrive all info	
+##@app.route('/device-list')
+##def devicelist():
+##	mycursor = mydb.cursor()
+##	mycursor.execute("select * from device")
+##	device_details = mycursor.fetchall()
+##	return render_template('admin.html', device_details = device_details)
 	
 if (__name__) == ('__main__'):
 	app.run(debug=True)
-	
+
