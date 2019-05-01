@@ -8,6 +8,8 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
+
+
   passwd="password",
   database="project"
 )
@@ -18,6 +20,28 @@ def devicelist():
         mycursor.execute("SELECT * FROM device")
         device_details = mycursor.fetchall()
         return render_template('devicelist.html', device_details = device_details)
+      
+ #return device function	
+@app.route('/return', methods=['GET', 'POST'])
+def returndevice():
+	mycursor = mydb.cursor()
+	mycursor.execute("select * from users")
+	user_list = mycursor.fetchall()
+	mydb.commit()
+	mycursor.close()
+	if request.method == 'POST':
+     # Fetch form data			
+		UserDetails = request.form
+		user_id = UserDetails['user']
+		#print (user_id)		
+		mycursor = mydb.cursor()
+		mycursor.execute("select device.deviceId, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s", (user_id,))		
+		loan_devices = mycursor.fetchall()		
+		mydb.commit()
+		mycursor.close()
+		return render_template('return.html', loan_devices = loan_devices,user_list = user_list)
+	
+	return render_template('return.html', user_list = user_list)
 
 
 
@@ -34,4 +58,4 @@ def devicelist():
 	
 if (__name__) == ('__main__'):
 	app.run(debug=True)
-	
+
