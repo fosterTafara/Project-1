@@ -1,1 +1,78 @@
-base layout
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+	{% if title %}
+		<title> {{ title }} - Devices Library </title>
+	{% else %}
+		<title> Devices Library </title>
+	{% endif %}
+	
+
+	
+</head>
+
+<body>
+
+	<header class="site-header">
+		<nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+			<div class="container">
+				<a class="navbar-brand mr-4" href="/">Device Library</a>	  
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarToggle">        
+					<div class="navbar-nav mr-auto">
+						<a class="nav-item nav-link" href="/">Home</a>
+						<a class="nav-item nav-link" href="/device-list">All Devices</a>
+						<a class="nav-item nav-link" href="/check-out">Check Out</a>
+						<a class="nav-item nav-link" href="/return">Return</a>						
+				
+					</div>
+				</div>
+			</div>
+		</nav>
+		
+		
+	</header>
+
+	
+	<div class="jumbotron jumbotron-fluid">
+		<div class="container text-center">
+			{% block heading %}{% endblock %}
+		</div>
+	</div>
+	
+	
+	<main role="main" class="container">
+		{% block content %}{% endblock %}
+	</main>
+	
+	
+	<!-- Optional JavaScript -->
+    <!-- Many Bootstrap components require the use of JavaScript to function. -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
