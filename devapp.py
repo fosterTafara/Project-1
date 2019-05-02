@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
   user="root",
 
 
-  passwd="password",
+  passwd="Signal2019$$",
   database="project"
 )
 
@@ -26,20 +26,30 @@ def devicelist():
 def returndevice():
 	mycursor = mydb.cursor()
 	mycursor.execute("select * from users")
-	user_list = mycursor.fetchall()
-	mydb.commit()
+	user_list = mycursor.fetchall()	
 	mycursor.close()
+	NUM_USER = len(user_list)
+	
 	if request.method == 'POST':
-     # Fetch form data			
-		UserDetails = request.form
-		user_id = UserDetails['user']
-		#print (user_id)		
-		mycursor = mydb.cursor()
-		mycursor.execute("select device.deviceId, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s", (user_id,))		
-		loan_devices = mycursor.fetchall()		
-		mydb.commit()
-		mycursor.close()
-		return render_template('return.html', loan_devices = loan_devices,user_list = user_list)
+		if 'NameSubmit' in request.form:
+			# Fetch form data	
+			NUM_USER =1
+			UserDetails = request.form
+			user_id = UserDetails['user']
+			#print (user_id)		
+			mycursor = mydb.cursor()
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s", (user_id,))		
+			loan_devices = mycursor.fetchall()
+			num_device = len(loan_devices)
+			print(num_device)
+			mycursor.close()
+			return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device)	
+		
+			if 'ReturnNow' in request.form:
+				SelectedDevices = request.form.getlist('selected[]')
+				mycursor = mydb.cursor()				
+				DeviceDetails = request.form
+				print(DeviceDetails)
 	
 	return render_template('return.html', user_list = user_list)
 
