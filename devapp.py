@@ -1,6 +1,8 @@
 # FLASK, MySQL and Python Demo
 from flask import Flask, render_template, request, redirect, session, url_for
 import mysql.connector
+from datetime import datetime
+
 # instantiate an object called app
 app = Flask(__name__)
 
@@ -29,15 +31,7 @@ def devicelist():
     # else: 
     #     print (result[6][1])
 	        
-	return render_template('devicelist.html', device_details = device_details)
-
-
-
-
-
-
-
-
+    return render_template('devicelist.html', device_details = device_details)
 
 
 
@@ -53,6 +47,7 @@ def returndevice():
 	NUM_USER = len(user_list)
 	
 	if request.method == 'POST':
+		#print(request.form)
 		if 'NameSubmit' in request.form:
 			# Fetch form data	
 			NUM_USER =1
@@ -60,19 +55,29 @@ def returndevice():
 			user_id = UserDetails['user']
 			#print (user_id)		
 			mycursor = mydb.cursor()
-			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s", (user_id,))		
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND where checkingsystem.returnDate like NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
 			num_device = len(loan_devices)
 			print(num_device)
 			mycursor.close()
-			return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device)	
+			return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
 		
-			if 'ReturnNow' in request.form:
-				SelectedDevices = request.form.getlist('selected[]')
-				mycursor = mydb.cursor()				
-				DeviceDetails = request.form
-				print(DeviceDetails)
-	
+		if 'ReturnNow' in request.form:
+                        #user_id = UserDetails['user']
+                        #print (user_id)			
+                        mycursor = mydb.cursor()
+                        SelectedDevices = request.form.getlist('selected[]')
+                        print(SelectedDevices)
+                        Current_Time = datetime.now()
+                        Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+                        DeviceDetails = request.form
+                        for each_item in SelectedDevices:
+                            #USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
+                            mycursor.execute("UPDATE checkingsystem SET returnDate = Current_Time WHERE deviceID = {}".format(each_item))
+                        print("success")
+                        mydb.commit()
+                        mycursor.close()    
+                            
 	return render_template('return.html', user_list = user_list)
 
 
