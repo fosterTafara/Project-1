@@ -8,18 +8,40 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-
-
   passwd="password",
   database="project"
 )
 
-@app.route('/device-list')
+@app.route('/device-list', methods =['GET', 'POST'])
 def devicelist():
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT * FROM device")
-        device_details = mycursor.fetchall()
-        return render_template('devicelist.html', device_details = device_details)
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM device")
+    device_details = mycursor.fetchall()
+	  
+    userDetails = request.form
+    # mycursor = mydb.cursor()
+    # mycursor.execute("SELECT device.deviceId, FROM device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s", (user_id,))
+    # result = mycursor.fetchall()      
+    mydb.commit()
+    mycursor.close()
+    # if len(result) == 0:
+    # 	print (result[5][0])
+    # else: 
+    #     print (result[6][1])
+	        
+	return render_template('devicelist.html', device_details = device_details)
+
+
+
+
+
+
+
+
+
+
+
+
       
  #return device function	
 @app.route('/return', methods=['GET', 'POST'])
