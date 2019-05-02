@@ -1,5 +1,5 @@
 # FLASK, MySQL and Python Demo
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, render_template, request, redirect, session, url_for, flash
 import mysql.connector
 from datetime import datetime
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
+  passwd="Signal2019$$",
   database="project"
 )
 
@@ -55,7 +55,7 @@ def returndevice():
 			user_id = UserDetails['user']
 			#print (user_id)		
 			mycursor = mydb.cursor()
-			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND where checkingsystem.returnDate like NULL", (user_id,))		
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
 			num_device = len(loan_devices)
 			print(num_device)
@@ -63,20 +63,20 @@ def returndevice():
 			return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
 		
 		if 'ReturnNow' in request.form:
-                        #user_id = UserDetails['user']
-                        #print (user_id)			
-                        mycursor = mydb.cursor()
-                        SelectedDevices = request.form.getlist('selected[]')
-                        print(SelectedDevices)
-                        Current_Time = datetime.now()
-                        Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
-                        DeviceDetails = request.form
-                        for each_item in SelectedDevices:
-                            #USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
-                            mycursor.execute("UPDATE checkingsystem SET returnDate = Current_Time WHERE deviceID = {}".format(each_item))
-                        print("success")
-                        mydb.commit()
-                        mycursor.close()    
+			#user_id = UserDetails['user']
+			#print (user_id)			
+			mycursor = mydb.cursor()
+			SelectedDevices = request.form.getlist('selected[]')
+			print(SelectedDevices)
+			Current_Time = datetime.now()
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			DeviceDetails = request.form
+			for each_item in SelectedDevices:
+				#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
+				mycursor.execute("update checkingsystem set returnDate = current_time where deviceID = {}".format(each_item))
+			#print("success")
+			mydb.commit()
+			mycursor.close()			
                             
 	return render_template('return.html', user_list = user_list)
 
