@@ -14,22 +14,21 @@ mydb = mysql.connector.connect(
 
 @app.route('/device-list', methods =['GET', 'POST'])
 def devicelist():
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM device")
-    device_details = mycursor.fetchall()
-	  
-    userDetails = request.form
-    # mycursor = mydb.cursor()
-    # mycursor.execute("SELECT device.deviceId, FROM device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s", (user_id,))
-    # result = mycursor.fetchall()      
-    mydb.commit()
-    mycursor.close()
-    # if len(result) == 0:
-    # 	print (result[5][0])
-    # else: 
-    #     print (result[6][1])
-	        
-	return render_template('devicelist.html', device_details = device_details)
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT * FROM device")
+	device_details = mycursor.fetchall()
+	mycursor = mydb.cursor()    
+	mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
+	# mycursor.execute ("SELECT users.firstName, users.lastName from users inner join checkingsystem on users.userId = checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")	
+	
+	borrower = mycursor.fetchall()      
+	mydb.commit()
+
+	mycursor.close()
+	print (borrower)
+
+#    
+	return render_template('devicelist.html', device_details = device_details, borrower = borrower)
 
 
 
