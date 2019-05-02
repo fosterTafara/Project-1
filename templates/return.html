@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 
 
-
 {% block content %}
 
+<div class = container class="alert alert-success">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+		{% if messages %}
+		
+			{% for message in messages %}
+				<p>{{ message[1] }}</p>
+			{% endfor %}
+	
+		{% endif %}
+		{% endwith %}
+</div>	
 
 
 <form method="POST" action="" name="UserID">

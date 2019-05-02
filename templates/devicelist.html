@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-success mt-2" role="alert">
+                {% for message in messages %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true" style="font-size:20px">×</span>
+                    </button>
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 <h2>Device List</h2>
 <br>
 <table class="table table-striped">
@@ -26,7 +37,7 @@
 		
         <td>{{borrower[0]}} {{' '}} {{borrower[1]}}</td>
 		
-		<td> <a href="/check-out?DevID={{item[0]}}" class="btn btn-info btn-xs">Borrow now</a></td>
+		<td> <a type="button" href="/check-out/{{item[0]}}"class="btn btn-info btn-xs">Borrow now</a></td>
 	</tr>
 	
 
