@@ -20,7 +20,7 @@ mydb = mysql.connector.connect(
 def devicelist():
 
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device inner join checkingsystem on device.deviceId=checkingsystem.deviceID inner join users on users.userId=checkingsystem.userId")
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
 	device_details = mycursor.fetchall()
 	mycursor = mydb.cursor()
 	#mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
