@@ -13,7 +13,7 @@ mydb = mysql.connector.connect(
   host="localhost",
   user="root",
   passwd="password",
-  database="project"
+  database="Project"
 )
 
 @app.route('/device-list', methods =['GET', 'POST'])
@@ -22,48 +22,48 @@ def devicelist():
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM device")
 	device_details = mycursor.fetchall()
-	mycursor = mydb.cursor()    
+	mycursor = mydb.cursor()
 	mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
-	# mycursor.execute ("SELECT users.firstName, users.lastName from users inner join checkingsystem on users.userId = checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")	
-	
-	borrower = mycursor.fetchall()      
+	# mycursor.execute ("SELECT users.firstName, users.lastName from users inner join checkingsystem on users.userId = checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
+
+	borrower = mycursor.fetchall()
 	mydb.commit()
 
 	mycursor.close()
 	print (borrower)
 
-#    
+#
 	return render_template('devicelist.html', device_details = device_details, borrower = borrower)
 
-      
- #return device function	
+
+ #return device function
 @app.route('/return', methods=['GET', 'POST'])
 def returndevice():
 	mycursor = mydb.cursor()
 	mycursor.execute("select * from users")
-	user_list = mycursor.fetchall()	
+	user_list = mycursor.fetchall()
 	mycursor.close()
 	NUM_USER = len(user_list)
-	
+
 	if request.method == 'POST':
 		#print(request.form)
 		if 'NameSubmit' in request.form:
-			# Fetch form data	
+			# Fetch form data
 			NUM_USER =1
 			UserDetails = request.form
 			user_id = UserDetails['user']
-			#print (user_id)		
+			#print (user_id)
 			mycursor = mydb.cursor()
-			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))
 			loan_devices = mycursor.fetchall()
 			num_device = len(loan_devices)
 			print(num_device)
 			mycursor.close()
-			return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
-		
+			return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)
+
 		if 'ReturnNow' in request.form:
 			#user_id = UserDetails['user']
-			#print (user_id)			
+			#print (user_id)
 			mycursor = mydb.cursor()
 			SelectedDevices = request.form.getlist('selected[]')
 			print(SelectedDevices)
@@ -75,10 +75,10 @@ def returndevice():
 				mycursor.execute("update checkingsystem set returnDate = current_time where deviceID = {}".format(each_item))
 			#print("success")
 			mydb.commit()
-			mycursor.close()			
-                            
+			mycursor.close()
+
 	return render_template('return.html', user_list = user_list)
-	
+
 #checking out page
 @app.route('/check-out/<int:deviceid>', methods=['GET', 'POST'])
 def checkout(deviceid):
@@ -93,43 +93,41 @@ def checkout(deviceid):
 		user_id = mycursor.fetchone()
 		mycursor.execute("SELECT d.deviceName FROM Device d INNER JOIN CheckingSystem c ON d.deviceId=c.deviceId WHERE d.deviceId = '{}';".format(device_id))
 		device_name = mycursor.fetchall()
-		# ADD WHERE 
 		mycursor.execute("SELECT COUNT(userId) FROM CheckingSystem WHERE borrowDate IS NOT NULL and returnDate IS NULL;")
 		user_count = mycursor.fetchall()
-		mycursor.close()	
+		mycursor.close()
 		mycursor = mydb.cursor()
 		current_date = datetime.now()
 		current_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
 		mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id[0], device_id, current_date))
-		mycursor.close()	
 		mydb.commit()
+		mydb.close()
 		flash("You have borrowed {} and you now have {} devices!".format(device_name[0][0], user_count[0][0]))
 
-		return redirect('/device-list')				 
-	#select from the database (device id/name/type)	
+		return redirect('/device-list')
+	#select from the database (device id/name/type)
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT deviceId, deviceName, deviceType from Device WHERE deviceId = {};" .format(device_id))
-	device_details = mycursor.fetchall() 
+	device_details = mycursor.fetchall()
 	# raise Exception(device_details)
 	#select from the database (name)
 	mycursor.execute("SELECT email, userId from Users;")
 	user_emails = mycursor.fetchall()
-	mycursor.close()	
-	return render_template('check-out.html', devices=device_details, emails=user_emails)	
+	mycursor.close()
+	return render_template('check-out.html', devices=device_details, emails=user_emails)
 
 
 
 ##put: devicechoice = request.args.get("DevID") into the check-out definition to capture the Device ID
 
 
-###admin retrive all info	
+###admin retrive all info
 ##@app.route('/device-list')
 ##def devicelist():
 ##	mycursor = mydb.cursor()
 ##	mycursor.execute("select * from device")
 ##	device_details = mycursor.fetchall()
 ##	return render_template('admin.html', device_details = device_details)
-	
+
 if (__name__) == ('__main__'):
 	app.run(debug=True)
-
