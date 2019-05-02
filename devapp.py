@@ -20,20 +20,16 @@ mydb = mysql.connector.connect(
 def devicelist():
 
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM device")
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device inner join checkingsystem on device.deviceId=checkingsystem.deviceID inner join users on users.userId=checkingsystem.userId")
 	device_details = mycursor.fetchall()
-	mycursor = mydb.cursor()    
-	mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
+	mycursor = mydb.cursor()
+	#mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
 	# mycursor.execute ("SELECT users.firstName, users.lastName from users inner join checkingsystem on users.userId = checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")	
 	
-	borrower = mycursor.fetchall()      
+	#borrower = mycursor.fetchall()      
 	mydb.commit()
-
-	mycursor.close()
-	print (borrower)
-
-#    
-	return render_template('devicelist.html', device_details = device_details, borrower = borrower)
+	mycursor.close()  
+	return render_template('devicelist.html', device_details = device_details)
 
       
  #return device function	
