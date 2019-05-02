@@ -8,7 +8,7 @@
 
 <form method="POST" action="" name="UserID">
 	<div>		
-		<h4>Select Your Email Address:</h4>
+		<h4>Select Your Name:</h4>
 	</div>
 	
 	</br>
@@ -16,7 +16,7 @@
 	<div>	
 	  <select name="user" size="5">
 		{% for user in user_list %}
-		<option value="{{ user[0] }}">{{ user[3] }} ({{ user[1] }}{{ " " }}{{ user[2] }}) </option>
+		<option value="{{ user[0] }}"> {{ user[1] }}{{ " " }}{{ user[2] }} ({{ user[3] }}) </option>
 		{% endfor %}
 	  </select>
 	
@@ -24,34 +24,52 @@
   
 	</br>
 	<div>
-		<button type="submit" class="btn btn-primary" align = "right">Submit</button>
+		<button type="submit" class="btn btn-info btn-xs" name="NameSubmit">Submit</button>
 	</div>
 </form>
 
-
-
-
-</br>
 </br>
 
-<h1>Your Loan Devices List</h1>
-<br>
-<table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Device ID</th>
-        <th>Device Type</th>     
-      </tr>
-	</thead>
-	<tr>
-		{% for device in loan_devices %}
+{% if NUM_USER ==1 %}
+	{% if num_device <1 %}
+		<div class = "alert alert-info" role ="alert">
+		You do not have any devices on loan.
+		</div>
 		
-    	<td>{{device[0]}}</td>
-    	<td>{{device[1]}}</td>
-    	
-	</tr>
-	
-		{% endfor %}
-</table>
+	{% else %}
 
+		<h1>Your Loan Devices List</h1>
+			
+				
+		<br>
+			<form method="POST" action="" name="Device">	
+				<table class="table table-striped">
+					<thead>
+					  <tr>
+						<th>Device Name</th>
+						<th>Device Type</th> 
+						<th align = "center">Return?</th>
+					  </tr>
+					</thead>
+					
+					
+					{% for device in loan_devices %}
+					<tr>						
+						<td>{{device[1]}}</td>
+						<td>{{device[2]}}</td>
+						<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+					</tr>					
+						{% endfor %}
+
+				</table>
+				
+				<div>
+					<button type="submit" class="btn btn-info btn-xs" name="ReturnNow">Return Now</button>
+				</div>				
+							
+
+			</form>	
+			
+	{% endif %}
+{% endif %}
 {% endblock %}
