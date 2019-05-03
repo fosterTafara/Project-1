@@ -60,14 +60,14 @@ INSERT INTO Device (deviceId, deviceName, deviceType, osType, osVersion, deviceR
 deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
 ("1000","Q Bert","Amazon Fire HD 7","Android","4.5.5","1 GB","Dual-Core 1.5GHz","1","800 x 1280 (216ppi)","Low","None","Available"),
 ("1001","Princess Zelda","Dell E 6400","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Unavailable"),
-("1002","Link","Dell Laptop","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Unavailable"),
-("1003","Link","Dell Laptop","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Unavailable"),
-("1004","Bison","Galaxy S5","Android","4.4.2","2 GB","Quad-Core 2.5GHz","1","1080 x 1920 (432ppi)","Medium","None","Unavailable"),
-("1005","Balrog","Galaxy S7 Edge","Android","6.0.1","4 GB","Octa-Core 4x2.3 GHz & 4x1.6 GHz","1","1440 x 2560 (534ppi)","High","None","Unavailable"),
+("1002","Link","Dell Laptop","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Available"),
+("1003","Link","Dell Laptop","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Available"),
+("1004","Bison","Galaxy S5","Android","4.4.2","2 GB","Quad-Core 2.5GHz","1","1080 x 1920 (432ppi)","Medium","None","Available"),
+("1005","Balrog","Galaxy S7 Edge","Android","6.0.1","4 GB","Octa-Core 4x2.3 GHz & 4x1.6 GHz","1","1440 x 2560 (534ppi)","High","None","Available"),
 ("1006","E-Honda","Galaxy Tab 1","Android","4.0.4","1 GB","Dual-Core 1GHz","1","800 x 1280 (149ppi)","Low","None","Unavailable"),
-("1007","Zangief","Galaxy Tab 4","Android","5.0.2","1.5 GB","Quad-Core 1.2GHz","1","800 x 1280 (216ppi)","Low","None","Available"),
-("1008","Guile","HTC One mini 2","Android","4.4.2","1 GB","Quad-Core 1.2GHz","1","720 x 1280 (326ppi)","Low","None","Available"),
-("1009","Dr Robotnik","iPad 4","IOS","10.1","1GB","Dual-Core 1.4GHz","32","1536 x 2048 (264ppi)","Medium","3e751193bdbf92b35a440f225318b5498de96c9e","Available"),
+("1007","Zangief","Galaxy Tab 4","Android","5.0.2","1.5 GB","Quad-Core 1.2GHz","1","800 x 1280 (216ppi)","Low","None","Unavailable"),
+("1008","Guile","HTC One mini 2","Android","4.4.2","1 GB","Quad-Core 1.2GHz","1","720 x 1280 (326ppi)","Low","None","Unavailable"),
+("1009","Dr Robotnik","iPad 4","IOS","10.1","1GB","Dual-Core 1.4GHz","32","1536 x 2048 (264ppi)","Medium","3e751193bdbf92b35a440f225318b5498de96c9e","Unavailable"),
 ("1010","Fox McCloud","iPad Air (retina)","IOS","10.3.2","1 GB DDR3","Dual-Core 1.3GHz","64","1536 x 2048 (264ppi)","Medium","7c7a369fd078c67f1cc123685ad887d3e32a6552","Available"),
 ("1011","Kratos","iPad Air 2","IOS","9.3.4","2 GB","Octa-core 1.5 GHz","64","2048 x 1536 (264ppi)","High","0b7886a9d846ea7cd50f80c1eefbeba3ead44b21","Available"),
 ("1012","Silver","iPad Mini","IOS","9.2","500MB","Dual-Core 1GHz","32","768 x 1024 (163 ppi)","Obsolete","e73f9b4cb93e83f718622016e31d90c06692d782","Available"),
@@ -118,14 +118,20 @@ Insert INTO Building (locationId, buildingAddress) VALUES
 INSERT INTO Users (userId, firstName, lastName, email, locationId, permissionId) VALUES
 ("1", "Carl", "Smith", "carl.smith@gamer.com", "O1", "User"),
 ("2", "Sonam", "Jones", "sonam.jones@gamer.com", "O1", "User"),
-("3", "Amol", "Downey", "amol.downey@gamer.com", "O2", "User")
+("3", "Amol", "Downey", "amol.downey@gamer.com", "O2", "User"),
+("4", "Jennifer", "Foster", "jennifer.foster@gamer.com", "O1", "User"),
+("5", "Andi", "Teo", "andi.teo@gamer.com", "O2", "User")
 ;
 
 INSERT INTO checkingsystem (userId, deviceId, borrowDate, dueDate, returnDate) VALUES
-("1", "1001","2019-05-01 23:59:59","2019-05-04 23:59:59",''),
+("1", "1001","2019-05-01 23:59:59","2019-05-04 23:59:59",null),
 ("2", "1002","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
 ("3", "1003","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
 ("1", "1004","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
 ("2", "1005","2019-05-01 23:59:59","2019-05-04 23:59:59","2019-05-02 10:59:59"),
-("3", "1006","2019-05-01 23:59:59","2019-05-04 23:59:59",'')
+("3", "1006","2019-05-01 23:59:59","2019-05-04 23:59:59",null),
+("4", "1007","2019-05-03 09:58:59","2019-05-07 09:58:59",null),
+("4", "1008","2019-05-03 09:59:59","2019-05-07 09:59:59",null),
+("5", "1009","2019-05-03 09:59:59","2019-05-07 09:59:59",null)
+
 ;
