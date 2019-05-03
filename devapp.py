@@ -12,9 +12,18 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="password",
   database="project"
 )
+
+@app.route('/users/')  
+def students():
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT * FROM Users")
+	result = mycursor.fetchall()
+	mycursor.close()
+	return render_template('users.html', title='Users', menu='users', users=result)
+
 
 @app.route('/device-list', methods =['GET', 'POST'])
 def devicelist():
@@ -30,11 +39,70 @@ def devicelist():
 	mydb.commit()
 
 	mycursor.close()
-	print (borrower)
+    
+	return render_template('devicelist.html', device_details = device_details)
 
-#    
-	return render_template('devicelist.html', device_details = device_details, borrower = borrower)
+@app.route('/device-list-return/<int:userid>', methods =['GET', 'POST'])
+def devicelistreturn(userid):
+	if request.method == 'GET':
+		user_id = userid
+		mycursor = mydb.cursor()
+		mycursor.execute('select * from Users where UserId ={}'.format(user_id))
+		user_details = mycursor.fetchall()
+		mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+		loan_devices = mycursor.fetchall()
+		num_device = len(loan_devices)
+		mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+		device_details = mycursor.fetchall()
+		print(num_device)
+		mycursor.close()
+								
+	return render_template('devicelistreturn.html',loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
+	
+	if request.method == 'POST':
 
+		if 'ReturnNow' in request.form:
+			mycursor = mydb.cursor()
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			loan_devices = mycursor.fetchall()
+			num_device = len(loan_devices)
+			print(num_device)
+			mycursor.close()
+			mycursor = mydb.cursor()
+			SelectedDevices = request.form.getlist('selected[]')
+			print(SelectedDevices)
+			Current_Time = datetime.now()
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			DeviceDetails = request.form
+			for each_item in SelectedDevices:
+			#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
+				mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
+				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
+				#print("success")
+				mydb.commit()
+				mycursor.close()
+			return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device)
+	return render_template('devicelistreturn.html', userid=user_id)
+	#return redirect('/device-list-return/{}'.format(user_id))
+
+	if request.method == 'POST':
+		if 'BorrowNow' in request.form:
+			mycursor = mydb.cursor()
+			mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+			device_details = mycursor.fetchall()
+			
+			mycursor = mydb.cursor()
+			mydb.commit()
+			mycursor.close()  
+	return render_template('devicelistreturn.html', device_details = device_details, userid=user_id)
+
+
+
+
+#return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
+		
+
+	
       
  #return device function	
 @app.route('/return', methods=['GET', 'POST'])
@@ -71,12 +139,12 @@ def returndevice():
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			for each_item in SelectedDevices:
-				#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
-				mycursor.execute("update checkingsystem set returnDate = current_time where deviceID = {}".format(each_item))
-			#print("success")
-			mydb.commit()
-			mycursor.close()			
-                            
+			#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
+				mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
+				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
+				#print("success")
+				mydb.commit()
+				mycursor.close()
 	return render_template('return.html', user_list = user_list)
 	
 #checking out page
