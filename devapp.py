@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
+  passwd="Signal2019$$",
   database="project"
 )
 
@@ -43,20 +43,22 @@ def devicelist():
 
 @app.route('/device-list-return/<int:userid>', methods =['GET', 'POST'])
 def devicelistreturn(userid):
-	if request.method == 'GET':
-		user_id = userid
-		mycursor = mydb.cursor()
-		mycursor.execute('select * from Users where UserId ={}'.format(user_id))
-		user_details = mycursor.fetchall()
-		mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
-		loan_devices = mycursor.fetchall()
-		num_device = len(loan_devices)
-		mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
-		device_details = mycursor.fetchall()
-		print(num_device)
-		mycursor.close()
+	#if request.method == 'GET':
+	user_id = userid
+	print(user_id)
+	mycursor = mydb.cursor()
+	mycursor.execute('select * from Users where UserId ={}'.format(user_id))
+	user_details = mycursor.fetchall()
+	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+	loan_devices = mycursor.fetchall()
+	num_device = len(loan_devices)
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+	device_details = mycursor.fetchall()
+	print(num_device)
+	print('get')
+	mycursor.close()
 								
-	return render_template('devicelistreturn.html',loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
+	#return render_template('devicelistreturn.html',loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
 	
 	if request.method == 'POST':
 
@@ -65,35 +67,69 @@ def devicelistreturn(userid):
 			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
 			num_device = len(loan_devices)
+			print('number of devices')
 			print(num_device)
 			mycursor.close()
 			mycursor = mydb.cursor()
 			SelectedDevices = request.form.getlist('selected[]')
 			print(SelectedDevices)
+			print ('happy')
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			for each_item in SelectedDevices:
 			#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
+				mycursor = mydb.cursor()
 				mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
 				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
 				#print("success")
 				mydb.commit()
 				mycursor.close()
-			return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device)
-	return render_template('devicelistreturn.html', userid=user_id)
+				print('success')
+			mycursor = mydb.cursor()
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			loan_devices = mycursor.fetchall()
+			mycursor.close()
+			return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
+	#return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
 	#return redirect('/device-list-return/{}'.format(user_id))
 
 	if request.method == 'POST':
 		if 'BorrowNow' in request.form:
 			mycursor = mydb.cursor()
 			mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
-			device_details = mycursor.fetchall()
+			device_details = mycursor.fetchall()			
+			mycursor = mydb.cursor()
+			BorrowedDevices = request.form.getlist('deviceSelected[]')
+			Current_Time = datetime.now()
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			DeviceDetails = request.form
+			for each_item in BorrowedDevices:
+				mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, each_item, Current_Time))
+				mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(each_item))		
+			
+			#mycursor.execute("SELECT device.deviceName FROM device INNER JOIN CheckingSystem ON device.deviceId=checkingsystem.deviceId WHERE device.deviceId = '{}';".format(device_id))
+			#device_name = mycursor.fetchall()
+			# ADD WHERE 
+			#mycursor.execute("SELECT COUNT(userId) FROM CheckingSystem WHERE borrowDate IS NOT NULL and returnDate IS NULL;")
+			#user_count = mycursor.fetchall()
+			#mycursor.close()	
+			#mycursor = mydb.cursor()
+			#current_date = datetime.now()
+			#current_date = current_date.strftime('%Y-%m-%d %H:%M:%S')									
+			mydb.commit()
+			mycursor.close()
 			
 			mycursor = mydb.cursor()
-			mydb.commit()
-			mycursor.close()  
-	return render_template('devicelistreturn.html', device_details = device_details, userid=user_id)
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			loan_devices = mycursor.fetchall()
+			mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+			device_details = mycursor.fetchall()
+			mycursor.close()	
+			
+			return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
+		return render_template('devicelistreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)	
+	return render_template('devicelistreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
 
 #return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
 		
