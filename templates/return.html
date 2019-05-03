@@ -26,7 +26,7 @@
 	<div>	
 	  <select name="user" size="5">
 		{% for user in user_list %}
-		<option value="{{ user[0] }}"> {{ user[1] }}{{ " " }}{{ user[2] }} ({{ user[3] }}) </option>
+		<option value="{{ user[0] }}"> {{ user[1] }}{{ " " }}{{ user[2] }} ({{ user[3] }})</option>
 		{% endfor %}
 	  </select>
 	
@@ -35,12 +35,14 @@
 	</br>
 	<div>
 		<button type="submit" class="btn btn-info btn-xs" name="NameSubmit">Submit</button>
+		
 	</div>
 </form>
 
 </br>
 
 {% if NUM_USER ==1 %}
+
 	{% if num_device <1 %}
 		<div class = "alert alert-info" role ="alert">
 		You do not have any devices on loan.
