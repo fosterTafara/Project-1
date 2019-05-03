@@ -12,16 +12,23 @@
 			</div>
 		{% endif %}
 	{% endwith %}
+<br>
+<br>
+<br>
+
 		<div class="row mt-4">	
 			<div class="col">
 				<table class="table table-hover">
-					<thead class="thead-dark">
+
+					<thead class="thead-primary">
+	
 						<tr>
 							<th scope="col">First Name</th>
 							<th scope="col">Last Name</th>
 							<th scope="col">Start Year</th>
 							<th scope="col"></th>
 						</tr>
+					</style>
 					</thead>
 					<tbody>
 					{% for user in users %}
@@ -30,7 +37,7 @@
 							<td>{{ user[2]|e }}</td>
 							<td>{{ user[3]|e }}</td>
 							<td class="text-right">
-								<a type="btn" class="btn btn-primary btn-round mb-2" text="center" href="/device-list-return/{{user[0]}}">Show details</a>
+								<a type="btn" class="btn btn-round mb-2" text="center" style="background-color: #4173f4; color: white; font-family: sans-serif; " href="/device-list-return/{{user[0]}}">Show details</a>
 							</td>
 						</tr>
 					{% endfor %}
