@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="password",
   database="project"
 )
 
