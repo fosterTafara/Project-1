@@ -3,112 +3,163 @@
 
 {% block content %}
 
-<div class = container class="alert alert-success">
-		{% with messages = get_flashed_messages(with_categories=true) %}
-		{% if messages %}
-		
-			{% for message in messages %}
-				<p>{{ message[1] }}</p>
-			{% endfor %}
-	
-		{% endif %}
-		{% endwith %}
-</div>	
+<div class=container class="alert alert-success">
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+
+	{% for message in messages %}
+	<p>{{ message[1] }}</p>
+	{% endfor %}
+
+	{% endif %}
+	{% endwith %}
+</div>
 
 
 
 
 </br>
 
-	{% if num_device <1 %}
-		<div class = "alert alert-info" role ="alert">
-		You do not have any devices on loan.
-		</div>
-		
-	{% else %}
+{% if num_device <1 %}
+<div class="alert alert-info" role="alert">
+	You do not have any devices on loan.
+</div>
 
-		<h1>{{user_details[0][1]}}'s Loan Devices List</h1>
-			
-		<h3>Your Loans</h3>		
-		<br>
-			<form method="POST" action="" name="Device">	
-				<table class="table table-striped">
-					<thead>
-					  <tr>
-						<th>Device Name</th>
-						<th>Device Type</th> 
-						<th align = "center">Return?</th>
-					  </tr>
-					</thead>
-					
-					
-					{% for device in loan_devices %}
-					<tr>						
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
-					</tr>					
-						{% endfor %}
 
-				</table>
-				
-				<div>
-					<button type="submit" class="btn btn-info btn-xs" name="ReturnNow">Return Now</button>
-				</div>				
-							
-
-			</form>	
-			
-			<h3>Devices List</h3>
+<h3>Devices List</h3>
 <br>
 <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Device Name</th>
-        <th>Device type</th>
-        <th>OS type</th>
-        <th>More Specs</th>
-		<th>Status</th>
-        <th>Assigned to</th>
-        <th></th>
-      </tr>
+	<thead>
+		<tr>
+			<th>Device Name</th>
+			<th>Device type</th>
+			<th>OS type</th>
+			<th>More Specs</th>
+			<th>Status</th>
+			<th>Assigned to</th>
+			<th></th>
+		</tr>
 	</thead>
 	<tr>
 		{% for item in device_details %}
-		
-    	<td>{{item[1]}}</td>
-    	<td>{{item[2]}}</td>
-    	<td>{{item[3]}}</td>
-    	<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
-     	<td>{{item[10]}}</td>
-		
+
+		<td>{{item[1]}}</td>
+		<td>{{item[2]}}</td>
+		<td>{{item[3]}}</td>
+		<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right"
+				data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
+		<td>{{item[10]}}</td>
+
 		{% if item[10]=='Available' %}
-		
-        <td>-</td>
-		
+
+		<td>-</td>
+
 		{% else %}
-		
+
 		<td>{{item[12]}} {{item[13]}}</td>
-		
+
 		{% endif %}
-		
+
 		{% if item[10]=='Available' %}
-		
-		<td><a type="button" href="/check-out/{{item[0]}}"class="btn btn-info btn-xs" name="BorrowNow">Borrow now</a></td>
-		
+
+		<td><a type="button" href="/check-out/{{item[0]}}" class="btn btn-info btn-xs" name="BorrowNow">Borrow now</a></td>
+
 		{% else %}
-		
+
 		<td><button type="button" disabled class="btn btn-info btn-xs">Borrow now</button></td>
-					
+
 		{% endif %}
-		
-	</tr>	
-		{% endfor %}
-		
-		
+
+	</tr>
+	{% endfor %}
+
+
 </table>
 
-			
-	{% endif %}
+{% else %}
+
+<h1>{{user_details[0][1]}}'s Loan Devices List</h1>
+
+<h3>Your Loans</h3>
+<br>
+<form method="POST" action="" name="Device">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Device Name</th>
+				<th>Device Type</th>
+				<th align="center">Return?</th>
+			</tr>
+		</thead>
+
+
+		{% for device in loan_devices %}
+		<tr>
+			<td>{{device[1]}}</td>
+			<td>{{device[2]}}</td>
+			<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+		</tr>
+		{% endfor %}
+
+	</table>
+
+	<div>
+		<button type="submit" class="btn btn-info btn-xs" name="ReturnNow">Return Now</button>
+	</div>
+
+
+
+<h3>Devices List</h3>
+<br>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Device Name</th>
+			<th>Device type</th>
+			<th>OS type</th>
+			<th>More Specs</th>
+			<th>Status</th>
+			<th>Assigned to</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tr>
+		{% for item in device_details %}
+
+		<td>{{item[1]}}</td>
+		<td>{{item[2]}}</td>
+		<td>{{item[3]}}</td>
+		<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right"
+				data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
+		<td>{{item[10]}}</td>
+
+		{% if item[10]=='Available' %}
+
+		<td>-</td>
+
+		{% else %}
+
+		<td>{{item[12]}} {{item[13]}}</td>
+
+		{% endif %}
+
+		{% if item[10]=='Available' %}
+
+		<td><a type="button" href="/check-out/{{item[0]}}" class="btn btn-info btn-xs" name="BorrowNow">Borrow now</a></td>
+
+		{% else %}
+
+		<td><button type="button" disabled class="btn btn-info btn-xs">Borrow now</button></td>
+
+		{% endif %}
+
+	</tr>
+	{% endfor %}
+
+
+</table>
+
+
+{% endif %}
 
 {% endblock %}
