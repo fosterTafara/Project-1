@@ -29,15 +29,14 @@ def students():
 def devicelist():
 
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM device")
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
 	device_details = mycursor.fetchall()
-	mycursor = mydb.cursor()    
-	mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
+	mycursor = mydb.cursor()
+	#mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
 	# mycursor.execute ("SELECT users.firstName, users.lastName from users inner join checkingsystem on users.userId = checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")	
 	
-	borrower = mycursor.fetchall()      
+	#borrower = mycursor.fetchall()      
 	mydb.commit()
-
 	mycursor.close()
     
 	return render_template('devicelist.html', device_details = device_details)
@@ -95,9 +94,6 @@ def devicelistreturn(userid):
 			mydb.commit()
 			mycursor.close()  
 	return render_template('devicelistreturn.html', device_details = device_details, userid=user_id)
-
-
-
 
 #return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
 		
