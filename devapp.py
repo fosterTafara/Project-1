@@ -52,7 +52,9 @@ def devicelistreturn(userid):
 	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 	loan_devices = mycursor.fetchall()
 	num_device = len(loan_devices)
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID left outer join Users on Mostrecentborrow.userID = Users.userID")
+
+
 	device_details = mycursor.fetchall()
 	print(num_device)
 	print('get')
@@ -81,6 +83,7 @@ def devicelistreturn(userid):
 			#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
 				mycursor = mydb.cursor()
 				mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
+			
 				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
 				#print("success")
 				mydb.commit()
@@ -106,6 +109,7 @@ def devicelistreturn(userid):
 			DeviceDetails = request.form
 			for each_item in BorrowedDevices:
 				mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, each_item, Current_Time))
+				mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(each_item))
 				mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(each_item))		
 			
 			#mycursor.execute("SELECT device.deviceName FROM device INNER JOIN CheckingSystem ON device.deviceId=checkingsystem.deviceId WHERE device.deviceId = '{}';".format(device_id))
