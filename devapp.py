@@ -26,16 +26,13 @@ def students():
 
 
 @app.route('/device-list', methods =['GET', 'POST'])
+### do we really need methods for this app.route?
 def devicelist():
-
+	### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
 	device_details = mycursor.fetchall()
-	mycursor = mydb.cursor()
-	#mycursor.execute ("SELECT firstName, lastName from users inner join checkingsystem on users.userId=checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")
-	# mycursor.execute ("SELECT users.firstName, users.lastName from users inner join checkingsystem on users.userId = checkingsystem.userId inner join device on checkingsystem.deviceId = device.deviceId where checkingsystem.returnDate is null")	
-	
-	#borrower = mycursor.fetchall()      
+	mycursor = mydb.cursor()    
 	mydb.commit()
 	mycursor.close()
     
@@ -180,6 +177,7 @@ def returndevice():
 	return render_template('return.html', user_list = user_list)
 	
 #checking out page
+#added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)
 @app.route('/check-out/<int:deviceid>', methods=['GET', 'POST'])
 def checkout(deviceid):
 	device_id= deviceid
