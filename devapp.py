@@ -16,6 +16,7 @@ mydb = mysql.connector.connect(
   database="Project"
 )
 
+@app.route('/')
 @app.route('/users/')  
 def students():
 	mycursor = mydb.cursor()
@@ -30,16 +31,30 @@ def students():
 def devicelist():
 	### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
+					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
+					 "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
+					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
+					 "left outer join Users on Mostrecentborrow.userID = Users.userID")
 	device_details = mycursor.fetchall()
 	mycursor = mydb.cursor()    
 	mydb.commit()
 	mycursor.close()
-    
+
 	return render_template('devicelist.html', device_details = device_details)
 
-@app.route('/device-list-return/<int:userid>', methods =['GET', 'POST'])
-def devicelistreturn(userid):
+@app.route('/device-list/search', methods=['POST'])
+def searchdevices():
+	deviceSearch = request.form
+	device_search_term = deviceSearch['device_search_details']
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT * FROM device WHERE deviceName LIKE '%{}%' OR deviceType LIKE '%{}%' OR osType LIKE '%{}%' OR osVersion LIKE '%{}%' OR deviceRam LIKE '%{}%' OR deviceCpu LIKE '%{}%' OR deviceBit LIKE '%{}%' OR screenRes LIKE '%{}%' OR deviceGrade LIKE '%{}%'".format(device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term))
+	device_details = mycursor.fetchall()
+	mycursor.close()
+	return render_template('devicelist.html', title='Search', device_details=device_details, is_search=True)
+
+@app.route('/device-borrow-return/<int:userid>', methods =['GET', 'POST'])
+def deviceborrowreturn(userid):
 	#if request.method == 'GET':
 	user_id = userid
 	print(user_id)
@@ -49,7 +64,11 @@ def devicelistreturn(userid):
 	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 	loan_devices = mycursor.fetchall()
 	num_device = len(loan_devices)
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID left outer join Users on Mostrecentborrow.userID = Users.userID")
+	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
+					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
+					 "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
+					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
+					 "left outer join Users on Mostrecentborrow.userID = Users.userID")
 	device_details = mycursor.fetchall()
 	print(num_device)
 	print('get')
@@ -86,8 +105,16 @@ def devicelistreturn(userid):
 			mycursor = mydb.cursor()
 			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
+			num_device = len(loan_devices)
+			mycursor.execute(
+				"SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
+				"device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
+				"users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
+				"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
+				"left outer join Users on Mostrecentborrow.userID = Users.userID")
+			device_details = mycursor.fetchall()
 			mycursor.close()
-			return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
 	#return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
 	#return redirect('/device-list-return/{}'.format(user_id))
 
@@ -121,13 +148,14 @@ def devicelistreturn(userid):
 			mycursor = mydb.cursor()
 			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
+			num_device = len(loan_devices)
 			mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
 			device_details = mycursor.fetchall()
 			mycursor.close()	
 			
-			return render_template('devicelistreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
-		return render_template('devicelistreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)	
-	return render_template('devicelistreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
+		return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
+	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details)
 
 #return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
 		
