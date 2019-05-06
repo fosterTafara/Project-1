@@ -16,6 +16,13 @@ mydb = mysql.connector.connect(
   database="Project"
 )
 
+user_loggedin_id = 3
+mycursor = mydb.cursor()
+mycursor.execute("SELECT permissionId FROM users WHERE userId={}".format(user_loggedin_id))
+result = mycursor.fetchone()
+role = result[0]
+
+
 @app.route('/')
 @app.route('/users/')  
 def students():
@@ -23,7 +30,7 @@ def students():
 	mycursor.execute("SELECT * FROM Users")
 	result = mycursor.fetchall()
 	mycursor.close()
-	return render_template('users.html', title='Users', menu='users', users=result)
+	return render_template('users.html', title='Users', menu='users', users=result, role=role)
 
 
 @app.route('/device-list', methods =['GET', 'POST'])
@@ -36,6 +43,7 @@ def devicelist():
 					 "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
 					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
 					 "left outer join Users on Mostrecentborrow.userID = Users.userID")
+
 	device_details = mycursor.fetchall()
 	mycursor = mydb.cursor()    
 	mydb.commit()
@@ -207,17 +215,15 @@ def returndevice():
 	
 #checking out page
 #added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)
-@app.route('/check-out/<int:deviceid>', methods=['GET', 'POST'])
+@app.route('/devicedetails/<int:deviceid>', methods=['GET', 'POST'])
 def checkout(deviceid):
 	device_id= deviceid
 
 	if request.method == 'POST':
 		# press check-out button update availability
-		formContent = request.form
-		email_address = formContent['item']
+
 		mycursor = mydb.cursor()
-		mycursor.execute("SELECT userId from Users WHERE email = '{}';" .format(email_address))
-		user_id = mycursor.fetchone()
+
 		mycursor.execute("SELECT d.deviceName FROM Device d INNER JOIN CheckingSystem c ON d.deviceId=c.deviceId WHERE d.deviceId = '{}';".format(device_id))
 		device_name = mycursor.fetchall()
 		# ADD WHERE 
@@ -227,7 +233,7 @@ def checkout(deviceid):
 		mycursor = mydb.cursor()
 		current_date = datetime.now()
 		current_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
-		mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id[0], device_id, current_date))
+		mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_loggedin_id, device_id, current_date))
 		mycursor.close()	
 		mydb.commit()
 		flash("You have borrowed {} and you now have {} devices!".format(device_name[0][0], user_count[0][0]))
@@ -235,14 +241,14 @@ def checkout(deviceid):
 		return redirect('/device-list')				 
 	#select from the database (device id/name/type)	
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT deviceId, deviceName, deviceType from Device WHERE deviceId = {};" .format(device_id))
+	mycursor.execute("SELECT * from Device WHERE deviceId = {};" .format(device_id))
 	device_details = mycursor.fetchall() 
 	# raise Exception(device_details)
 	#select from the database (name)
 	mycursor.execute("SELECT email, userId from Users;")
 	user_emails = mycursor.fetchall()
 	mycursor.close()	
-	return render_template('check-out.html', devices=device_details, emails=user_emails)	
+	return render_template('devicedetails.html', devices=device_details, emails=user_emails)
 
 
 
