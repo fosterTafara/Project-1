@@ -72,15 +72,21 @@ def deviceborrowreturn(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from Users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 	loan_devices = mycursor.fetchall()
 	num_device = len(loan_devices)
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					 "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
-					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
-					 "left outer join Users on Mostrecentborrow.userID = Users.userID")
+	#mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
+					 #"device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
+					 #"users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
+					 #"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
+					 #"left outer join Users on Mostrecentborrow.userID = Users.userID")
+					 
+	#mycursor.execute("create view latestborrow as (select * from checkingsystem where returnDate is null)")
+	
+	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid")
+	
 	device_details = mycursor.fetchall()
+	print (device_details)
 	print(num_device)
 	print('get')
 	mycursor.close()
@@ -114,15 +120,11 @@ def deviceborrowreturn(userid):
 				mycursor.close()
 				print('success')
 			mycursor = mydb.cursor()
-			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
 			num_device = len(loan_devices)
-			mycursor.execute(
-				"SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-				"device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-				"users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
-				"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
-				"left outer join Users on Mostrecentborrow.userID = Users.userID")
+			mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid")
+
 			device_details = mycursor.fetchall()
 			mycursor.close()
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details)
@@ -157,10 +159,10 @@ def deviceborrowreturn(userid):
 			mycursor.close()
 			
 			mycursor = mydb.cursor()
-			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 			loan_devices = mycursor.fetchall()
 			num_device = len(loan_devices)
-			mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, checkingsystem.userId, users.firstName, users.lastName  from device left outer join checkingsystem on device.deviceId=checkingsystem.deviceID left outer join users on users.userId=checkingsystem.userId")
+			mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid")
 			device_details = mycursor.fetchall()
 			mycursor.close()	
 			
