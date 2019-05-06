@@ -51,7 +51,9 @@
 	<tr>
 		{% for item in device_details %}
 
-    	<td>{{item[1]}}</td>
+    	<td>
+            <a href="/devicedetails/{{item[0]}}">{{item[1]}}</a>
+        </td>
     	<td>{{item[2]}}</td>
     	<td>{{item[3]}}</td>
     	<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
