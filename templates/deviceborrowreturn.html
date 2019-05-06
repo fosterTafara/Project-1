@@ -37,6 +37,7 @@
 						<th>Device ID</th>
 						<th>Device Name</th>
 						<th>Device Type</th>
+						<th>Due Date</th>
 
 						<th> </th>
 
@@ -49,6 +50,7 @@
 					<td>{{device[0]}}</td>
 					<td>{{device[1]}}</td>
 					<td>{{device[2]}}</td>
+					<td>{{device[3]}}</td>
 					<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
 				</tr>
 				{% endfor %}
@@ -89,6 +91,7 @@
 				<th>More Specs</th>
 				<th>Status</th>
 				<th>Assigned to</th>
+				<th>Due Date</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -101,19 +104,34 @@
 			<td>{{item[3]}}</td>
 			<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right"
 					data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
-			<td>{{item[10]}}</td>
+			<td>{{item[11]}}</td>
 
-			{% if item[10]=='Available' %}
+	
+			{% if item[11]=='Available' %}
 
 			<td>-</td>
 
 			{% else %}
 
-			<td>{{item[12]}} {{item[13]}}</td>
+			<td>{{item[18]}} {{item[19]}}</td>
 
 			{% endif %}
+			
+			
+			
+			{% if item[11]=='Available' %}
 
-			{% if item[10]=='Available' %}
+			<td>-</td>
+
+			{% else %}
+
+			<td>{{item[15]}}</td>
+
+			{% endif %}
+				
+			
+			
+			{% if item[11]=='Available' %}
 
 			<td><input type="checkbox" class="form-check-input" name="deviceSelected[]" value={{item[0]}}></input></td>
 
