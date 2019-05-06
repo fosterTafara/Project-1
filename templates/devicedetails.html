@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<div class="alert alert-success mt-2" role="alert">
+				{% for message in messages %}
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true" style="font-size:20px">×</span>
+					</button>
+					{{ message }}
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endwith %}
+<br>
+	<div class="row ml-5 mt-5 mr-5">
+			<div class="col">
+				<div class="card">
+					<div class="card-header text-body font-weight-bold">
+						<div class="row">
+							<div class="col">
+								<h5>Device check-out</h5>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						{% for item in devices %}
+							<div class="col ml-4">
+								<div class="row">
+									<h5 class="text-body mr-1">ID:</h5> <h5 class="text-secondary">{{ devices[0][0]|e }}</h5>
+								</div>
+								<div class="row">
+									<h5 class="text-body mr-1">Name: </h5><h5 class="text-secondary">{{ devices[0][1]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">Type: </h5><h5 class="text-secondary">{{ devices[0][2]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">OS Type: </h5><h5 class="text-secondary">{{ devices[0][3]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1"> OS Version:</h5><h5 class="text-secondary">{{ devices[0][4]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">RAM: </h5><h5 class="text-secondary">{{ devices[0][5]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">CPU: </h5><h5 class="text-secondary">{{ devices[0][6]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">Bit: </h5><h5 class="text-secondary">{{ devices[0][7]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">Screen Resolution: </h5><h5 class="text-secondary">{{ devices[0][8]|e }}</h5>
+								</div>
+								<div class="row" >
+									<h5 class="text-body mr-1">Grade: </h5><h5 class="text-secondary">{{ devices[0][9]|e }}</h5>
+								</div>
+
+								<div class="row">
+									<form method="POST" action="" class="border border-light" type="text-left">
+										<button type="submit" class="btn btn-primary mb-2" >Borrow</button>
+									</form>
+								</div>
+							</div>
+						</div>
+
+						{% endfor %}
+
+
+
+			</div>
+		</div>
+{% endblock content %}
