@@ -12,6 +12,28 @@
             </div>
         {% endif %}
     {% endwith %}
+    {% if is_search %}
+	 <div class="alert alert-info mt-2" role="alert">
+		This is the result of your search
+	</div>
+	{% endif %}
+ <div class="row mt-1 mb-3">
+	<div class="col text-left">
+		<form method="POST" action="/device-list/search" class="form-inline">
+			<div class="form-group">
+				  <input class="form-control" type="text" placeholder="Search Device Details "aria-label="Search" name="device_search_details">
+			</div>
+			<div class="col mt-2">
+				<button type="submit" class="btn btn-primary mb-2">Search</button>
+			</div>
+		</form>
+	</div>
+</div>
+{% if is_search and not device_details %}
+		<div class="alert alert-info mt-2" role="alert">
+			There are no results that match your search
+		</div>
+    {% else %}
 <h2>Device List</h2>
 <br>
 <table class="table table-striped">
@@ -28,37 +50,37 @@
 	</thead>
 	<tr>
 		{% for item in device_details %}
-		
+
     	<td>{{item[1]}}</td>
     	<td>{{item[2]}}</td>
     	<td>{{item[3]}}</td>
     	<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
      	<td>{{item[10]}}</td>
-		
+
 		{% if item[10]=='Available' %}
-		
+
         <td>-</td>
-		
+
 		{% else %}
-		
+
 		<td>{{item[12]}} {{item[13]}}</td>
-		
+
 		{% endif %}
-		
-		{% if item[10]=='Available' %}
-		
-		<td><a type="button" href="/check-out/{{item[0]}}" class="btn btn-default">Borrow now</a></td>
-		
-		{% else %}
-		
-		<td><button type="button" disabled class="btn btn-info btn-xs">Borrow now</button></td>
-					
-		{% endif %}
-		
-	</tr>	
+
+        {% if item[10]=='Available' %}
+
+        <td><input type="checkbox" class="form-check-input" name="deviceSelected[]" value={{item[0]}}></input></td>
+
+        {% else %}
+
+        <td><input type="checkbox" disabled class="form-check-input" name="deviceselected[]" value={{item[0]}}></input></td>
+
+        {% endif %}
+	</tr>
 		{% endfor %}
-		
-		
+
+
 </table>
 
+{% endif %}
 {% endblock %}
