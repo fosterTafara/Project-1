@@ -36,7 +36,7 @@
     {% else %}
 <h2>Device List</h2>
 <br>
-<table class="table table-striped">
+<table id="devices" class="table table-striped">
     <thead>
       <tr>
         <th>Device Name</th>
@@ -84,3 +84,26 @@
 
 {% endif %}
 {% endblock %}
+
+$(document).ready(function() {
+    // Setup - add a text input to each footer cell
+    $('#devices thead tr').clone(true).appendTo( '#devices thead' );
+    $('#devices thead tr:eq(1) th').each( function (i) {
+        var title = $(devicelist).text();
+        $(devicelist).html( '<input type="text" placeholder="Search '+title+'" />' );
+
+        $( 'input', devicelist ).on( 'keyup change', function () {
+            if ( table.column(i).search() !== devicelist.value ) {
+                table
+                    .column(i)
+                    .search( devicelist.value )
+                    .draw();
+            }
+        } );
+    } );
+
+    var table = $('#devices').DataTable( {
+        orderCellsTop: true,
+        fixedHeader: true
+    } );
+} );
