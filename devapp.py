@@ -12,8 +12,8 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
-  database="Project"
+  passwd="Ciucas365",
+  database="project"
 )
 
 @app.route('/')
@@ -33,9 +33,9 @@ def devicelist():
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
 					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					 "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
-					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
-					 "left outer join users on Mostrecentborrow.userID = users.userID")
+					 "users.firstName as mostrecentuser, users.lastName from device left outer join (SELECT deviceID, borrowDate AS mostrecentborrowDate, userID FROM checkingsystem "
+					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) mostrecentborrow on device.deviceID = mostrecentborrow.deviceID "
+					 "left outer join users on mostrecentborrow.userID = users.userID")
 	device_details = mycursor.fetchall()
 	mycursor = mydb.cursor()    
 	mydb.commit()
@@ -70,7 +70,7 @@ def deviceborrowreturn(userid):
 	user_id = userid
 	print(user_id)
 	mycursor = mydb.cursor()
-	mycursor.execute('select * from Users where UserId ={}'.format(user_id))
+	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
 	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
 	loan_devices = mycursor.fetchall()
@@ -81,7 +81,7 @@ def deviceborrowreturn(userid):
 					 #"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
 					 #"left outer join Users on Mostrecentborrow.userID = Users.userID")
 					 
-	#mycursor.execute("create view latestborrow as (select * from checkingsystem where returnDate is null)")
+	# mycursor.execute("create view latestborrow as (select * from checkingsystem where returnDate is null)")
 	
 	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid")
 	
@@ -114,7 +114,7 @@ def deviceborrowreturn(userid):
 			#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
 				mycursor = mydb.cursor()
 				mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
-				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
+				mycursor.execute('UPDATE device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
 				#print("success")
 				mydb.commit()
 				mycursor.close()
@@ -142,7 +142,7 @@ def deviceborrowreturn(userid):
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			for each_item in BorrowedDevices:
-				mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, each_item, Current_Time))
+				mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, each_item, Current_Time))
 				mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(each_item))
 				mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(each_item))
 			
@@ -187,7 +187,7 @@ def checkout(deviceid):
 		formContent = request.form
 		email_address = formContent['item']
 		mycursor = mydb.cursor()
-		mycursor.execute("SELECT userId from Users WHERE email = '{}';" .format(email_address))
+		mycursor.execute("SELECT userId from users WHERE email = '{}';" .format(email_address))
 		user_id = mycursor.fetchone()
 		mycursor.execute("SELECT d.deviceName FROM Device d INNER JOIN CheckingSystem c ON d.deviceId=c.deviceId WHERE d.deviceId = '{}';".format(device_id))
 		device_name = mycursor.fetchall()
@@ -206,11 +206,11 @@ def checkout(deviceid):
 		return redirect('/device-list')				 
 	#select from the database (device id/name/type)	
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT deviceId, deviceName, deviceType from Device WHERE deviceId = {};" .format(device_id))
+	mycursor.execute("SELECT deviceId, deviceName, deviceType from device WHERE deviceId = {};" .format(device_id))
 	device_details = mycursor.fetchall() 
 	# raise Exception(device_details)
 	#select from the database (name)
-	mycursor.execute("SELECT email, userId from Users;")
+	mycursor.execute("SELECT email, userId from users;")
 	user_emails = mycursor.fetchall()
 	mycursor.close()	
 	return render_template('check-out.html', devices=device_details, emails=user_emails)	
