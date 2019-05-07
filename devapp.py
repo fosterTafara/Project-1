@@ -20,7 +20,7 @@ mydb = mysql.connector.connect(
 @app.route('/users/')  
 def students():
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM Users")
+	mycursor.execute("SELECT * FROM users")
 	result = mycursor.fetchall()
 	mycursor.close()
 	return render_template('users.html', title='Users', menu='users', users=result)
@@ -35,7 +35,7 @@ def devicelist():
 					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
 					 "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
 					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
-					 "left outer join Users on Mostrecentborrow.userID = Users.userID")
+					 "left outer join users on Mostrecentborrow.userID = users.userID")
 	device_details = mycursor.fetchall()
 	mycursor = mydb.cursor()    
 	mydb.commit()
