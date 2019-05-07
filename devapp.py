@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="password",
   database="Project"
 )
 
@@ -175,6 +175,46 @@ def deviceborrowreturn(userid):
 
 	
       
+	
+#checking out page
+#added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)
+@app.route('/check-out/<int:deviceid>', methods=['GET', 'POST'])
+def checkout(deviceid):
+	device_id= deviceid
+
+	if request.method == 'POST':
+		# press check-out button update availability
+		formContent = request.form
+		email_address = formContent['item']
+		mycursor = mydb.cursor()
+		mycursor.execute("SELECT userId from Users WHERE email = '{}';" .format(email_address))
+		user_id = mycursor.fetchone()
+		mycursor.execute("SELECT d.deviceName FROM Device d INNER JOIN CheckingSystem c ON d.deviceId=c.deviceId WHERE d.deviceId = '{}';".format(device_id))
+		device_name = mycursor.fetchall()
+		# ADD WHERE 
+		mycursor.execute("SELECT COUNT(userId) FROM CheckingSystem WHERE borrowDate IS NOT NULL and returnDate IS NULL;")
+		user_count = mycursor.fetchall()
+		mycursor.close()	
+		mycursor = mydb.cursor()
+		current_date = datetime.now()
+		current_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
+		mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id[0], device_id, current_date))
+		mycursor.close()	
+		mydb.commit()
+		flash("You have borrowed {} and you now have {} devices!".format(device_name[0][0], user_count[0][0]))
+
+		return redirect('/device-list')				 
+	#select from the database (device id/name/type)	
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT deviceId, deviceName, deviceType from Device WHERE deviceId = {};" .format(device_id))
+	device_details = mycursor.fetchall() 
+	# raise Exception(device_details)
+	#select from the database (name)
+	mycursor.execute("SELECT email, userId from Users;")
+	user_emails = mycursor.fetchall()
+	mycursor.close()	
+	return render_template('check-out.html', devices=device_details, emails=user_emails)	
+
  #return device function	
 @app.route('/return', methods=['GET', 'POST'])
 def returndevice():
@@ -217,46 +257,6 @@ def returndevice():
 				mydb.commit()
 				mycursor.close()
 	return render_template('return.html', user_list = user_list)
-	
-#checking out page
-#added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)
-@app.route('/check-out/<int:deviceid>', methods=['GET', 'POST'])
-def checkout(deviceid):
-	device_id= deviceid
-
-	if request.method == 'POST':
-		# press check-out button update availability
-		formContent = request.form
-		email_address = formContent['item']
-		mycursor = mydb.cursor()
-		mycursor.execute("SELECT userId from Users WHERE email = '{}';" .format(email_address))
-		user_id = mycursor.fetchone()
-		mycursor.execute("SELECT d.deviceName FROM Device d INNER JOIN CheckingSystem c ON d.deviceId=c.deviceId WHERE d.deviceId = '{}';".format(device_id))
-		device_name = mycursor.fetchall()
-		# ADD WHERE 
-		mycursor.execute("SELECT COUNT(userId) FROM CheckingSystem WHERE borrowDate IS NOT NULL and returnDate IS NULL;")
-		user_count = mycursor.fetchall()
-		mycursor.close()	
-		mycursor = mydb.cursor()
-		current_date = datetime.now()
-		current_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
-		mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id[0], device_id, current_date))
-		mycursor.close()	
-		mydb.commit()
-		flash("You have borrowed {} and you now have {} devices!".format(device_name[0][0], user_count[0][0]))
-
-		return redirect('/device-list')				 
-	#select from the database (device id/name/type)	
-	mycursor = mydb.cursor()
-	mycursor.execute("SELECT deviceId, deviceName, deviceType from Device WHERE deviceId = {};" .format(device_id))
-	device_details = mycursor.fetchall() 
-	# raise Exception(device_details)
-	#select from the database (name)
-	mycursor.execute("SELECT email, userId from Users;")
-	user_emails = mycursor.fetchall()
-	mycursor.close()	
-	return render_template('check-out.html', devices=device_details, emails=user_emails)	
-
 
 
 ##put: devicechoice = request.args.get("DevID") into the check-out definition to capture the Device ID
