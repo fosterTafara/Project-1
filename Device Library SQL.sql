@@ -56,6 +56,8 @@ foreign key (deviceId) references Device (deviceId),
 foreign key (userId) references Users (userId)
 );
 
+CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL);
+
 INSERT INTO Device (deviceId, deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu,
 deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
 ("1000","Q Bert","Amazon Fire HD 7","Android","4.5.5","1 GB","Dual-Core 1.5GHz","1","800 x 1280 (216ppi)","Low","None","Available"),
