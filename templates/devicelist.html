@@ -51,7 +51,7 @@
   <input type="checkbox" name="Assigned" checked="checked"> Assigned to</p>
 
 
-<table id ="columnSort" class="table table-striped">
+<table id ="columnSort1" class="table table-striped">
     <thead>
       <tr>
         <th class ="DeviceName">Device Name</th>
@@ -78,14 +78,14 @@
     	<td><button type="button" class="btn btn-secondary MoreSpecs" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
      	<td class="OSVersion">{{item[4]}}</td>
 		<td class="RAM">{{item[5]}}</td>
-        <td class="CPU">{{item[6]}}</td>
-		<td class="Bit">{{item[7]}}</td>
-		<td class="ScreenRes">{{item[8]}}</td>
-		<td class="Grade">{{item[9]}}</td>
-		<td class = "Status">{{item[11]}}</td>
+        <td class="CPU">{{item[5]}}</td>
+		<td class="Bit">{{item[6]}}</td>
+		<td class="ScreenRes">{{item[7]}}</td>
+		<td class="Grade">{{item[8]}}</td>
+		<td class = "Status">{{item[10]}}</td>
 
 
-		{% if item[11]=='Available' %}
+		{% if item[10]=='Available' %}
 
         <td>-</td>
 
@@ -95,15 +95,6 @@
 
 		{% endif %}
 
-        {% if item[11]=='Available' %}
-
-        <td><input type="checkbox1" class="form-check-input" name="deviceSelected[]" value={{item[0]}}></input></td>
-
-        {% else %}
-
-        <td><input type="checkbox1" disabled class="form-check-input" name="deviceselected[]" value={{item[0]}}></input></td>
-
-        {% endif %}
 	</tr>
 		{% endfor %}
 		 

@@ -49,7 +49,7 @@
 					<td>{{device[1]}}</td>
 					<td>{{device[2]}}</td>
 					<td>{{device[3]}}</td>
-					<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+					<td> <input type="checkbox1" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
 				</tr>
 				{% endfor %}
 
@@ -105,7 +105,7 @@
 					<td>{{device[1]}}</td>
 					<td>{{device[2]}}</td>
 					<td>{{device[3]}}</td>
-					<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+					<td> <input type="checkbox1" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
 				</tr>
 				{% endfor %}
 
@@ -134,30 +134,54 @@
 <br>
 <form method="POST" action="" name="DeviceList">
 	
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Device ID</th>
-				<th>Device Name</th>
-				<th>Device type</th>
-				<th>OS type</th>
-				<th>More Specs</th>
-				<th>Status</th>
-				<th>Assigned to</th>
-				<th>Due Date</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tr>
-			{% for item in device_details %}
+<p><input type="checkbox" name="DeviceName" checked="checked"> Device Name 
+  <input type="checkbox" name="DeviceType" checked="checked"> Device Type 
+  <input type="checkbox" name="OSType" checked="checked">OS Type
+  <input type="checkbox" name="MoreSpecs" checked="checked">More Specs
+  <input type="checkbox" name="OSVersion">OS Version
+  <input type="checkbox" name="RAM">RAM
+  <input type="checkbox" name="CPU">CPU
+  <input type="checkbox" name="Bit">Bit
+  <input type="checkbox" name="ScreenRes">Screen Resolution
+  <input type="checkbox" name="Grade">Grade
+  <input type="checkbox" name="Status" checked="checked"> Status
+  <input type="checkbox" name="Assigned" checked="checked"> Assigned to</p>
+  <input type="checkbox" name="Duedate" checked="checked"> Due date</p>
 
-			<td>{{item[0]}}</td>
-			<td>{{item[1]}}</td>
-			<td>{{item[2]}}</td>
-			<td>{{item[3]}}</td>
-			<td><button type="button" class="btn btn-secondary" data-container="body" data-toggle="popover" data-placement="right"
-					data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
-			<td>{{item[11]}}</td>
+
+<table id ="columnSort" class="table table-striped">
+    <thead>
+      <tr>
+        <th class ="DeviceName">Device Name</th>
+        <th class="DeviceType">Device Type</th>
+        <th class="OSType">OS Type</th>
+		<th class="MoreSpecs">More Specs</th>
+		<th class="OSVersion">OS Version</th>
+		<th class="RAM">RAM</th>
+        <th class="CPU">CPU</th>
+		<th class="Bit">Bit</th>
+		<th class="ScreenRes">Screen Resolution</th>
+		<th class="Grade">Grade</th>
+		<th class = "Status">Status</th>
+        <th class="DeviceType">Assigned to</th>
+        <th class="DueDate">Due date></th>
+		<th></th>
+      </tr>
+	</thead>
+	<tr>
+		{% for item in device_details %}
+
+    	<td class = "DeviceName">{{item[1]}}</td>
+    	<td class = "DeviceType">{{item[2]}}</td>
+    	<td class="OSType">{{item[3]}}</td>
+    	<td><button type="button" class="btn btn-secondary MoreSpecs" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
+     	<td class="OSVersion">{{item[4]}}</td>
+		<td class="RAM">{{item[5]}}</td>
+        <td class="CPU">{{item[6]}}</td>
+		<td class="Bit">{{item[7]}}</td>
+		<td class="ScreenRes">{{item[8]}}</td>
+		<td class="Grade">{{item[9]}}</td>
+		<td class = "Status">{{item[11]}}</td>
 
 	
 			{% if item[11]=='Available' %}
