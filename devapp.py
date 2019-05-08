@@ -12,13 +12,9 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-<<<<<<< HEAD
   passwd="Signal2019$$",
   database="Project"
-=======
-  passwd="Ciucas365",
-  database="project"
->>>>>>> 1347eeef2e180dde29ea2444493023e81b55667c
+
 )
 #foster
 
