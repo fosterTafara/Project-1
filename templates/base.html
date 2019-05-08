@@ -32,9 +32,36 @@
 
 	<script>"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css"</script>
 	<script>"https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"</script>
+
 	<script>$(document).ready(function() {$('#columnSort').DataTable();} );</script>
    
-
+  <script>
+	$(document).ready(function() {
+    $('#columnSort').DataTable( {
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option label="Select" value=""></option></select>')
+                    .appendTo( $(column.header()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
+} );
+$('select option:selected').text();
+</script>
 
 
 

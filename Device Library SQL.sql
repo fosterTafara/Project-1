@@ -1,3 +1,4 @@
+    
 -- DROP DATABASE Project;
  
 CREATE Database IF NOT EXISTS Project;
@@ -48,6 +49,8 @@ ALTER TABLE Device AUTO_INCREMENT=1051;
 CREATE TABLE IF NOT EXISTS CheckingSystem (
 userId INT,
 deviceId INT,
+holdDate DATETIME,
+holdExpiry DATETIME,
 borrowDate DATETIME, 
 dueDate DATETIME,
 returnDate DATETIME,
@@ -55,6 +58,8 @@ returnDate DATETIME,
 foreign key (deviceId) references Device (deviceId),
 foreign key (userId) references Users (userId)
 );
+
+CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL);
 
 INSERT INTO Device (deviceId, deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu,
 deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
