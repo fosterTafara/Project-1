@@ -48,6 +48,8 @@ ALTER TABLE Device AUTO_INCREMENT=1051;
 CREATE TABLE IF NOT EXISTS CheckingSystem (
 userId INT,
 deviceId INT,
+holdDate DATETIME,
+holdExpiry DATETIME,
 borrowDate DATETIME, 
 dueDate DATETIME,
 returnDate DATETIME,
