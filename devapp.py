@@ -12,15 +12,11 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-<<<<<<< HEAD
   passwd="Signal2019$$",
   database="Project"
-=======
-  passwd="Ciucas365",
-  database="project"
->>>>>>> 1347eeef2e180dde29ea2444493023e81b55667c
+
 )
-#foster
+
 
 @app.route('/')
 @app.route('/users/')  
@@ -98,19 +94,6 @@ def deviceborrowreturn(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
-<<<<<<< HEAD
-=======
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
-	loan_devices = mycursor.fetchall()
-	num_device = len(loan_devices)
-	#mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-					 #"device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					 #"users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
-					 #"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
-					 #"left outer join Users on Mostrecentborrow.userID = Users.userID")
-					 
-
->>>>>>> 1347eeef2e180dde29ea2444493023e81b55667c
 	
 	loan_devices = loandevices(user_id)	
 	num_device = len(loan_devices)
@@ -135,12 +118,9 @@ def deviceborrowreturn(userid):
 			#USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
 				mycursor = mydb.cursor()
 				mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
-<<<<<<< HEAD
+
 				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
-=======
-				mycursor.execute('UPDATE device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
-				#print("success")
->>>>>>> 1347eeef2e180dde29ea2444493023e81b55667c
+
 				mydb.commit()
 				mycursor.close()
 				mycursor = mydb.cursor()
