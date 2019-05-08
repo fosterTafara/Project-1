@@ -81,7 +81,7 @@ def deviceborrowreturn(userid):
 					 #"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
 					 #"left outer join Users on Mostrecentborrow.userID = Users.userID")
 					 
-	# mycursor.execute("create view latestborrow as (select * from checkingsystem where returnDate is null)")
+
 	
 	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid")
 	
@@ -96,13 +96,13 @@ def deviceborrowreturn(userid):
 	if request.method == 'POST':
 
 		if 'ReturnNow' in request.form:
-			mycursor = mydb.cursor()
-			mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
-			loan_devices = mycursor.fetchall()
-			num_device = len(loan_devices)
+			# mycursor = mydb.cursor()
+			# mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
+			# loan_devices = mycursor.fetchall()
+			# num_device = len(loan_devices)
 			print('number of devices')
 			print(num_device)
-			mycursor.close()
+			# mycursor.close()
 			mycursor = mydb.cursor()
 			SelectedDevices = request.form.getlist('selected[]')
 			print(SelectedDevices)
