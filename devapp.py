@@ -81,7 +81,6 @@ def deviceborrowreturn(userid):
 					 #"AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
 					 #"left outer join Users on Mostrecentborrow.userID = Users.userID")
 					 
-	#mycursor.execute("create view latestborrow as (select * from checkingsystem where returnDate is null)")
 	
 	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid")
 	
