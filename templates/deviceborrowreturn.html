@@ -24,8 +24,6 @@
 
 {% else %}
 
-
-
 		<h3>{{user_details[0][1]}}'s Loan Devices</h3>
 
 		<!-- 		<h3>Your Loans</h3>		 -->
@@ -135,10 +133,7 @@
 
 <br>
 <form method="POST" action="" name="DeviceList">
-	<div align=right>
-		<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow Now</button>
-	</div>
-	<br>
+	
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -171,7 +166,7 @@
 
 			{% else %}
 
-			<td>{{item[18]}} {{item[19]}}</td>
+			<td>{{item[20]}} {{item[21]}}</td>
 
 			{% endif %}
 			
@@ -183,20 +178,25 @@
 
 			{% else %}
 
-			<td>{{item[15]}}</td>
+			<td>{{item[17]}}</td>
 
 			{% endif %}
 				
 			
 			
 			{% if item[11]=='Available' %}
-
-			<td><input type="checkbox" class="form-check-input" name="deviceSelected[]" value={{item[0]}}></input></td>
+			<form method="POST" action="" name="BorrowNow{{item[0]}}">
+				<td>
+					<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow{{item[0]}}">Borrow Now</button>
+				</td>
+			</form>
 
 			{% else %}
-
-			<td><input type="checkbox" disabled class="form-check-input" name="deviceselected[]" value={{item[0]}}></input></td>
-
+			<form method="POST" action="" name="HoldNow{{item[0]}}">
+				<td>
+					<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow{{item[0]}}">Hold Now</button>
+				</td>
+			</form>
 			{% endif %}
 
 		</tr>
@@ -206,11 +206,6 @@
 	</table>
 
 
-	<br>
-
-	<div align=right>
-		<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow Now</button>
-	</div>
 </form>
 
 
