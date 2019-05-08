@@ -73,6 +73,64 @@
 <br>
 
 
+{% if num_hold_device <1 %}
+<div class="alert alert-info" role="alert">
+	You do not have any devices on hold.
+</div>
+
+{% else %}
+
+
+
+		<h3>{{user_details[0][1]}}'s Hold Devices</h3>
+
+		<!-- 		<h3>Your Devices on Hold</h3>		 -->
+		<br>
+		<form method="POST" action="" name="Device">
+			<table style=" color: #4173f4; font-family: sans-serif;" class="table table-striped">
+				<thead>
+					<tr>
+						<th>Device ID</th>
+						<th>Device Name</th>
+						<th>Device Type</th>
+						<th>Device Status</th>
+
+						<th> </th>
+
+					</tr>
+				</thead>
+
+
+				{% for device in loan_devices %}
+				<tr>
+					<td>{{device[0]}}</td>
+					<td>{{device[1]}}</td>
+					<td>{{device[2]}}</td>
+					<td>{{device[3]}}</td>
+					<td> <input type="checkbox" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+				</tr>
+				{% endfor %}
+
+			</table>
+
+
+			<br>
+
+			<div align=right>
+				<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow Now</button>
+
+			</div>
+
+
+		</form>
+
+{% endif %}
+
+<br>
+
+
+
+
 <h3>Devices List</h3>
 
 <br>
