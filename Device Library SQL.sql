@@ -138,3 +138,7 @@ INSERT INTO checkingsystem (userId, deviceId, borrowDate, dueDate, returnDate) V
 ("5", "1009","2019-05-03 09:59:59","2019-05-07 09:59:59",null)
 ;
 
+<<<<<<< HEAD
+=======
+Create view latestborrow as (select * from checkingsystem where returnDate is null);
+>>>>>>> f68b9856821ab903d8bcb592fa712b2819bc306c
