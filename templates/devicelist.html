@@ -51,20 +51,20 @@
   <input type="checkbox" name="Assigned" checked="checked"> Assigned to</p>
 
 
-<table id ="columnSort1" class="table table-striped">
+<table id ="columnSort" class="table table-striped">
     <thead>
       <tr>
         <th class ="DeviceName">Device Name</th>
         <th class="DeviceType">Device Type</th>
         <th class="OSType">OS Type</th>
-		<th class="MoreSpecs">More Specs</th>
-		<th class="OSVersion">OS Version</th>
-		<th class="RAM">RAM</th>
+    		<th class="MoreSpecs">More Specs</th>
+    		<th class="OSVersion">OS Version</th>
+    		<th class="RAM">RAM</th>
         <th class="CPU">CPU</th>
-		<th class="Bit">Bit</th>
-		<th class="ScreenRes">Screen Resolution</th>
-		<th class="Grade">Grade</th>
-		<th class = "Status">Status</th>
+    		<th class="Bit">Bit</th>
+    		<th class="ScreenRes">Screen Resolution</th>
+    		<th class="Grade">Grade</th>
+    		<th class = "Status">Status</th>
         <th class="DeviceType">Assigned to</th>
         <th></th>
       </tr>
@@ -77,12 +77,12 @@
     	<td class="OSType">{{item[3]}}</td>
     	<td><button type="button" class="btn btn-secondary MoreSpecs" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
      	<td class="OSVersion">{{item[4]}}</td>
-		<td class="RAM">{{item[5]}}</td>
-        <td class="CPU">{{item[5]}}</td>
-		<td class="Bit">{{item[6]}}</td>
-		<td class="ScreenRes">{{item[7]}}</td>
-		<td class="Grade">{{item[8]}}</td>
-		<td class = "Status">{{item[10]}}</td>
+		  <td class="RAM">{{item[5]}}</td>
+      <td class="CPU">{{item[5]}}</td>
+  		<td class="Bit">{{item[6]}}</td>
+  		<td class="ScreenRes">{{item[7]}}</td>
+  		<td class="Grade">{{item[8]}}</td>
+  		<td class = "Status">{{item[10]}}</td>
 
 
 		{% if item[10]=='Available' %}
