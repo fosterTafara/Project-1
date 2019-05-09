@@ -29,7 +29,7 @@
 		<!-- 		<h3>Your Loans</h3>		 -->
 		<br>
 		<form method="POST" action="" name="Device">
-			<table style=" color: #4173f4; font-family: sans-serif;" class="table table-striped">
+			<table style=" font-family: sans-serif;" class="table table-striped">
 				<thead>
 					<tr>
 						<th>Device ID</th>
@@ -48,20 +48,16 @@
 					<td>{{device[0]}}</td>
 					<td>{{device[1]}}</td>
 					<td>{{device[2]}}</td>
-					<td>{{device[3]}}</td>
-					
+					<td>{{device[3]}}</td>				
 					<form method="POST" action="">
 						<td>
 							<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
 						</td>
 					</form>
-					
-					
 				</tr>
 				{% endfor %}
 
 			</table>
-
 
 		</form>
 
@@ -129,7 +125,6 @@
 <p><input type="checkbox" name="DeviceName" checked="checked"> Device Name 
   <input type="checkbox" name="DeviceType" checked="checked"> Device Type 
   <input type="checkbox" name="OSType" checked="checked">OS Type
-  <input type="checkbox" name="MoreSpecs" checked="checked">More Specs
   <input type="checkbox" name="OSVersion">OS Version
   <input type="checkbox" name="RAM">RAM
   <input type="checkbox" name="CPU">CPU
@@ -137,95 +132,93 @@
   <input type="checkbox" name="ScreenRes">Screen Resolution
   <input type="checkbox" name="Grade">Grade
   <input type="checkbox" name="Status" checked="checked"> Status
-  <input type="checkbox" name="Assigned" checked="checked"> Assigned to</p>
-  <input type="checkbox" name="Duedate" checked="checked"> Due date</p>
+  <input type="checkbox" name="Assigned" checked="checked"> Assigned to
+  <input type="checkbox" name="DueDate" checked="checked"> Due date</p>
 
 
 <table id ="columnSort" class="table table-striped">
+
     <thead>
       <tr>
+
         <th class ="DeviceID">Device ID</th>
 		<th class ="DeviceName">Device Name</th>
         <th class="DeviceType">Device Type</th>
         <th class="OSType">OS Type</th>
-		<th class="MoreSpecs">More Specs</th>
 		<th class="OSVersion">OS Version</th>
 		<th class="RAM">RAM</th>
         <th class="CPU">CPU</th>
 		<th class="Bit">Bit</th>
 		<th class="ScreenRes">Screen Resolution</th>
 		<th class="Grade">Grade</th>
-		<th class = "Status">Status</th>
-        <th class="DeviceType">Assigned to</th>
-        <th class="DueDate">Due date></th>
-		<th></th>
+		<th class="Status">Status</th>
+        <th class="Assigned">Assigned to</th>
+        <th class="DueDate">Due date</th>
+        <th></th>
+      </tr>
+	
+      <tr>
+        <th class ="DeviceID">Device ID</th>
+        <th class="DeviceName"></th>
+        <th class="DeviceType"></th>
+        <th class="OSType"></th>
+        <th class="OSVersion"></th>
+        <th class="RAM"></th>
+        <th class="CPU"></th>
+        <th class="Bit"></th>
+        <th class="ScreenRes"></th>
+        <th class="Grade"></th>
+        <th class="Status"></th>
+        <th class="Assigned"></th>
+        <th class="DueDate"></th>
+        <th></th>
       </tr>
 	</thead>
 	<tr>
 		{% for item in device_details %}
 
-    	<td class = "DeviceID">{{item[0]}}</td>
-		<td class = "DeviceName">{{item[1]}}</td>
+    <td class = "DeviceID">{{item[0]}}</td>
+		<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>    	
+
     	<td class = "DeviceType">{{item[2]}}</td>
     	<td class="OSType">{{item[3]}}</td>
-    	<td><button type="button" class="btn btn-secondary MoreSpecs" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
+    
      	<td class="OSVersion">{{item[4]}}</td>
 		<td class="RAM">{{item[5]}}</td>
         <td class="CPU">{{item[6]}}</td>
 		<td class="Bit">{{item[7]}}</td>
 		<td class="ScreenRes">{{item[8]}}</td>
 		<td class="Grade">{{item[9]}}</td>
-		<td class = "Status">{{item[11]}}</td>
-
-	
+		<td class="Status">{{item[11]}}</td>
+		<td class="Assigned"> 
 			{% if item[11]=='Available' or item[11]=='On Hold' %}
-
-			<td>-</td>
-
+			-
 			{% else %}
-
-			<td>{{item[20]}} {{item[21]}}</td>
-
+			{{item[20]}} {{item[21]}}
 			{% endif %}
-			
-			
-			
+		</td>
+		<td class="DueDate"> 
 			{% if item[11]=='Available'or item[11]=='On Hold' %}
-
-			<td>-</td>
-
+			-
 			{% else %}
-
-			<td>{{item[17]}}</td>
-
+			{{item[17]}}
 			{% endif %}
-				
-			
-			
+		</td>
+		<td>
 			{% if item[11]=='Available' %}
 			<form method="POST" action="">
-				<td>
 					<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
-				</td>
 			</form>
-
 			{% else %}
 			<form method="POST" action="">
-				<td>
 					<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
 				</td>
 			</form>
 			{% endif %}
-
+		</td>
 		</tr>
 		{% endfor %}
-
-
 	</table>
-
-
 </form>
-
-
 
 {% endblock %}
