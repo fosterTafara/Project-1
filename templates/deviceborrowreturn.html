@@ -49,19 +49,18 @@
 					<td>{{device[1]}}</td>
 					<td>{{device[2]}}</td>
 					<td>{{device[3]}}</td>
-					<td> <input type="checkbox1" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+					
+					<form method="POST" action="">
+						<td>
+							<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+						</td>
+					</form>
+					
+					
 				</tr>
 				{% endfor %}
 
 			</table>
-
-
-			<br>
-
-			<div align=right>
-				<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return Now</button>
-
-			</div>
 
 
 		</form>
@@ -77,9 +76,6 @@
 </div>
 
 {% else %}
-
-
-
 		<h3>{{user_details[0][1]}}'s Hold Devices</h3>
 
 		<!-- 		<h3>Your Devices on Hold</h3>		 -->
@@ -99,25 +95,21 @@
 				</thead>
 
 
-				{% for device in loan_devices %}
+				{% for device in hold_devices %}
 				<tr>
 					<td>{{device[0]}}</td>
 					<td>{{device[1]}}</td>
 					<td>{{device[2]}}</td>
 					<td>{{device[3]}}</td>
-					<td> <input type="checkbox1" class="form-check-input" name="selected[]" value={{device[0]}}></input></td>
+					<form method="POST" action="">
+						<td>
+							<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+						</td>
+					</form>
 				</tr>
 				{% endfor %}
 
 			</table>
-
-
-			<br>
-
-			<div align=right>
-				<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow Now</button>
-
-			</div>
 
 
 		</form>
@@ -152,7 +144,8 @@
 <table id ="columnSort" class="table table-striped">
     <thead>
       <tr>
-        <th class ="DeviceName">Device Name</th>
+        <th class ="DeviceID">Device ID</th>
+		<th class ="DeviceName">Device Name</th>
         <th class="DeviceType">Device Type</th>
         <th class="OSType">OS Type</th>
 		<th class="MoreSpecs">More Specs</th>
@@ -171,7 +164,8 @@
 	<tr>
 		{% for item in device_details %}
 
-    	<td class = "DeviceName">{{item[1]}}</td>
+    	<td class = "DeviceID">{{item[0]}}</td>
+		<td class = "DeviceName">{{item[1]}}</td>
     	<td class = "DeviceType">{{item[2]}}</td>
     	<td class="OSType">{{item[3]}}</td>
     	<td><button type="button" class="btn btn-secondary MoreSpecs" data-container="body" data-toggle="popover" data-placement="right" data-content="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">More Specs</button></td>
@@ -184,7 +178,7 @@
 		<td class = "Status">{{item[11]}}</td>
 
 	
-			{% if item[11]=='Available' %}
+			{% if item[11]=='Available' or item[11]=='On Hold' %}
 
 			<td>-</td>
 
@@ -196,7 +190,7 @@
 			
 			
 			
-			{% if item[11]=='Available' %}
+			{% if item[11]=='Available'or item[11]=='On Hold' %}
 
 			<td>-</td>
 
@@ -209,16 +203,16 @@
 			
 			
 			{% if item[11]=='Available' %}
-			<form method="POST" action="" name="BorrowNow{{item[0]}}">
+			<form method="POST" action="">
 				<td>
-					<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow{{item[0]}}">Borrow Now</button>
+					<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 				</td>
 			</form>
 
 			{% else %}
-			<form method="POST" action="" name="HoldNow{{item[0]}}">
+			<form method="POST" action="">
 				<td>
-					<button type="submit" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow{{item[0]}}">Hold Now</button>
+					<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
 				</td>
 			</form>
 			{% endif %}
