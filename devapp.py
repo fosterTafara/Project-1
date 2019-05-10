@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 import mysql.connector
 from datetime import datetime
+from datetime import timedelta
 
 # instantiate an object called app
 app = Flask(__name__)
@@ -12,10 +13,8 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
+  passwd="Signal2019$$",
   database="project"
-
-
 )
 
 
@@ -31,10 +30,18 @@ def students():
 
 def devicedetails():	
 	mycursor = mydb.cursor()
-	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid where holdDate is null")	
+	mycursor.execute("SELECT * FROM devicedetails")
 	device_details = mycursor.fetchall()
 	mycursor.close()
-	return device_details
+	return device_details	
+
+def devicedetails(userid):
+	user_id = userid
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT * FROM devicedetails where userid <> %s or userid is null", (user_id,))
+	device_details_userid = mycursor.fetchall()
+	mycursor.close()
+	return device_details_userid
 
 def loandevices(userid):
 	user_id = userid
@@ -47,7 +54,8 @@ def loandevices(userid):
 def holddevices(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.holdDate is not NULL and checkingsystem.borrowDate is NULL", (user_id,))		
+	Current_Time = datetime.now()
+	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.holdDate is not NULL and checkingsystem.borrowDate is NULL and holdExpiry > Current_Time", (user_id,))
 	hold_devices = mycursor.fetchall()
 	mycursor.close()
 	return hold_devices
@@ -69,7 +77,7 @@ def deviceborrowreturn(userid):
 	num_hold_device = len(hold_devices)
 	print(num_hold_device)
 	
-	device_details = devicedetails()
+	device_details_userid = devicedetails(user_id)
 
 	mycursor.close()
 	
@@ -95,9 +103,9 @@ def deviceborrowreturn(userid):
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
-			device_details = devicedetails()
+			device_details_userid = devicedetails(user_id)
 			mycursor.close()
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 		
 	if request.method == 'POST':
@@ -120,10 +128,10 @@ def deviceborrowreturn(userid):
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
-			device_details = devicedetails()
+			device_details_userid = devicedetails(user_id)
 			mycursor.close()	
 			
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 		
 	if request.method == 'POST':		
 		if 'HoldNow' in request.form:
@@ -133,19 +141,32 @@ def deviceborrowreturn(userid):
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')			
 			DeviceDetails = request.form
 			device_id=DeviceDetails['HoldNow']						
-			mycursor.execute("SELECT dueDate from checkingsystem where deviceId={} and returnDate is null and holdDate is null".format(device_id,))					
+			mycursor.execute("SELECT dueDate from latestborrow where deviceId={} and borrowDate is not null".format(device_id,))					
 			Due_Date=mycursor.fetchone()			
-			Due_Date=Due_Date[0]
-			print(Due_Date)
+			Due_Date=Due_Date[0]		
 			
 			
-			mycursor.execute("SELECT * from checkingsystem where deviceId = {} and holdDate is not null and borrowDate is null".format(device_id,))
+			mycursor.execute("SELECT * from latestborrow where deviceId = {} and borrowDate is null".format(device_id,))
 			check_hold_queue = mycursor.fetchall()
 			hold_position = len(check_hold_queue)+1
-			print(hold_position)
+		
 			
-			mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
-			mycursor.execute("UPDATE checkingsystem SET holdExpiry = DATE_ADD(holdDate, INTERVAL 2 DAY) WHERE deviceID = {} and userId={}".format(device_id, user_id))			
+			if hold_position ==1:			
+				mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
+				mycursor.execute("UPDATE checkingsystem SET holdExpiry = DATE_ADD(holdDate, INTERVAL 2 DAY) WHERE deviceID = {} and userId={}".format(device_id, user_id))
+			
+			elif hold_position ==2:	
+				Due_Date = Due_Date + timedelta(days=5)
+				mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
+				mycursor.execute("UPDATE checkingsystem SET holdExpiry = DATE_ADD(holdDate, INTERVAL 2 DAY) WHERE deviceID = {} and userId={}".format(device_id, user_id))
+				
+			elif hold_position ==3:	
+				Due_Date = Due_Date + timedelta(days=10)				
+				mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
+				mycursor.execute("UPDATE checkingsystem SET holdExpiry = DATE_ADD(holdDate, INTERVAL 2 DAY) WHERE deviceID = {} and userId={}".format(device_id, user_id))
+			else:
+				flash('Sorry you cannot put a hold on the device now. There have been 3 holds on the device please select another one !')
+				
 			mydb.commit()
 			mycursor.close()
 			
@@ -155,12 +176,12 @@ def deviceborrowreturn(userid):
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
-			device_details = devicedetails()
+			device_details_userid = devicedetails(user_id)
 			mycursor.close()	
 			
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)	
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)	
 		#return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
-	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 		
 
