@@ -38,7 +38,8 @@ def devicedetails():
 def devicedetails(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM devicedetails where userid <> %s or userid is null", (user_id,))
+	mycursor.execute("SELECT * FROM devicedetails left outer join checkingsystem on devicedetails.userid = checkingsystem.userid where devicedetails.holdDate is not null and devicedetails.borrowDate is null and devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
+	
 	device_details_userid = mycursor.fetchall()
 	mycursor.close()
 	return device_details_userid
@@ -111,7 +112,7 @@ def deviceborrowreturn(userid):
 	if request.method == 'POST':
 		if 'BorrowNow' in request.form:
 			mycursor = mydb.cursor()
-			device_details = devicedetails()			
+			device_details_userid = devicedetails(user_id)			
 			mycursor = mydb.cursor()			
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')				
@@ -136,15 +137,16 @@ def deviceborrowreturn(userid):
 	if request.method == 'POST':		
 		if 'HoldNow' in request.form:
 			mycursor = mydb.cursor(buffered=True)
-			device_details = devicedetails()					
+			device_details_userid = devicedetails(user_id)					
 			Current_Time = datetime.now()			
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')			
 			DeviceDetails = request.form
 			device_id=DeviceDetails['HoldNow']						
 			mycursor.execute("SELECT dueDate from latestborrow where deviceId={} and borrowDate is not null".format(device_id,))					
-			Due_Date=mycursor.fetchone()			
-			Due_Date=Due_Date[0]		
+			Due_Date=mycursor.fetchone()	
 			
+			Due_Date=Due_Date[0]
+			print (Due_Date)
 			
 			mycursor.execute("SELECT * from latestborrow where deviceId = {} and borrowDate is null".format(device_id,))
 			check_hold_queue = mycursor.fetchall()
@@ -171,8 +173,7 @@ def deviceborrowreturn(userid):
 			mycursor.close()
 			
 			mycursor = mydb.cursor()
-			loan_devices = loandevices(user_id)
-		
+			loan_devices = loandevices(user_id)		
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
