@@ -189,23 +189,23 @@
 		<td class="Bit">{{item[7]}}</td>
 		<td class="ScreenRes">{{item[8]}}</td>
 		<td class="Grade">{{item[9]}}</td>
-		<td class="Status">{{item[11]}}</td>
+		<td class="Status">{{item[10]}}</td>
 		<td class="Assigned"> 
-			{% if item[11]=='Available' or item[11]=='On Hold' %}
+			{% if item[10]=='Available' or item[10]=='On Hold' %}
 			-
 			{% else %}
-			{{item[20]}} {{item[21]}}
+			{{item[17]}} {{item[18]}}
 			{% endif %}
 		</td>
 		<td class="DueDate"> 
-			{% if item[11]=='Available'or item[11]=='On Hold' %}
+			{% if item[10]=='Available'or item[10]=='On Hold' %}
 			-
 			{% else %}
-			{{item[17]}}
+			{{item[14]}}
 			{% endif %}
 		</td>
 		<td>
-			{% if item[11]=='Available' %}
+			{% if item[10]=='Available' %}
 			<form method="POST" action="">
 					<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 			</form>
