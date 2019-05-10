@@ -59,7 +59,12 @@ foreign key (deviceId) references Device (deviceId),
 foreign key (userId) references Users (userId)
 );
 
-CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL);
+CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL and borrowDate is not null);
+CREATE VIEW devicedetails as (select device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, 
+latestborrow.holdDate, latestborrow.holdExpiry, latestborrow.borrowDate, latestborrow.dueDate, latestborrow.returnDate, users.userId, users.firstName, users.lastName,users.email, building.buildingAddress from device
+left outer join latestborrow on device.deviceId = latestborrow.deviceId 
+left outer join users on users.userid = latestborrow.userid
+left outer join building on users.locationId = building.locationId);
 
 INSERT INTO Device (deviceId, deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu,
 deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
