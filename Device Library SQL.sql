@@ -1,20 +1,20 @@
     
 -- DROP DATABASE Project;
  
-CREATE Database IF NOT EXISTS Project;
-USE Project;
+CREATE Database IF NOT EXISTS project;
+USE project;
 
 SET default_storage_engine= InnoDb;
 
 -- Drop table Building;
-CREATE TABLE IF NOT EXISTS Building (
+CREATE TABLE IF NOT EXISTS building (
 locationId varchar(75),
 buildingAddress varchar(50),
 Primary Key (locationId) 
 );
 
--- Drop table Users;
-CREATE TABLE IF NOT EXISTS Users (
+-- Drop table users;
+CREATE TABLE IF NOT EXISTS users (
 userId int NOT NULL AUTO_INCREMENT, -- Just numbers
 firstName varchar (50),
 lastName varchar (50),
@@ -22,12 +22,12 @@ email varchar (50), -- could just add UNIQUE here as a constraint
 locationId varchar (75),
 permissionId varchar (50), -- dont know if it will be numbers/characters or both  
 Primary Key (userId),
-foreign key (locationId) references Building (locationId),
+foreign key (locationId) references building (locationId),
 UNIQUE KEY (email)
 );
 
 -- Drop table Device;
-CREATE TABLE IF NOT EXISTS Device (
+CREATE TABLE IF NOT EXISTS device (
 deviceId int not null AUTO_INCREMENT, -- need confirmation what device id will look like
 deviceName varchar(50),
 deviceType varchar(50),
@@ -43,10 +43,10 @@ deviceStatus varchar(15),
 -- location_id varchar(50),  don't think this is needed
 Primary Key (deviceId)
 );
-ALTER TABLE Device AUTO_INCREMENT=1051;
+ALTER TABLE device AUTO_INCREMENT=1051;
 
 -- Drop table CheckingSystem;
-CREATE TABLE IF NOT EXISTS CheckingSystem (
+CREATE TABLE IF NOT EXISTS checkingsystem (
 userId INT,
 deviceId INT,
 holdDate DATETIME,
@@ -55,8 +55,8 @@ borrowDate DATETIME,
 dueDate DATETIME,
 returnDate DATETIME,
 -- project varchar (50), 
-foreign key (deviceId) references Device (deviceId),
-foreign key (userId) references Users (userId)
+foreign key (deviceId) references device (deviceId),
+foreign key (userId) references users (userId)
 );
 
 CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL and borrowDate is not null);
@@ -66,7 +66,7 @@ left outer join latestborrow on device.deviceId = latestborrow.deviceId
 left outer join users on users.userid = latestborrow.userid
 left outer join building on users.locationId = building.locationId);
 
-INSERT INTO Device (deviceId, deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu,
+INSERT INTO device (deviceId, deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu,
 deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
 ("1000","Q Bert","Amazon Fire HD 7","Android","4.5.5","1 GB","Dual-Core 1.5GHz","1","800 x 1280 (216ppi)","Low","None","Available"),
 ("1001","Princess Zelda","Dell E 6400","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Unavailable"),
@@ -121,11 +121,11 @@ deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
 ("1050","Pac Man","Chromebook","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Available")
 ;
 
-Insert INTO Building (locationId, buildingAddress) VALUES
+Insert INTO building (locationId, buildingAddress) VALUES
 ("O1", "Alpha Office"),
 ("O2", "Beta Office")
 ;
-INSERT INTO Users (userId, firstName, lastName, email, locationId, permissionId) VALUES
+INSERT INTO users (userId, firstName, lastName, email, locationId, permissionId) VALUES
 ("1", "Carl", "Smith", "carl.smith@gamer.com", "O1", "User"),
 ("2", "Sonam", "Jones", "sonam.jones@gamer.com", "O1", "User"),
 ("3", "Amol", "Downey", "amol.downey@gamer.com", "O2", "User"),
