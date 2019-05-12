@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="Ciucas365",
   database="project"
 )
 
@@ -27,13 +27,51 @@ def students():
 	mycursor.close()
 	return render_template('users.html', title='Users', menu='users', users=result)
 
-
-def devicedetails():	
+	
+def alldevicedetails():	
 	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM devicedetails")
+	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid where holdDate is null")	
 	device_details = mycursor.fetchall()
+	for idx, item in enumerate(device_details):
+		if item[17] is not None:
+			the_time = item[17]
+			# raise Exception((the_time.strftime('%d %B')))
+			the_time = the_time.strftime('%d %B')
+	# 		# raise Exception(the_time)
+			# the_time = datetime.strptime(the_time, '%d %B' )
+	# 		# raise Exception(type(the_time))
+	# 		# raise Exception(the_time)
+			item = list(item)
+			item[17] = the_time
+			item = tuple(item)
+			device_details[idx] = item
+			# raise Exception((item))
+
+		# raise Exception((item[17]))
+	# end for
+	# for x in range (0,((len(device_details))+1)):
+	# 	device_details[x][17]=device_details[x][17].strftime('%d %B' )
+	# raise Exception((device_details))
+	# formatted = []
+	# for item in device_details:
+	# 	if item[17] is not None:
+	# 			the_time = item[17]
+	# 	# 		# raise Exception((the_time.strftime('%d %B')))
+	# 			the_time = the_time.strftime('%d %B')
+	# 	# 		# raise Exception(the_time)
+	# 			# the_time = datetime.strptime(the_time, '%d %B' )
+	# 	# 		# raise Exception(type(the_time))
+	# 	# 		# raise Exception(the_time)
+	# 			item = list(item)
+	# 			item[17] = the_time
+	# 			item = tuple(item)
+
+	# 	# 		device_details[idx] = item
+	# 			# raise Exception((item))
+	# 	formatted.append(item)
+	# raise Exception((device_details))
 	mycursor.close()
-	return device_details	
+	return device_details
 
 def devicedetails(userid):
 	user_id = userid
@@ -76,10 +114,10 @@ def deviceborrowreturn(userid):
 
 	hold_devices = holddevices(user_id)
 	num_hold_device = len(hold_devices)
-	print(num_hold_device)
+	# print(num_hold_device)
 	
 	device_details_userid = devicedetails(user_id)
-
+	# raise Exception(device_details_userid)
 	mycursor.close()
 	
 	if request.method == 'POST':
@@ -89,14 +127,15 @@ def deviceborrowreturn(userid):
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			device_id=DeviceDetails['ReturnNow']
+
 			mycursor = mydb.cursor()
 			mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(device_id))
-			mycursor.execute("SELECT * from checkingsystem WHERE deviceID = {} and holdDate is null".format(device_id))
+			mycursor.execute("SELECT * from checkingsystem WHERE deviceID = {} and holdDate is not null and borrowDate is null".format(device_id))
 			check_hold_number =mycursor.fetchall()
 			if len(check_hold_number) == 0:
-				mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(device_id))
+				mycursor.execute('UPDATE device SET deviceStatus = "Available" WHERE deviceId = {}'.format(device_id))
 			else:
-				mycursor.execute('UPDATE Device SET deviceStatus = "On Hold" WHERE deviceId = {}'.format(device_id))
+				mycursor.execute('UPDATE device SET deviceStatus = "On Hold" WHERE deviceId = {}'.format(device_id))
 			mydb.commit()
 			mycursor.close()
 			mycursor = mydb.cursor()
@@ -115,7 +154,7 @@ def deviceborrowreturn(userid):
 			device_details_userid = devicedetails(user_id)			
 			mycursor = mydb.cursor()			
 			Current_Time = datetime.now()
-			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')				
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			print(DeviceDetails)
 			#DeviceDetails is a dictionary in this case.
@@ -203,7 +242,42 @@ def devicelist():
 
 	return render_template('devicelist.html', device_details = device_details)
 	
-      
+
+@app.route('/device-borrow-return')
+def borrowreturn():
+	
+	mycursor = mydb.cursor()
+	mycursor.execute("select * from users")
+	user_details = mycursor.fetchall()
+	user_id = user_details[0][0]
+	print(user_id)
+
+	# can't just use function, need to pass the value to the variables in render_template
+	loan_devices = loandevices(user_id)	
+	num_device = len(loan_devices)
+
+	hold_devices = holddevices(user_id)
+	num_hold_device = len(hold_devices)
+	print(num_hold_device)
+
+	device_details_userid = alldevicedetails()
+
+	# raise Exception(device_details)
+	# dates_only = zip(*device_details)
+	# raise Exception(dates_only)
+
+
+	# the_time = device_details[0][17]
+
+	# the_time = the_time.strftime('%d %B' )
+	# raise Exception(the_time)
+	# print(the_time)
+	# raise Exception(str(dates_only))
+
+	mycursor.close()
+
+	return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+		   
 	
 # #checking out page
 # #added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)

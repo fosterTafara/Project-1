@@ -13,9 +13,23 @@
 
 	{% endif %}
 	{% endwith %}
+<div class="row">
+	<div class="col-4">
+		<form>
+			<div class="form-group">
+				<select class="form-control" name="userid"  id="mySel">
+				<option value = "Please select your email">Please select your email</option> 
+				{% for item in user_details %}     
+				<option value="{{item[0]}}">{{item[3]}}</option>
+				{% endfor %}
+				</select> 
+			</div>
+	</div>	
+			<div class="col">
+				<a type="btn" class="btn btn-round mb-2" text="center" style="background-color: #4173f4; color: white; font-family: sans-serif; " href="/device-borrow-return/{{user_details[0][0]}}"name="SelectUser" >Go!</a>		
+			</div>
+		</form>
 </div>
-
-<br>
 
 {% if num_device <1 %}
 <div class="alert alert-info" role="alert">
@@ -122,18 +136,20 @@
 <br>
 <form method="POST" action="" name="DeviceList">
 	
-<p><input type="checkbox" name="DeviceName" checked="checked"> Device Name 
-  <input type="checkbox" name="DeviceType" checked="checked"> Device Type 
-  <input type="checkbox" name="OSType" checked="checked">OS Type
-  <input type="checkbox" name="OSVersion">OS Version
-  <input type="checkbox" name="RAM">RAM
-  <input type="checkbox" name="CPU">CPU
-  <input type="checkbox" name="Bit">Bit
-  <input type="checkbox" name="ScreenRes">Screen Resolution
-  <input type="checkbox" name="Grade">Grade
-  <input type="checkbox" name="Status" checked="checked"> Status
-  <input type="checkbox" name="Assigned" checked="checked"> Assigned to
-  <input type="checkbox" name="DueDate" checked="checked"> Due date</p>
+<p>
+	<input type="checkbox" name="DeviceId" checked="checked"> Device Name 
+	<input type="checkbox" name="DeviceName" checked="checked"> Device Name 
+	<input type="checkbox" name="DeviceType" checked="checked"> Device Type 
+	<input type="checkbox" name="OSType" checked="checked">OS Type
+	<input type="checkbox" name="OSVersion">OS Version
+	<input type="checkbox" name="RAM">RAM
+	<input type="checkbox" name="CPU">CPU
+	<input type="checkbox" name="Bit">Bit
+	<input type="checkbox" name="ScreenRes">Screen Resolution
+	<input type="checkbox" name="Grade">Grade
+	<input type="checkbox" name="Status" checked="checked"> Status
+	<input type="checkbox" name="Assigned" checked="checked"> Assigned to
+	<input type="checkbox" name="DueDate" checked="checked"> Due date</p>
 
 
 <table id ="columnSort" class="table table-striped">
@@ -158,7 +174,7 @@
       </tr>
 	
       <tr>
-        <th class ="DeviceID">Device ID</th>
+        <th class ="DeviceID"></th>
         <th class="DeviceName"></th>
         <th class="DeviceType"></th>
         <th class="OSType"></th>
@@ -179,10 +195,8 @@
 
     <td class = "DeviceID">{{item[0]}}</td>
 		<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version: {{item[4]}}, RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>    	
-
     	<td class = "DeviceType">{{item[2]}}</td>
     	<td class="OSType">{{item[3]}}</td>
-    
      	<td class="OSVersion">{{item[4]}}</td>
 		<td class="RAM">{{item[5]}}</td>
         <td class="CPU">{{item[6]}}</td>
@@ -201,7 +215,7 @@
 			{% if item[10]=='Available'or item[10]=='On Hold' %}
 			-
 			{% else %}
-			{{item[14]}}
+				{{item[14]}}
 			{% endif %}
 		</td>
 		<td>

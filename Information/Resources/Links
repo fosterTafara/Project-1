@@ -1,6 +1,9 @@
 insert helpful links here
 
 
-using Data Table Java Script 
+1.Using Data Table Java Script 
 https://datatables.net/examples/styling/bootstrap4.html
 https://datatables.net/examples/api/multi_filter_select.html
+
+2.Accessing index in for loops:
+https://stackoverflow.com/questions/522563/accessing-the-index-in-for-loops
