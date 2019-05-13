@@ -16,60 +16,32 @@ mydb = mysql.connector.connect(
   passwd="Signal2019$$",
   database="project"
 )
-
-
-@app.route('/')
-@app.route('/users/')  
-def students():
-	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM users")
-	result = mycursor.fetchall()
-	mycursor.close()
-	return render_template('users.html', title='Users', menu='users', users=result)
-
 	
 def alldevicedetails():	
 	mycursor = mydb.cursor()
-	mycursor.execute("select * from device left outer join latestborrow on device.deviceId = latestborrow.deviceId left outer join users on users.userid = latestborrow.userid where holdDate is null")	
+	mycursor.execute("select * from devicedetails")	
 	device_details = mycursor.fetchall()
-	for idx, item in enumerate(device_details):
-		if item[17] is not None:
-			the_time = item[17]
-			# raise Exception((the_time.strftime('%d %B')))
-			the_time = the_time.strftime('%d %B')
-	# 		# raise Exception(the_time)
-			# the_time = datetime.strptime(the_time, '%d %B' )
-	# 		# raise Exception(type(the_time))
-	# 		# raise Exception(the_time)
-			item = list(item)
-			item[17] = the_time
-			item = tuple(item)
-			device_details[idx] = item
-			# raise Exception((item))
+	# for idx, item in enumerate(device_details):
+	# 	if item[15] is not None:
+	# 		the_time = item[15]
+	# 		the_time = the_time.strftime('%d %B')
+	# 		item = list(item)
 
-		# raise Exception((item[17]))
-	# end for
+	# 		item[15] = the_time
+	# 		item = tuple(item)
+	# 		device_details[idx] = item
 	# for x in range (0,((len(device_details))+1)):
 	# 	device_details[x][17]=device_details[x][17].strftime('%d %B' )
-	# raise Exception((device_details))
 	# formatted = []
 	# for item in device_details:
 	# 	if item[17] is not None:
 	# 			the_time = item[17]
-	# 	# 		# raise Exception((the_time.strftime('%d %B')))
 	# 			the_time = the_time.strftime('%d %B')
-	# 	# 		# raise Exception(the_time)
-	# 			# the_time = datetime.strptime(the_time, '%d %B' )
-	# 	# 		# raise Exception(type(the_time))
-	# 	# 		# raise Exception(the_time)
 	# 			item = list(item)
 	# 			item[17] = the_time
 	# 			item = tuple(item)
-
 	# 	# 		device_details[idx] = item
-	# 			# raise Exception((item))
 	# 	formatted.append(item)
-	# raise Exception((device_details))
 	mycursor.close()
 	return device_details
 
@@ -78,8 +50,10 @@ def devicedetails(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
 	#need to redefine the querries because it still contains holding item of the user
+
 	
 	device_details_userid = mycursor.fetchall()
+	# raise Exception(device_details_userid)
 	mycursor.close()
 	return device_details_userid
 
@@ -90,7 +64,7 @@ def loandevices(userid):
 	#This query needs to be fixed to include borrow from Hold, thinking of using latestborrow
 	
 	loan_devices = mycursor.fetchall()
-	mycursor.close()	
+	mycursor.close()
 	return loan_devices
 
 def holddevices(userid):
@@ -98,7 +72,9 @@ def holddevices(userid):
 	mycursor = mydb.cursor()
 	Current_Time = datetime.now()
 	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.holdDate is not NULL and checkingsystem.borrowDate is NULL", (user_id,))
+
 	#need to reconsider after the discussion about overall holding situation
+
 	hold_devices = mycursor.fetchall()
 	mycursor.close()
 	return hold_devices
@@ -113,7 +89,7 @@ def deviceborrowreturn(userid):
 	user_details = mycursor.fetchall()
 	
 	# can't just use function, need to pass the value to the variables in render_template
-	loan_devices = loandevices(user_id)	
+	loan_devices = loandevices(user_id)
 	num_device = len(loan_devices)
 
 	hold_devices = holddevices(user_id)
@@ -125,8 +101,8 @@ def deviceborrowreturn(userid):
 	mycursor.close()
 	
 	if request.method == 'POST':
-		if 'ReturnNow' in request.form:		
-			mycursor = mydb.cursor()			
+		if 'ReturnNow' in request.form:
+			mycursor = mydb.cursor()
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
@@ -155,36 +131,37 @@ def deviceborrowreturn(userid):
 	if request.method == 'POST':
 		if 'BorrowNow' in request.form:
 			mycursor = mydb.cursor()
-			device_details_userid = devicedetails(user_id)			
-			mycursor = mydb.cursor()			
+			device_details_userid = devicedetails(user_id)
+			mycursor = mydb.cursor()
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			print(DeviceDetails)
 			#DeviceDetails is a dictionary in this case.
-			device_id=DeviceDetails['BorrowNow']						
+			device_id=DeviceDetails['BorrowNow']
 			mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Current_Time))
 			mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(device_id,))
 			mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(device_id,))
 			mydb.commit()	
 			mycursor = mydb.cursor()
-			loan_devices = loandevices(user_id)		
+			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
-			mycursor.close()	
+			mycursor.close()
 			
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 		
-	if request.method == 'POST':		
+	if request.method == 'POST':
 		if 'HoldNow' in request.form:
 			mycursor = mydb.cursor(buffered=True)
-			device_details_userid = devicedetails(user_id)					
-			Current_Time = datetime.now()			
-			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')			
+			device_details_userid = devicedetails(user_id)
+			Current_Time = datetime.now()
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			device_id=DeviceDetails['HoldNow']
+
 			
 			mycursor.execute("SELECT * from latesthold where deviceId ={} and userId={}".format(device_id,user_id))
 			check_holding = mycursor.fetchall()
@@ -192,6 +169,7 @@ def deviceborrowreturn(userid):
 				flash('You have already held this item. Please choose another one')
 			else: 
 			
+
 				mycursor.execute("SELECT dueDate from latestborrow where deviceId={} and borrowDate is not null".format(device_id,))					
 				Due_Date=mycursor.fetchone()	
 				
@@ -203,6 +181,7 @@ def deviceborrowreturn(userid):
 				hold_position = len(check_hold_queue)+1
 				print(hold_position)
 			
+
 				
 				if hold_position ==1:			
 					mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
@@ -224,20 +203,24 @@ def deviceborrowreturn(userid):
 				mycursor.close()
 			
 			mycursor = mydb.cursor()
-			loan_devices = loandevices(user_id)		
+			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
+
 			mycursor.close()	
+
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)	
 		
 		
 	if request.method == 'POST':
 		if 'BorrowHold' in request.form:
+
 			print(user_id)
 			mycursor = mydb.cursor(buffered=True)
 			device_details_userid = devicedetails(user_id)			
+
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
@@ -276,80 +259,95 @@ def deviceborrowreturn(userid):
 				mydb.commit()	
 				mycursor = mydb.cursor()
 				loan_devices = loandevices(user_id)		
+
 				num_device = len(loan_devices)
 				hold_devices = holddevices(user_id)
 				num_hold_device = len(hold_devices)
 				device_details_userid = devicedetails(user_id)
+
 				mycursor.close()	
 			
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
-	
-		
-		
-		
-		
-		
-		
-		
-		
-		
+				
 	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
-		
-
-@app.route('/device-list', methods =['GET', 'POST'])
-### do we really need methods for this app.route?
-def devicelist():
-	### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
-	mycursor = mydb.cursor()
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					 "users.firstName as mostrecentuser, users.lastName from device left outer join (SELECT deviceID, borrowDate AS mostrecentborrowDate, userID FROM checkingsystem "
-					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) mostrecentborrow on device.deviceID = mostrecentborrow.deviceID "
-					 "left outer join users on mostrecentborrow.userID = users.userID")
-	device_details = mycursor.fetchall()
-	mycursor = mydb.cursor()    
-	mydb.commit()
-	mycursor.close()
-
-	return render_template('devicelist.html', device_details = device_details)
 	
-
-@app.route('/device-borrow-return')
+@app.route('/', methods =['GET', 'POST'])
+@app.route('/device-borrow-return', methods =['GET', 'POST'])
 def borrowreturn():
-	
 	mycursor = mydb.cursor()
-	mycursor.execute("select * from users")
-	user_details = mycursor.fetchall()
-	user_id = user_details[0][0]
-	print(user_id)
+	mycursor.execute("SELECT * FROM users")
+	users = mycursor.fetchall()
 
-	# can't just use function, need to pass the value to the variables in render_template
-	loan_devices = loandevices(user_id)	
-	num_device = len(loan_devices)
+	device_details_userid = alldevicedetails()
 
-	hold_devices = holddevices(user_id)
-	num_hold_device = len(hold_devices)
-	print(num_hold_device)
+	print(device_details_userid[0][0])
+	
+	if request.method == 'POST':
+	
+		userDetails = request.form
+		user_id = userDetails['userid']
+		mycursor = mydb.cursor()
+		mycursor.execute("select * from users")
+		user_details = mycursor.fetchall()
+		print(user_id)	
+		    
+		#studentList = request.args.get("ID")
+		#user_id = request.args.get("user_id")
+
 
 	device_details = alldevicedetails()
 
-	# raise Exception(device_details)
-	# dates_only = zip(*device_details)
-	# raise Exception(dates_only)
 
 
-	# the_time = device_details[0][17]
+		mycursor.close()
+		return redirect('/device-borrow-return/{}'.format(user_id))
+		
+	return render_template('deviceborrowreturn.html', device_details_userid=device_details_userid, users=users, usertrue=True)	   
 
-	# the_time = the_time.strftime('%d %B' )
-	# raise Exception(the_time)
-	# print(the_time)
-	# raise Exception(str(dates_only))
 
+
+@app.route('/users/')  
+def students():
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT * FROM users")
+	users = mycursor.fetchall()
 	mycursor.close()
+	# if 'Userselect' in request.form: #this is the button name
+		# print("HAPPY")
+		# mycursor = mydb.cursor()
+		# userDetails = request.form
+		# print(userDetails)
+		# # student_ID = courseDetails['studentId']
+		# # coursename = courseDetails['courseone']
+		# # print(student_ID)
+
+		# return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+
+	return render_template('users.html', title='Users', menu='users', users=users)
+
+
+# @app.route('/device-list', methods =['GET', 'POST'])
+# ### do we really need methods for this app.route?
+# def devicelist():
+	# ### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
+	# mycursor = mydb.cursor()
+	# mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
+					 # "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
+					 # "users.firstName as mostrecentuser, users.lastName from device left outer join (SELECT deviceID, borrowDate AS mostrecentborrowDate, userID FROM checkingsystem "
+					 # "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) mostrecentborrow on device.deviceID = mostrecentborrow.deviceID "
+					 # "left outer join users on mostrecentborrow.userID = users.userID")
+	# device_details = mycursor.fetchall()
+	# mycursor = mydb.cursor()    
+	# mydb.commit()
+	# mycursor.close()
+
+	# return render_template('devicelist.html', device_details = device_details)
+
 
 	return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 		   
+
 	
 # #checking out page
 # #added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)

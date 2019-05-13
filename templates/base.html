@@ -52,7 +52,14 @@
 
 	</script>
 	<!-- Function to disable "sign in" button -->
-	
+	<script>
+						function enableButton()
+		{
+		    var selectelem = document.getElementById('userid');
+		    var btnelem = document.getElementById('seedoc');
+		    btnelem.disabled = !selectelem.value;
+		}
+	</script>
 <!-- 	<script>$(document).ready(function() {
 
     $('.btn-group').on('click', 'button', function() {
@@ -92,8 +99,7 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarToggle">
 					<div class="navbar-nav mr-auto">
-						<a class="nav-item nav-link" href="/users">Home</a>
-						<a class="nav-item nav-link" href="/device-list">All Devices</a>
+						<a class="nav-item nav-link" href="/">Home</a>
 
 
 					</div>
