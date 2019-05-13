@@ -15,21 +15,29 @@
 	{% endwith %}
 <div class="row">
 	<div class="col-4">
-		<form>
-			<div class="form-group">
-				<select class="form-control" name="userid"  id="mySel">
-				<option value = "Please select your email">Please select your email</option> 
-				{% for item in user_details %}     
-				<option value="{{item[0]}}">{{item[3]}}</option>
+		<form method = "POST">
+			<div class="form-group" form = "Form1">
+			
+				<select class="form-control" name="userid"  id="Form1">
+				<option value = "">Please select your email</option> 
+				{% for item in users %}     
+				<option id="userid" name= "userid" value="{{item[0]}}">{{item[3]}}</option>
 				{% endfor %}
 				</select> 
 			</div>
 	</div>	
-			<div class="col">
-				<a type="btn" class="btn btn-round mb-2" text="center" style="background-color: #4173f4; color: white; font-family: sans-serif; " href="/device-borrow-return/{{user_details[0][0]}}"name="SelectUser" >Go!</a>		
+
+			<div class="col-4">
+
+			<input type="submit" class="btn btn-secondary btn-block" style= "background-color: #0a3170;" value = "Go">
+
+
+
 			</div>
 		</form>
 </div>
+{% if not usertrue %}
+
 
 {% if num_device <1 %}
 <div class="alert alert-info" role="alert">
@@ -128,7 +136,7 @@
 
 <br>
 
-
+{% endif %}
 
 
 <h3>Devices List</h3>
