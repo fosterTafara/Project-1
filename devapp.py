@@ -13,19 +13,10 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Ciucas365",
+  passwd="password",
   database="project"
 )
 
-
-@app.route('/')
-@app.route('/users/')  
-def students():
-	mycursor = mydb.cursor()
-	mycursor.execute("SELECT * FROM users")
-	result = mycursor.fetchall()
-	mycursor.close()
-	return render_template('users.html', title='Users', menu='users', users=result)
 
 	
 def alldevicedetails():	
@@ -111,6 +102,7 @@ def deviceborrowreturn(userid):
 	# can't just use function, need to pass the value to the variables in render_template
 	loan_devices = loandevices(user_id)	
 	num_device = len(loan_devices)
+	print(num_device)
 
 	hold_devices = holddevices(user_id)
 	num_hold_device = len(hold_devices)
@@ -223,61 +215,77 @@ def deviceborrowreturn(userid):
 		#return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
-		
-
-@app.route('/device-list', methods =['GET', 'POST'])
-### do we really need methods for this app.route?
-def devicelist():
-	### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
-	mycursor = mydb.cursor()
-	mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-					 "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					 "users.firstName as mostrecentuser, users.lastName from device left outer join (SELECT deviceID, borrowDate AS mostrecentborrowDate, userID FROM checkingsystem "
-					 "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) mostrecentborrow on device.deviceID = mostrecentborrow.deviceID "
-					 "left outer join users on mostrecentborrow.userID = users.userID")
-	device_details = mycursor.fetchall()
-	mycursor = mydb.cursor()    
-	mydb.commit()
-	mycursor.close()
-
-	return render_template('devicelist.html', device_details = device_details)
 	
-
-@app.route('/device-borrow-return')
+@app.route('/', methods =['GET', 'POST'])
+@app.route('/device-borrow-return', methods =['GET', 'POST'])
 def borrowreturn():
-	
 	mycursor = mydb.cursor()
-	mycursor.execute("select * from users")
-	user_details = mycursor.fetchall()
-	user_id = user_details[0][0]
-	print(user_id)
+	mycursor.execute("SELECT * FROM users")
+	users = mycursor.fetchall()
 
-	# can't just use function, need to pass the value to the variables in render_template
-	loan_devices = loandevices(user_id)	
-	num_device = len(loan_devices)
+	mycursor = mydb.cursor()
+	mycursor.execute("select * from devicedetails")	
+	device_details_userid = mycursor.fetchall()
+	print(device_details_userid[0][0])
+	
+	if request.method == 'POST':
+	
+		userDetails = request.form
+		user_id = userDetails['userid']
+		mycursor = mydb.cursor()
+		mycursor.execute("select * from users")
+		user_details = mycursor.fetchall()
+		print(user_id)	
+		    
+		#studentList = request.args.get("ID")
+		#user_id = request.args.get("user_id")
 
-	hold_devices = holddevices(user_id)
-	num_hold_device = len(hold_devices)
-	print(num_hold_device)
-
-	device_details_userid = alldevicedetails()
-
-	# raise Exception(device_details)
-	# dates_only = zip(*device_details)
-	# raise Exception(dates_only)
 
 
-	# the_time = device_details[0][17]
+		mycursor.close()
+		return redirect('/device-borrow-return/{}'.format(user_id))
+		
+	return render_template('deviceborrowreturn.html', device_details_userid=device_details_userid, users=users, usertrue=True)	   
 
-	# the_time = the_time.strftime('%d %B' )
-	# raise Exception(the_time)
-	# print(the_time)
-	# raise Exception(str(dates_only))
 
+
+@app.route('/users/')  
+def students():
+	mycursor = mydb.cursor()
+	mycursor.execute("SELECT * FROM users")
+	users = mycursor.fetchall()
 	mycursor.close()
+	# if 'Userselect' in request.form: #this is the button name
+		# print("HAPPY")
+		# mycursor = mydb.cursor()
+		# userDetails = request.form
+		# print(userDetails)
+		# # student_ID = courseDetails['studentId']
+		# # coursename = courseDetails['courseone']
+		# # print(student_ID)
 
-	return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
-		   
+		# return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+
+	return render_template('users.html', title='Users', menu='users', users=users)
+
+
+# @app.route('/device-list', methods =['GET', 'POST'])
+# ### do we really need methods for this app.route?
+# def devicelist():
+	# ### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
+	# mycursor = mydb.cursor()
+	# mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
+					 # "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
+					 # "users.firstName as mostrecentuser, users.lastName from device left outer join (SELECT deviceID, borrowDate AS mostrecentborrowDate, userID FROM checkingsystem "
+					 # "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) mostrecentborrow on device.deviceID = mostrecentborrow.deviceID "
+					 # "left outer join users on mostrecentborrow.userID = users.userID")
+	# device_details = mycursor.fetchall()
+	# mycursor = mydb.cursor()    
+	# mydb.commit()
+	# mycursor.close()
+
+	# return render_template('devicelist.html', device_details = device_details)
+
 	
 # #checking out page
 # #added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)
