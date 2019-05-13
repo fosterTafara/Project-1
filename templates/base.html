@@ -52,7 +52,14 @@
 
 	</script>
 	<!-- Function to disable "sign in" button -->
-	
+	<script>
+						function enableButton()
+		{
+		    var selectelem = document.getElementById('userid');
+		    var btnelem = document.getElementById('seedoc');
+		    btnelem.disabled = !selectelem.value;
+		}
+	</script>
 <!-- 	<script>$(document).ready(function() {
 
     $('.btn-group').on('click', 'button', function() {
