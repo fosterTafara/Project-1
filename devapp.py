@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="password",
   database="project"
 )
 	
@@ -64,6 +64,7 @@ def loandevices(userid):
 	#This query needs to be fixed to include borrow from Hold, thinking of using latestborrow
 	
 	loan_devices = mycursor.fetchall()
+
 	mycursor.close()
 	return loan_devices
 
@@ -143,15 +144,18 @@ def deviceborrowreturn(userid):
 			mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(device_id,))
 			mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(device_id,))
 			mydb.commit()	
-			mycursor = mydb.cursor()
+			
 			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
-			mycursor.close()
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
 			
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+			mycursor.close()
+			# flash("You have checked out device {}".format (device_id))
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, device_name=device_name)
 		
 	if request.method == 'POST':
 		if 'HoldNow' in request.form:
@@ -296,8 +300,7 @@ def borrowreturn():
 		#user_id = request.args.get("user_id")
 
 
-	device_details = alldevicedetails()
-
+		device_details = alldevicedetails()
 
 
 		mycursor.close()
