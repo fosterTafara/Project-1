@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="password",
   database="project"
 )
 	
@@ -50,6 +50,7 @@ def devicedetails(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
 	#need to redefine the querries because it still contains holding item of the user
+	#this is because of the left joins in the view which don't allow for one device to be attached to two users.
 
 	
 	device_details_userid = mycursor.fetchall()
