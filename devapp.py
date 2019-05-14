@@ -50,6 +50,7 @@ def devicedetails(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
 	#need to redefine the querries because it still contains holding item of the user
+	#this is because of the left joins in the view which doesn't allow for one device to be attached to two users.
 
 	
 	device_details_userid = mycursor.fetchall()
@@ -60,9 +61,9 @@ def devicedetails(userid):
 def loandevices(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL AND checkingsystem.holdDate is null", (user_id,))		
-	#This query needs to be fixed to include borrow from Hold, thinking of using latestborrow
-	
+	mycursor.execute("select deviceId, deviceName, deviceType, dueDate from devicedetails where userId = %s AND returnDate is NULL", (user_id,))
+	#this queries is correct now by using devicedetails view
+		
 	loan_devices = mycursor.fetchall()
 
 	mycursor.close()
@@ -72,9 +73,8 @@ def holddevices(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
 	Current_Time = datetime.now()
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.holdDate is not NULL and checkingsystem.borrowDate is NULL", (user_id,))
-
-	#need to reconsider after the discussion about overall holding situation
+	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join latesthold on device.deviceId = latesthold.deviceId where latesthold.userId = %s", (user_id,))
+	#this queries is correct now by using latesthold view
 
 	hold_devices = mycursor.fetchall()
 	mycursor.close()
@@ -159,6 +159,7 @@ def deviceborrowreturn(userid):
 		
 	if request.method == 'POST':
 		if 'HoldNow' in request.form:
+			#This function should be modified based new user story, holdExpiry will only be updated once the device is returned
 			mycursor = mydb.cursor(buffered=True)
 			device_details_userid = devicedetails(user_id)
 			Current_Time = datetime.now()
@@ -169,8 +170,9 @@ def deviceborrowreturn(userid):
 			
 			mycursor.execute("SELECT * from latesthold where deviceId ={} and userId={}".format(device_id,user_id))
 			check_holding = mycursor.fetchall()
+			
 			if len(check_holding) != 0:
-				flash('You have already held this item. Please choose another one')
+				flash('You have already held this item.')
 			else: 
 			
 
@@ -181,11 +183,12 @@ def deviceborrowreturn(userid):
 				print (Due_Date)
 				
 				mycursor.execute("SELECT * from checkingsystem where deviceId = {} and holdDate is not null and borrowDate is null".format(device_id,))
+				
 				check_hold_queue = mycursor.fetchall()
 				hold_position = len(check_hold_queue)+1
 				print(hold_position)
 			
-
+				#review the way to determine the holding position
 				
 				if hold_position ==1:			
 					mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
@@ -305,7 +308,7 @@ def borrowreturn():
 
 		mycursor.close()
 		return redirect('/device-borrow-return/{}'.format(user_id))
-		
+	
 	return render_template('deviceborrowreturn.html', device_details_userid=device_details_userid, users=users, usertrue=True)	   
 
 
