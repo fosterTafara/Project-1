@@ -60,9 +60,9 @@ def devicedetails(userid):
 def loandevices(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, checkingsystem.dueDate from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL AND checkingsystem.holdDate is null", (user_id,))		
-	#This query needs to be fixed to include borrow from Hold, thinking of using latestborrow
-	
+	mycursor.execute("select deviceId, deviceName, deviceType, dueDate from devicedetails where userId = %s AND returnDate is NULL", (user_id,))
+	#this queries is correct now by using devicedetails view
+		
 	loan_devices = mycursor.fetchall()
 	mycursor.close()
 	return loan_devices
@@ -71,9 +71,8 @@ def holddevices(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
 	Current_Time = datetime.now()
-	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.holdDate is not NULL and checkingsystem.borrowDate is NULL", (user_id,))
-
-	#need to reconsider after the discussion about overall holding situation
+	mycursor.execute("select device.deviceId,device.deviceName, device.deviceType, device.deviceStatus from device inner join latesthold on device.deviceId = latesthold.deviceId where latesthold.userId = %s", (user_id,))
+	#this queries is correct now by using latesthold view
 
 	hold_devices = mycursor.fetchall()
 	mycursor.close()
