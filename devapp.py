@@ -51,8 +51,9 @@ def devicedetails(userid):
 	#mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
 	mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid is null or devicedetails.userid <> %s AND devicedetails.deviceid NOT IN (select latesthold.deviceid from latesthold where latesthold.userid = %s)", (user_id, userid,))
 
-	#need to redefine the querries because it still contains holding item of the user
-	#this is because of the left joins in the view which doesn't allow for one device to be attached to two users.
+	#needed to redefine the query because it still contains holding item of the user - resolved
+	#this was because of the left joins in the view which didn't allow for one device to be attached to two users.
+
 
 	
 	device_details_userid = mycursor.fetchall()
@@ -67,6 +68,7 @@ def loandevices(userid):
 	#this queries is correct now by using devicedetails view
 		
 	loan_devices = mycursor.fetchall()
+
 	mycursor.close()
 	return loan_devices
 
@@ -145,15 +147,18 @@ def deviceborrowreturn(userid):
 			mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(device_id,))
 			mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(device_id,))
 			mydb.commit()	
-			mycursor = mydb.cursor()
+			
 			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
-			mycursor.close()
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
 			
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+			mycursor.close()
+			# flash("You have checked out device {}".format (device_id))
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, device_name=device_name)
 		
 	if request.method == 'POST':
 		if 'HoldNow' in request.form:
@@ -302,7 +307,6 @@ def borrowreturn():
 
 
 		device_details = alldevicedetails()
-
 
 
 		mycursor.close()
