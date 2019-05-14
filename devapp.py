@@ -155,6 +155,7 @@ def deviceborrowreturn(userid):
 		
 	if request.method == 'POST':
 		if 'HoldNow' in request.form:
+			#This function should be modified based new user story, holdExpiry will only be updated once the device is returned
 			mycursor = mydb.cursor(buffered=True)
 			device_details_userid = devicedetails(user_id)
 			Current_Time = datetime.now()
@@ -165,8 +166,9 @@ def deviceborrowreturn(userid):
 			
 			mycursor.execute("SELECT * from latesthold where deviceId ={} and userId={}".format(device_id,user_id))
 			check_holding = mycursor.fetchall()
+			
 			if len(check_holding) != 0:
-				flash('You have already held this item. Please choose another one')
+				flash('You have already held this item.')
 			else: 
 			
 
@@ -177,11 +179,12 @@ def deviceborrowreturn(userid):
 				print (Due_Date)
 				
 				mycursor.execute("SELECT * from checkingsystem where deviceId = {} and holdDate is not null and borrowDate is null".format(device_id,))
+				
 				check_hold_queue = mycursor.fetchall()
 				hold_position = len(check_hold_queue)+1
 				print(hold_position)
 			
-
+				#review the way to determine the holding position
 				
 				if hold_position ==1:			
 					mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
@@ -296,13 +299,13 @@ def borrowreturn():
 		#user_id = request.args.get("user_id")
 
 
-	device_details = alldevicedetails()
+		device_details = alldevicedetails()
 
 
 
 		mycursor.close()
 		return redirect('/device-borrow-return/{}'.format(user_id))
-		
+	
 	return render_template('deviceborrowreturn.html', device_details_userid=device_details_userid, users=users, usertrue=True)	   
 
 
