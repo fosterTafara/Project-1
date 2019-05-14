@@ -50,8 +50,10 @@ def devicedetails(userid):
 	mycursor = mydb.cursor()
 	#mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
 	mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid is null or devicedetails.userid <> %s AND devicedetails.deviceid NOT IN (select latesthold.deviceid from latesthold where latesthold.userid = %s)", (user_id, userid,))
+
 	#needed to redefine the query because it still contains holding item of the user - resolved
 	#this was because of the left joins in the view which didn't allow for one device to be attached to two users.
+
 
 	
 	device_details_userid = mycursor.fetchall()
@@ -312,10 +314,115 @@ def borrowreturn():
 	
 	return render_template('deviceborrowreturn.html', device_details_userid=device_details_userid, users=users, usertrue=True)	   
 
+@app.route('/myview/<int:userid>', methods =['GET', 'POST'])
+def myview(userid):
+#if request.method == 'GET':
+	user_id = userid
+
+	mycursor = mydb.cursor()
+	mycursor.execute('select * from users where UserId ={}'.format(user_id))
+	user_details = mycursor.fetchall()
+	
+	# can't just use function, need to pass the value to the variables in render_template
+	loan_devices = loandevices(user_id)
+	num_device = len(loan_devices)
+
+	hold_devices = holddevices(user_id)
+	num_hold_device = len(hold_devices)
+	# print(num_hold_device)
+	
+	device_details_userid = devicedetails(user_id)
+	# raise Exception(device_details_userid)
+	mycursor.close()
+	
+	if request.method == 'POST':
+		if 'ReturnNow' in request.form:
+			mycursor = mydb.cursor()
+			Current_Time = datetime.now()
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			DeviceDetails = request.form
+			device_id=DeviceDetails['ReturnNow']
+
+			mycursor = mydb.cursor()
+			mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {} and userId={}".format(device_id, user_id))
+			mycursor.execute("SELECT * from checkingsystem WHERE deviceID = {} and holdDate is not null and borrowDate is null".format(device_id))
+			check_hold_number =mycursor.fetchall()
+			if len(check_hold_number) == 0:
+				mycursor.execute('UPDATE device SET deviceStatus = "Available" WHERE deviceId = {}'.format(device_id))
+			else:
+				mycursor.execute('UPDATE device SET deviceStatus = "On Hold" WHERE deviceId = {}'.format(device_id))
+			mydb.commit()
+			mycursor.close()
+			mycursor = mydb.cursor()
+			loan_devices = loandevices(user_id)
+			num_device = len(loan_devices)
+			hold_devices = holddevices(user_id)
+			num_hold_device = len(hold_devices)
+			device_details_userid = devicedetails(user_id)
+			mycursor.close()
+			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	
+		
+	if request.method == 'POST':
+		if 'BorrowHold' in request.form:
+
+			print(user_id)
+			mycursor = mydb.cursor(buffered=True)
+			device_details_userid = devicedetails(user_id)			
+
+			Current_Time = datetime.now()
+			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			DeviceDetails = request.form
+			device_id=DeviceDetails['BorrowHold']
+			#mycursor.execute("Select deviceStatus from devicedetails where deviceId = {}".format(device_id,))
+			#device_Status = mycursor.fetchone()
+			#print(device_Status)
+			#if device_status == 'Available': no need to check because the device status will always "On hold" if we go with deleting Hold expired
+			
+			mycursor.execute("SELECT * from checkingsystem where deviceId = {} and holdDate is not null and borrowDate is null order by holdDate asc".format(device_id,))
+			check_hold_queue = mycursor.fetchall()
+			
+			print (check_hold_queue)
+			
+			if len(check_hold_queue) ==1:
+				#mycursor = mydb.cursor
+				mycursor.execute("UPDATE checkingsystem SET borrowDate = '{}' where userId={} and deviceid={} and borrowDate is null".format(Current_Time,user_id,device_id))
+				mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE userId = {} and deviceid={} and borrowDate = '{}'".format(user_id,device_id,Current_Time))
+				#mycursor.execute("UPDATE checkingsystem SET deviceStatus = 'Unavailable' WHERE deviceid={} and borrowDate = '{}'".format(user_id,device_id,Current_Time))
+				mydb.commit()	
+			
+			else: 
+				
+				
+				loan_devices = loandevices(user_id)		
+				num_device = len(loan_devices)
+				hold_devices = holddevices(user_id)
+				num_hold_device = len(hold_devices)
+				device_details_userid = devicedetails(user_id)
+				mycursor.close()
+			
+			
+				mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Current_Time))
+				mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(device_id,))
+				mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(device_id,))
+				mydb.commit()	
+				mycursor = mydb.cursor()
+				loan_devices = loandevices(user_id)		
+
+				num_device = len(loan_devices)
+				hold_devices = holddevices(user_id)
+				num_hold_device = len(hold_devices)
+				device_details_userid = devicedetails(user_id)
+
+				mycursor.close()	
+			
+			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+				
+	return render_template('myview.html', userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 
 @app.route('/users/')  
-def students():
+def users():
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM users")
 	users = mycursor.fetchall()
