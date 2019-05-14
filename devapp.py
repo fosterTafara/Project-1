@@ -4,19 +4,20 @@ import mysql.connector
 from datetime import datetime
 from datetime import timedelta
 
+
+
+
 # instantiate an object called app
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
-
-# Configure db
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
   passwd="password",
   database="project"
 )
-	
+
 def alldevicedetails():	
 	mycursor = mydb.cursor()
 	mycursor.execute("select * from devicedetails")	
@@ -128,8 +129,13 @@ def deviceborrowreturn(userid):
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
+			
 			mycursor.close()
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+			flash("You have returned {}".format (device_name[0]))
+			mycursor.close()
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 		
 	if request.method == 'POST':
@@ -157,7 +163,7 @@ def deviceborrowreturn(userid):
 			device_name = mycursor.fetchone()
 			
 			mycursor.close()
-			# flash("You have checked out device {}".format (device_id))
+			flash("You have checked out device {}".format (device_name[0]))
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, device_name=device_name)
 		
 	if request.method == 'POST':
@@ -169,6 +175,8 @@ def deviceborrowreturn(userid):
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			device_id=DeviceDetails['HoldNow']
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
 
 			
 			mycursor.execute("SELECT * from latesthold where deviceId ={} and userId={}".format(device_id,user_id))
@@ -176,8 +184,9 @@ def deviceborrowreturn(userid):
 			
 			if len(check_holding) != 0:
 				flash('You have already held this item.')
+
 			else: 
-			
+				flash("You have place a hold on {}".format (device_name[0]))
 
 				mycursor.execute("SELECT dueDate from latestborrow where deviceId={} and borrowDate is not null".format(device_id,))					
 				Due_Date=mycursor.fetchone()	
@@ -196,7 +205,7 @@ def deviceborrowreturn(userid):
 				if hold_position ==1:			
 					mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
 					mycursor.execute("UPDATE checkingsystem SET holdExpiry = DATE_ADD(holdDate, INTERVAL 2 DAY) WHERE deviceID = {} and userId={}".format(device_id, user_id))
-				
+					# mycursor.execute(select)
 				elif hold_position ==2:	
 					Due_Date = Due_Date + timedelta(days=5)
 					mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Due_Date))
@@ -221,7 +230,7 @@ def deviceborrowreturn(userid):
 
 			mycursor.close()	
 
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)	
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, device_name=device_name)	
 		
 		
 	if request.method == 'POST':
