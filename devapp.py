@@ -50,7 +50,7 @@ def devicedetails(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM devicedetails where devicedetails.userid <> %s or devicedetails.userid is null", (user_id,))
 	#need to redefine the querries because it still contains holding item of the user
-	#this is because of the left joins in the view which don't allow for one device to be attached to two users.
+	#this is because of the left joins in the view which doesn't allow for one device to be attached to two users.
 
 	
 	device_details_userid = mycursor.fetchall()
