@@ -2,10 +2,7 @@
 
 
 {% block content %}
-
-
-<div class=container>
-{% with messages = get_flashed_messages() %}
+	{% with messages = get_flashed_messages() %}
 		{% if messages %}
 			<div class="alert alert-danger mt-2" role="alert">
 
@@ -47,60 +44,49 @@
 </div>
 {% endif %}
 
-
-
 {% if not usertrue %}
+	{% if num_device <1 %}
+	<div class="alert alert-info" role="alert">
+		You do not have any devices on loan.
+	</div>
+	{% else %}
 
+			<h3>{{user_details[0][1]}}'s Loan Devices</h3>
 
-{% if num_device <1 %}
-<div class="alert alert-info" role="alert">
-	You do not have any devices on loan.
-</div>
+			<!-- 		<h3>Your Loans</h3>		 -->
+			<br>
+			<form method="POST" action="" name="Device">
+				<table style=" font-family: sans-serif;" class="table table-striped">
+					<thead>
+						<tr>
+							<th>Device ID</th>
+							<th>Device Name</th>
+							<th>Device Type</th>
+							<th>Due Date</th>
+							<th> </th>
+						</tr>
+					</thead>
 
-{% else %}
-
-		<h3>{{user_details[0][1]}}'s Loan Devices</h3>
-
-		<!-- 		<h3>Your Loans</h3>		 -->
-		<br>
-		<form method="POST" action="" name="Device">
-			<table style=" font-family: sans-serif;" class="table table-striped">
-				<thead>
+					{% for device in loan_devices %}
 					<tr>
-						<th>Device ID</th>
-						<th>Device Name</th>
-						<th>Device Type</th>
-						<th>Due Date</th>
-
-						<th> </th>
-
+						<td>{{device[0]}}</td>
+						<td>{{device[1]}}</td>
+						<td>{{device[2]}}</td>
+						<td>	
+							{% if device[3] is not none %}
+								{{ device[3] .strftime('%d %B') }}
+							{% endif %}
+						</td>				
+						<form method="POST" action="">
+							<td>
+								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+							</td>
+						</form>
 					</tr>
-				</thead>
-
-				{% for device in loan_devices %}
-				<tr>
-					<td>{{device[0]}}</td>
-					<td>{{device[1]}}</td>
-					<td>{{device[2]}}</td>
-					<td>	
-						{% if device[3] is not none %}
-							{{ device[3] .strftime('%d %B') }}
-						{% endif %}
-					</td>				
-					<form method="POST" action="">
-						<td>
-							<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
-						</td>
-					</form>
-				</tr>
-				{% endfor %}
-
-			</table>
-
-		</form>
-
-{% endif %}
-
+					{% endfor %}
+				</table>
+			</form>
+	{% endif %}
 <br>
 
 
@@ -122,39 +108,30 @@
 						<th>Device Name</th>
 						<th>Device Type</th>
 						<th>Device Status</th>
-
 						<th> </th>
-
 					</tr>
 				</thead>
-
-
 				{% for device in hold_devices %}
-				<tr>
-					<td>{{device[0]}}</td>
-					<td>{{device[1]}}</td>
-					<td>{{device[2]}}</td>
-					<td>{{device[3]}}</td>
-					<form method="POST" action="">
-						<td>
-							{% if device[3]=='Unavailable' %}
-								<form method="POST" action="">
-										<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-								</form>
-							{% else %}
-								<form method="POST" action="">
-										<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-								</form>
-							{% endif %}
-		
-						</td>
-
-				</tr>
+					<tr>
+						<td>{{device[0]}}</td>
+						<td>{{device[1]}}</td>
+						<td>{{device[2]}}</td>
+						<td>{{device[3]}}</td>
+						<form method="POST" action="">
+							<td>
+								{% if device[3]=='Unavailable' %}
+									<form method="POST" action="">
+											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+									</form>
+								{% else %}
+									<form method="POST" action="">
+											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+									</form>
+								{% endif %}
+							</td>
+					</tr>
 				{% endfor %}
-
 			</table>
-
-
 		</form>
 
 {% endif %}
@@ -163,29 +140,28 @@
 
 {% endif %}
 
+<div class="row mt-4">
 
 <h3>Devices List</h3>
+</div>
 
 <br>
 <form method="POST" action="" name="DeviceList">
 	<div class="row">
-	
-<p>
+	<div class="col" id="new-search-area"></div>
+
 	<div class="col"> 
-	<input type="checkbox" name="DeviceId" checked="checked"> Device Name 
+	<input type="checkbox" name="DeviceId" checked="checked"> Device Id 
 	<br>
 	<input type="checkbox" name="DeviceName" checked="checked"> Device Name 
 	<br>
 	</div>
 	<div class="col"> 
 	<input type="checkbox" name="DeviceType" checked="checked"> Device Type
-
 	<br>
-	
 	<input type="checkbox" name="OSType" checked="checked">OS Type
 	</div>
 	<div class="col"> 
-	
 	<input type="checkbox" name="OSVersion" checked="checked">OS Version
 	<br>
 	<input type="checkbox" name="CPU" checked="checked">CPU
@@ -194,11 +170,9 @@
 	<div class="col">
 	<input type="checkbox" name="Bit">Bit
 	<br>
-	
 	<input type="checkbox" name="RAM">RAM 
 	</div>
 	<div class="col"> 
-
 	<input type="checkbox" name="ScreenRes">Screen Resolution
 	<br>
 	<input type="checkbox" name="Grade">Grade
@@ -206,8 +180,6 @@
 	<div class="col"> 
 	<input type="checkbox" name="Status" checked="checked"> Status
 	<br>
-
-	
 	<input type="checkbox" name="Assigned" checked="checked"> Assigned to
 	<br>
 	<input type="checkbox" name="DueDate" checked="checked"> Due date</p>
@@ -215,12 +187,18 @@
     <br>
     <br>
 
-
+<br>
 <table id ="columnSort" class="table table-striped">
+
+
+
+<br>
 
     <thead>
       <tr>
-
+      	{% if not usertrue %}
+        <th></th>
+        {% endif %}
         <th class ="DeviceID">ID</th>
 		<th class ="DeviceName">Device Name</th>
         <th class="DeviceType">Device Type</th>
@@ -234,10 +212,12 @@
 		<th class="Status">Status</th>
         <th class="Assigned">Assigned</th>
         <th class="DueDate">Due</th>
-        <th></th>
       </tr>
 	
       <tr>
+      	{% if not usertrue %}
+      	<th></th>
+      	{% endif %}
         <th class ="DeviceID"></th>
         <th class="DeviceName"></th>
         <th class="DeviceType"></th>
@@ -251,13 +231,26 @@
         <th class="Status"></th>
         <th class="Assigned"></th>
         <th class="DueDate"></th>
-        <th></th>
       </tr>
 	</thead>
 	<tr>
 		{% for item in device_details_userid %}
+			{% if not usertrue %}
+			<td>
+				{% if item[11]=='Available' %}
+				<form method="POST" action="">
+						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
+				</form>
+				{% else %}
+				<form method="POST" action="">
+						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow"> Hold </button>
+				
+				</form>
+				{% endif %}
+			</td>
 
-    <td class = "DeviceID">{{item[0]}}</td>
+			{% endif %}
+    	<td class = "DeviceID">{{item[0]}}</td>
 		<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version:  RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>    	
     	<td class = "DeviceType">{{item[2]}}</td>
     	<td class="OSType">{{item[3]}}</td>
@@ -286,23 +279,7 @@
 			{% endif %}
 		</td>
 
-		<td>
-
-			{% if not usertrue %}
-				{% if item[11]=='Available' %}
-				<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
-
-				</form>
-				{% else %}
-				<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow"> Hold </button>
-					</td>
-				</form>
-				{% endif %}
-
-			{% endif %}
-		</td>
+			
 		</tr>
 		{% endfor %}
 	</table>
