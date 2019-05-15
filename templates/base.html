@@ -23,7 +23,7 @@
 			$(document).ready(function() {
 		    $('#columnSort').DataTable( {
 		        initComplete: function () {
-		            this.api().columns([0, 1, 2, 3, 5, 6, 8, 9, 11]).every( function () {
+		            this.api().columns([1, 2, 3, 5, 6, 8, 9, 11]).every( function () {
 		                var column = this;
 		                var select = $('<select><option label="Select" value=""></option></select>')
 		                    .appendTo( $(column.header()).empty() )
