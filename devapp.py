@@ -92,7 +92,16 @@ def deviceborrowreturn(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
-	
+
+	## Query for overdue items
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW()'.format (user_id))
+	over_due = mycursor.fetchall()
+	items_over_due = len(over_due)
+
+	## Query for items due soon
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day)'.format (user_id))
+	due_soon = mycursor.fetchall()
+	item_due_soon = len(due_soon)
 	# can't just use function, need to pass the value to the variables in render_template
 	loan_devices = loandevices(user_id)
 	num_device = len(loan_devices)
@@ -135,7 +144,7 @@ def deviceborrowreturn(userid):
 			mycursor.close()
 			flash("You have returned {}".format (device_name[0]))
 			mycursor.close()
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+			return render_template('deviceborrowreturn.html', items_over_due=items_over_due, over_due=over_due, userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 		
 	if request.method == 'POST':
@@ -288,8 +297,8 @@ def deviceborrowreturn(userid):
 			
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 				
-	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
-
+	return render_template('deviceborrowreturn.html', item_due_soon=item_due_soon, due_soon=due_soon, items_over_due=items_over_due, over_due=over_due, userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+# return render_template('deviceborrowreturn.html', items_over_due=items_over_due, over_due=over_due, userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 	
 @app.route('/', methods =['GET', 'POST'])
 @app.route('/device-borrow-return', methods =['GET', 'POST'])
