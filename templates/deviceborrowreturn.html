@@ -4,7 +4,7 @@
 {% block content %}
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
-			<div class="alert alert-danger mt-2" role="alert">
+			<div class="alert alert-primary mt-2" role="alert">
 
 				{% for message in messages %}
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -43,6 +43,31 @@
 	You have checked out {{device_name[0]}}
 </div>
 {% endif %}
+
+
+{% if items_over_due !=0 %}
+<div class="alert alert-info" role="alert">
+	You have {{items_over_due}} item/s overdue. Please return
+
+	{% for item in over_due %}
+		{{item[2]}}
+	{% endfor %}
+
+</div>
+{% endif %}
+
+
+{% if items_due_soon !=0 %}
+<div class="alert alert-info" role="alert">
+	 You have device(s) due back very soon! 
+
+	{% for item in due_soon %}
+		{{item[2]}}
+	{% endfor %}
+
+</div>
+{% endif %}
+
 
 {% if not usertrue %}
 	{% if num_device <1 %}
