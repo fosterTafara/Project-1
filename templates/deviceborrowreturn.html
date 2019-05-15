@@ -31,7 +31,7 @@
 				</div>
 		</div>	
 				<div class="col-1">
-				<input type="submit" id="seedoc" class="btn btn-secondary btn-block" style= "background-color: #4173f4;"  disabled value="Go">
+				<input type="submit" id="seedoc" class="btn btn-secondary btn-block" style= "background-color: ##428bca;"  disabled value="Go">
 				</div>
 			</form>
 	</div>
@@ -39,18 +39,20 @@
 {% endif %}
 
 {% if borrow_device %}
-<div class="alert alert-info" role="alert">
+<div class="alert alert-primary mt-2" role="alert">
 	You have checked out {{device_name[0]}}
 </div>
 {% endif %}
 
 
 {% if items_over_due !=0 %}
-<div class="alert alert-info" role="alert">
-	You have {{items_over_due}} item/s overdue. Please return
+<div class="alert alert-danger mt-2" role="alert">
+	Please return {{items_over_due}} overdue item/s 
+	<br>
 
 	{% for item in over_due %}
 		{{item[2]}}
+		/
 	{% endfor %}
 
 </div>
@@ -58,7 +60,7 @@
 
 
 {% if items_due_soon !=0 %}
-<div class="alert alert-info" role="alert">
+<div class="alert alert-warning mt-2" role="alert">
 	 You have device(s) due back very soon! 
 
 	{% for item in due_soon %}
@@ -71,7 +73,7 @@
 
 {% if not usertrue %}
 	{% if num_device <1 %}
-	<div class="alert alert-info" role="alert">
+	<div class="alert alert-primary mt-2" role="alert">
 		You do not have any devices on loan.
 	</div>
 	{% else %}
@@ -104,7 +106,7 @@
 						</td>				
 						<form method="POST" action="">
 							<td>
-								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
 							</td>
 						</form>
 					</tr>
@@ -116,7 +118,7 @@
 
 
 {% if num_hold_device <1 %}
-<div class="alert alert-info" role="alert">
+<div class="alert alert-primary mt-2" role="alert">
 	You do not have any devices on hold.
 </div>
 
@@ -146,11 +148,11 @@
 							<td>
 								{% if device[3]=='Unavailable' %}
 									<form method="POST" action="">
-											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
 									</form>
 								{% else %}
 									<form method="POST" action="">
-											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
 									</form>
 								{% endif %}
 							</td>
@@ -264,11 +266,11 @@
 			<td>
 				{% if item[11]=='Available' %}
 				<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
+						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 				</form>
 				{% else %}
 				<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow"> Hold </button>
+						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow"> Hold </button>
 				
 				</form>
 				{% endif %}
