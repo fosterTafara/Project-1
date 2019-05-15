@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="Ciucas365",
   database="project"
 )
 
@@ -328,10 +328,10 @@ def deviceborrowreturn(userid):
 
 				mycursor.close()	
 			
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+				return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 				
 
-	return render_template('deviceborrowreturn.html', userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	return render_template('deviceborrowreturn.html', over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 
 	
@@ -341,31 +341,20 @@ def borrowreturn():
 	mycursor = mydb.cursor()
 	mycursor.execute("SELECT * FROM users")
 	users = mycursor.fetchall()
-
-	device_details_userid = alldevicedetails()
-
-	print(device_details_userid[0][0])
-	
+	device_details= alldevicedetails()	
 	if request.method == 'POST':
-	
 		userDetails = request.form
 		user_id = userDetails['userid']
 		mycursor = mydb.cursor()
 		mycursor.execute("select * from users")
 		user_details = mycursor.fetchall()
 		print(user_id)	
-		    
 		#studentList = request.args.get("ID")
 		#user_id = request.args.get("user_id")
-
-
 		device_details = alldevicedetails()
-
-
 		mycursor.close()
 		return redirect('/device-borrow-return/{}'.format(user_id))
-	
-	return render_template('deviceborrowreturn.html', device_details_userid=device_details_userid, users=users, usertrue=True)	   
+	return render_template('deviceborrowreturn.html', device_details=device_details, users=users, usertrue=True)	   
 
 @app.route('/myview/<int:userid>', methods =['GET', 'POST'])
 def myview(userid):
@@ -475,7 +464,7 @@ def myview(userid):
 
 				mycursor.close()	
 			
-			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+				return render_template('myview.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 				
 	return render_template('myview.html', userid=user_id,loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
