@@ -377,8 +377,14 @@ def myview(userid):
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
+
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
+			
+			flash("You have returned {}".format (device_name[0]))
 			mycursor.close()
-			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+			mycursor.close()
+			return render_template('myview.html', userid=user_id, device_name=device_name, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 	
 		
 	if request.method == 'POST':
