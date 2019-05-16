@@ -149,16 +149,17 @@
 						<td>{{device[3]}}</td>
 						<form method="POST" action="">
 							<td>
-								{% if device[3]=='Unavailable' %}
-									<form method="POST" action="">
-											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-									</form>
-								{% else %}
+								{% if device[3]=='On Hold' and device[4]==1 %}
 									<form method="POST" action="">
 											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
 									</form>
+								{% else %}
+									<form method="POST" action="">
+											<button disabled  type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+									</form>
 								{% endif %}
 							</td>
+						</form>
 					</tr>
 				{% endfor %}
 			</table>
