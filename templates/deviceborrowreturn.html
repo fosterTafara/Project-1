@@ -50,6 +50,20 @@
 </div>
 {% endif %}
 
+{% if item_hold_avai_borrow !=0 and not usertrue  %}
+<div class="alert alert-success mt-2" role="alert">
+	You have {{item_hold_avai_borrow}} holding item/s available to borrow: 
+	<br>
+
+	{% for item in hold_avai_borrow %}
+		{{item[2]}}
+	{% endfor %}
+
+</div>
+{% endif %}
+
+
+
 
 {% if items_over_due !=0 and not usertrue  %}
 <div class="alert alert-danger mt-2" role="alert">
@@ -58,7 +72,6 @@
 
 	{% for item in over_due %}
 		{{item[2]}}
-		/
 	{% endfor %}
 
 </div>
