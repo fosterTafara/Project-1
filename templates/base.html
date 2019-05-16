@@ -42,6 +42,7 @@
 		                } );
 		            } );
 		             $("#columnSort_filter").detach().appendTo('#new-search-area');
+
 		        }
 		    } );
 		} );
@@ -74,7 +75,18 @@
 	{% else %}
 		<title> Devices Library </title>
 	{% endif %}
+<style>
+.wrap {
+    position: relative;
+}
 
+.wrap span {
+    position: absolute;
+    top: 0;
+    right: 3;
+}	
+
+</style>
 
 </head>
 
@@ -88,7 +100,9 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarToggle">
 					<div class="navbar-nav mr-auto">
-						<a class="nav-item nav-link" href="/myview/{{userid}}">My devices</a>
+						{% if not usertrue %}
+							<a class="nav-item nav-link" href="/myview/{{userid}}">My devices</a>
+						{% endif %}
 					</div>
 				</div>
 			</div>

@@ -2,19 +2,20 @@
 
 
 {% block content %}
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<div class="alert alert-primary mt-2" role="alert">
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<div class="alert alert-primary wrap" role="alert">
 
-	{% for message in messages %}
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-		<span aria-hidden="true" style="font-size:20px">×</span>
-	</button>
-	{{ message }}
-	{% endfor %}
-</div>
-{% endif %}
-{% endwith %}
+				{% for message in messages %}
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true" style="font-size:20px">×</span>
+					</button>
+					{{ message }}
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endwith %}
+
 
 <!-- ## Populate drop down list with user emails which need to be selected before go button is activated -->
 {% if usertrue %}
@@ -46,54 +47,55 @@
 
 
 <!-- ##Create front end messages for non flash alerts -->
+
 {% if not usertrue %}
 
-		<!-- ##Message for item on hold is available to borrow -->
-		{% if item_hold_avai_borrow ==0 %}
-		<div >
-		</div>
-		
-		{% else %}
-		<div class="alert alert-success mt-2" role="alert">
-			You have {{item_hold_avai_borrow}} holding item/s available to borrow:
+	{% if item_hold_avai_borrow and item_hold_avai_borrow != 0 %}
+	<div class="alert alert-success wrap" role="alert">
+		You have {{item_hold_avai_borrow}} holding item/s available to borrow: 
+		<br>
+		{% for item in hold_avai_borrow %}
+			{{item[3]}}
 			<br>
+		{% endfor %}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true" style="font-size:20px">×</span>
+		</button>
+	</div>
+	{% endif %}
 
-			{% for item in hold_avai_borrow %}
-			{{item[2]}}
-			{% endfor %}
-		</div>
-		{% endif %}
-
-
-
-		<!-- ##Message for item overdue -->
-		{% if items_over_due !=0%}
-		<div class="alert alert-danger mt-2" role="alert">
-			Please return {{items_over_due}} overdue item/s
+	{% if items_over_due and items_over_due !=0 %}
+	<div class="alert alert-danger wrap" role="alert">
+		Please return {{items_over_due}} overdue item/s 
+		{% for item in over_due %}
 			<br>
-
-
-			{% for item in over_due %}
 			{{item[2]}}
-			{% endfor %}
+			<br>
+		{% endfor %}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true" style="font-size:20px">×</span>
+		</button>
+	</div>
+	{% endif %}
 
-		</div>
-		{% endif %}
-		
-		<!-- ##Message for item on hold is available to borrow -->
-		{% if item_due_soon !=0 and not usertrue %}
-		<div class="alert alert-warning mt-2" role="alert">
-			You have device(s) due back very soon!
-
-			{% for item in due_soon %}
+	{% if item_due_soon and item_due_soon !=0 %}
+	<div class="alert alert-warning wrap" role="alert">
+		 You have device(s) due back very soon! 
+		 <br>
+		{% for item in due_soon %}
 			{{item[2]}}
-			/
-			{% endfor %}
-		</div>
-		{% endif %}
+			<br>
+		{% endfor %}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true" style="font-size:20px">×</span>
+		</button>
+	</div>
+	{% endif %}
 
 
 {% endif %}
+
+
 
 
 
@@ -208,6 +210,7 @@
 						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 					</form>
 
+
 	
 					{% elif item[11]=='Unavailable' and item[17]== userid %}
 					<form method="POST" action="">
@@ -237,7 +240,6 @@
 										{% endif %}
 									{% endif %}
 							{% endif %}
-									
 						{% endfor %}
 							
 					{% else %}
@@ -248,6 +250,7 @@
 												
 						
 					{% endif %}
+
 
 										
 		{% endif %}
