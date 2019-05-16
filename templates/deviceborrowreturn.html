@@ -48,52 +48,49 @@
 <!-- ##Create front end messages for non flash alerts -->
 {% if not usertrue %}
 
-{% if borrow_device %}
-<div class="alert alert-primary mt-2" role="alert">
-	You have checked out {{device_name[0]}}
-</div>
-{% endif %}
+		<!-- ##Message for item on hold is available to borrow -->
+		{% if item_hold_avai_borrow ==0 %}
+		<div >
+		</div>
+		
+		{% else %}
+		<div class="alert alert-success mt-2" role="alert">
+			You have {{item_hold_avai_borrow}} holding item/s available to borrow:
+			<br>
 
-{% if item_hold_avai_borrow !=0 and not usertrue  %}
-<div class="alert alert-success mt-2" role="alert">
-	You have {{item_hold_avai_borrow}} holding item/s available to borrow:
-	<br>
-
-	{% for item in hold_avai_borrow %}
-	{{item[2]}}
-	{% endfor %}
-
-</div>
-{% endif %}
+			{% for item in hold_avai_borrow %}
+			{{item[2]}}
+			{% endfor %}
+		</div>
+		{% endif %}
 
 
 
-{% if items_over_due !=0 and not usertrue  %}
-<div class="alert alert-danger mt-2" role="alert">
-	Please return {{items_over_due}} overdue item/s
-	<br>
-
-	{% for item in over_due %}
-	{{item[2]}}
-	{% endfor %}
+		<!-- ##Message for item overdue -->
+		{% if items_over_due !=0%}
+		<div class="alert alert-danger mt-2" role="alert">
+			Please return {{items_over_due}} overdue item/s
+			<br>
 
 
-		{% for item in over_due %}
+			{% for item in over_due %}
+			{{item[2]}}
+			{% endfor %}
+
+		</div>
+		{% endif %}
+		
+		<!-- ##Message for item on hold is available to borrow -->
+		{% if item_due_soon !=0 and not usertrue %}
+		<div class="alert alert-warning mt-2" role="alert">
+			You have device(s) due back very soon!
+
+			{% for item in due_soon %}
 			{{item[2]}}
 			/
-		{% endfor %}
-{% endif %}
-
-{% if item_due_soon !=0 and not usertrue %}
-<div class="alert alert-warning mt-2" role="alert">
-	You have device(s) due back very soon!
-
-	{% for item in due_soon %}
-	{{item[2]}}
-	/
-	{% endfor %}
-</div>
-{% endif %}
+			{% endfor %}
+		</div>
+		{% endif %}
 
 
 {% endif %}
