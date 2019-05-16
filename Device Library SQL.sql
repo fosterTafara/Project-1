@@ -1,5 +1,4 @@
-    
---DROP DATABASE Project;
+DROP DATABASE Project;
  
 CREATE Database IF NOT EXISTS project;
 USE project;
@@ -62,6 +61,8 @@ foreign key (userId) references users (userId)
 
 CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL and borrowDate is not null);
 CREATE VIEW latesthold as (SELECT * FROM checkingsystem WHERE holdDate is not NULL and borrowDate is null);
+CREATE VIEW statusonhold as (SELECT * FROM checkingsystem WHERE holdposition =1 and holdexpiry is not null);
+Drop view position1hold;
 CREATE VIEW devicedetails as (select device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, deviceRam, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, 
 latestborrow.holdDate, latestborrow.holdExpiry, latestborrow.borrowDate, latestborrow.dueDate, latestborrow.returnDate, users.userId, users.firstName, users.lastName,users.email, building.buildingAddress from device
 left outer join latestborrow on device.deviceId = latestborrow.deviceId 
@@ -71,15 +72,15 @@ left outer join building on users.locationId = building.locationId);
 INSERT INTO device (deviceId, deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu,
 deviceBit, screenRes, deviceGrade, deviceUuid,deviceStatus) VALUES
 ("1000","Q Bert","Amazon Fire HD 7","Android","4.5.5","1 GB","Dual-Core 1.5GHz","1","800 x 1280 (216ppi)","Low","None","Available"),
-("1001","Princess Zelda","Dell E 6400","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Unavailable"),
+("1001","Princess Zelda","Dell E 6400","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Available"),
 ("1002","Link","Dell Laptop","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Available"),
 ("1003","Link","Dell Laptop","Windows","TBC","TBC","TBC","1","TBC","TBC","TBC","Available"),
 ("1004","Bison","Galaxy S5","Android","4.4.2","2 GB","Quad-Core 2.5GHz","1","1080 x 1920 (432ppi)","Medium","None","Available"),
 ("1005","Balrog","Galaxy S7 Edge","Android","6.0.1","4 GB","Octa-Core 4x2.3 GHz & 4x1.6 GHz","1","1440 x 2560 (534ppi)","High","None","Available"),
-("1006","E-Honda","Galaxy Tab 1","Android","4.0.4","1 GB","Dual-Core 1GHz","1","800 x 1280 (149ppi)","Low","None","Unavailable"),
-("1007","Zangief","Galaxy Tab 4","Android","5.0.2","1.5 GB","Quad-Core 1.2GHz","1","800 x 1280 (216ppi)","Low","None","Unavailable"),
-("1008","Guile","HTC One mini 2","Android","4.4.2","1 GB","Quad-Core 1.2GHz","1","720 x 1280 (326ppi)","Low","None","Unavailable"),
-("1009","Dr Robotnik","iPad 4","IOS","10.1","1GB","Dual-Core 1.4GHz","32","1536 x 2048 (264ppi)","Medium","3e751193bdbf92b35a440f225318b5498de96c9e","Unavailable"),
+("1006","E-Honda","Galaxy Tab 1","Android","4.0.4","1 GB","Dual-Core 1GHz","1","800 x 1280 (149ppi)","Low","None","Available"),
+("1007","Zangief","Galaxy Tab 4","Android","5.0.2","1.5 GB","Quad-Core 1.2GHz","1","800 x 1280 (216ppi)","Low","None","Available"),
+("1008","Guile","HTC One mini 2","Android","4.4.2","1 GB","Quad-Core 1.2GHz","1","720 x 1280 (326ppi)","Low","None","Available"),
+("1009","Dr Robotnik","iPad 4","IOS","10.1","1GB","Dual-Core 1.4GHz","32","1536 x 2048 (264ppi)","Medium","3e751193bdbf92b35a440f225318b5498de96c9e","Available"),
 ("1010","Fox McCloud","iPad Air (retina)","IOS","10.3.2","1 GB DDR3","Dual-Core 1.3GHz","64","1536 x 2048 (264ppi)","Medium","7c7a369fd078c67f1cc123685ad887d3e32a6552","Available"),
 ("1011","Kratos","iPad Air 2","IOS","9.3.4","2 GB","Octa-core 1.5 GHz","64","2048 x 1536 (264ppi)","High","0b7886a9d846ea7cd50f80c1eefbeba3ead44b21","Available"),
 ("1012","Silver","iPad Mini","IOS","9.2","500MB","Dual-Core 1GHz","32","768 x 1024 (163 ppi)","Obsolete","e73f9b4cb93e83f718622016e31d90c06692d782","Available"),
