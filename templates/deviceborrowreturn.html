@@ -36,157 +36,64 @@
 			</form>
 	</div>
 {% else %}
-	{% for item in user_details %}     
-		<h3>Hi, {{item[1]}} {{item[2]}}!</h3>
-	{% endfor %}
+	<div class="row justify-content-center align-items-center">
+		{% for item in user_details %}     
+			<h3>Hi {{item[1]}}</h3>
+		{% endfor %}
+	</div>
 
 {% endif %}
 
 <!-- ##Create front end messages for non flash alerts -->
-
-{% if borrow_device %}
-<div class="alert alert-primary mt-2" role="alert">
-	You have checked out {{device_name[0]}}
-</div>
-{% endif %}
-
-{% if item_hold_avai_borrow !=0 and not usertrue  %}
-<div class="alert alert-success mt-2" role="alert">
-	You have {{item_hold_avai_borrow}} holding item/s available to borrow: 
-	<br>
-
-	{% for item in hold_avai_borrow %}
-		{{item[2]}}
-	{% endfor %}
-
-</div>
-{% endif %}
-
-
-
-
-{% if items_over_due !=0 and not usertrue  %}
-<div class="alert alert-danger mt-2" role="alert">
-	Please return {{items_over_due}} overdue item/s 
-	<br>
-
-	{% for item in over_due %}
-		{{item[2]}}
-	{% endfor %}
-
-</div>
-{% endif %}
-
-
-{% if item_due_soon !=0 and not usertrue %}
-<div class="alert alert-warning mt-2" role="alert">
-	 You have device(s) due back very soon! 
-
-	{% for item in due_soon %}
-		{{item[2]}}
-		/
-	{% endfor %}
-</div>
-{% endif %}
-
-
 {% if not usertrue %}
-	{% if num_device <1 %}
+
+	{% if borrow_device %}
 	<div class="alert alert-primary mt-2" role="alert">
-		You do not have any devices on loan.
+		You have checked out {{device_name[0]}}
 	</div>
-	{% else %}
-
-<!-- ## This part is moving to the myview page -->
-			<h4>{{user_details[0][1]}}'s Loan Devices</h4>
-
-
-			<br>
-			<form method="POST" action="" name="Device">
-				<table style=" font-family: sans-serif;" class="table table-striped">
-					<thead>
-						<tr>
-							<th>Device ID</th>
-							<th>Device Name</th>
-							<th>Device Type</th>
-							<th>Due Date</th>
-							<th> </th>
-						</tr>
-					</thead>
-
-					{% for device in loan_devices %}
-					<tr>
-						<td>{{device[0]}}</td>
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td>	
-							{% if device[3] is not none %}
-								{{ device[3] .strftime('%d %B') }}
-							{% endif %}
-						</td>				
-						<form method="POST" action="">
-							<td>
-								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
-							</td>
-						</form>
-					</tr>
-					{% endfor %}
-				</table>
-			</form>
 	{% endif %}
-<br>
 
-
-{% if num_hold_device <1 %}
-<div class="alert alert-primary mt-2" role="alert">
-	You do not have any devices on hold.
-</div>
-
-{% else %}
-		<h3>{{user_details[0][1]}}'s Hold Devices</h3>
-
-		<!-- 		<h3>Your Devices on Hold</h3>		 -->
+	{% if item_hold_avai_borrow !=0 and not usertrue  %}
+	<div class="alert alert-success mt-2" role="alert">
+		You have {{item_hold_avai_borrow}} holding item/s available to borrow: 
 		<br>
-		<form method="POST" action="" name="Device">
-			<table style="font-family: sans-serif;" class="table table-striped">
-				<thead>
-					<tr>
-						<th>Device ID</th>
-						<th>Device Name</th>
-						<th>Device Type</th>
-						<th>Device Status</th>
-						<th> </th>
-					</tr>
-				</thead>
-				{% for device in hold_devices %}
-					<tr>
-						<td>{{device[0]}}</td>
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td>{{device[3]}}</td>
-						<form method="POST" action="">
-							<td>
-								{% if device[3]=='On Hold' and device[4]==1 %}
-									<form method="POST" action="">
-											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-									</form>
-								{% else %}
-									<form method="POST" action="">
-											<button disabled  type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-									</form>
-								{% endif %}
-							</td>
-						</form>
-					</tr>
-				{% endfor %}
-			</table>
-		</form>
 
+		{% for item in hold_avai_borrow %}
+			{{item[2]}}
+		{% endfor %}
+
+	</div>
+	{% endif %}
+
+
+
+	{% if items_over_due !=0 and not usertrue  %}
+	<div class="alert alert-danger mt-2" role="alert">
+		Please return {{items_over_due}} overdue item/s 
+		<br>
+
+		{% for item in over_due %}
+			{{item[2]}}
+		{% endfor %}
+
+	</div>
+	{% endif %}
+
+	{% if item_due_soon !=0 and not usertrue %}
+	<div class="alert alert-warning mt-2" role="alert">
+		 You have device(s) due back very soon! 
+
+		{% for item in due_soon %}
+			{{item[2]}}
+			/
+		{% endfor %}
+	</div>
+	{% endif %}
+	
 {% endif %}
 
-<br>
 
-{% endif %}
+
 
 <div class="row mt-4">
 
@@ -289,18 +196,18 @@
 
 				<td>
 					{% if item[11]=='Available' %}
+					
 					<form method="POST" action="">
 							<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 					</form>
 					
-					{% else %}
+					{% elif  %}
 
 					<form method="POST" action="">
 							<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow"> Hold </button>
 
-					
-						{% for device in hold_devices %}
-					
+					</form>
+										
 						
 							{% if item[11]=='Unavailable' and item[17]== userid %}
 							<form method="POST" action="">
