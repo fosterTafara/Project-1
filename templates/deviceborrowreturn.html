@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 
-
 {% block content %}
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
@@ -17,7 +16,7 @@
 		{% endif %}
 	{% endwith %}
 
-
+<!-- ## Populate drop down list with user emails which need to be selected before go button is activated -->
 {% if usertrue %}
 	<div class="row">
 		<div class="col-4">
@@ -42,6 +41,8 @@
 	{% endfor %}
 
 {% endif %}
+
+<!-- ##Create front end messages for non flash alerts -->
 
 {% if borrow_device %}
 <div class="alert alert-primary mt-2" role="alert">
@@ -70,6 +71,7 @@
 
 	{% for item in due_soon %}
 		{{item[2]}}
+		/
 	{% endfor %}
 </div>
 {% endif %}
@@ -82,9 +84,10 @@
 	</div>
 	{% else %}
 
-			<h3>{{user_details[0][1]}}'s Loan Devices</h3>
+<!-- ## This part is moving to the myview page -->
+			<h4>{{user_details[0][1]}}'s Loan Devices</h4>
 
-			<!-- 		<h3>Your Loans</h3>		 -->
+
 			<br>
 			<form method="POST" action="" name="Device">
 				<table style=" font-family: sans-serif;" class="table table-striped">
@@ -150,16 +153,17 @@
 						<td>{{device[3]}}</td>
 						<form method="POST" action="">
 							<td>
-								{% if device[3]=='Unavailable' %}
-									<form method="POST" action="">
-											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-									</form>
-								{% else %}
+								{% if device[3]=='On Hold' and device[4]==1 %}
 									<form method="POST" action="">
 											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
 									</form>
+								{% else %}
+									<form method="POST" action="">
+											<button disabled  type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+									</form>
 								{% endif %}
 							</td>
+						</form>
 					</tr>
 				{% endfor %}
 			</table>
@@ -176,7 +180,7 @@
 
 <h3>Devices List</h3>
 </div>
-
+<!-- ## Creating the checkboxes -->
 <br>
 <form method="POST" action="" name="DeviceList">
 	<div class="row">
@@ -220,6 +224,7 @@
     <br>
 
 <br>
+<!-- ## Creating the table -->
 <table id ="columnSort" class="table table-striped">
 
 
@@ -329,6 +334,8 @@
 			-
 			{% else %}
 			{{item[18]}} {{item[19]}}
+			<br>
+			{{item[21]}} 
 			{% endif %}
 		</td>
 		<td class="DueDate"> 
