@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Ciucas365",
+  passwd="password",
   database="project"
 )
 
@@ -108,7 +108,14 @@ def deviceborrowreturn(userid):
 
 	hold_devices = holddevices(user_id)
 	num_hold_device = len(hold_devices)
-	# print(num_hold_device)
+
+	mycursor.execute('SELECT device.deviceName, users.userId, checkingsystem.deviceId, device.deviceId, checkingsystem.userId, checkingsystem.holdPosition, checkingsystem.holdExpiry from checkingsystem, users, device where checkingsystem.userId = users.userId and checkingsystem.deviceId = device.deviceId and holdPosition =1 and holdExpiry is not null')
+	hold_available = mycursor.fetchall()
+
+	
+	flash('{} is now avilable. It will be held for you until {}'.format (hold_available[0][0], hold_available[0][6]))
+
+	
 	
 	device_details = alldevicedetails()
 	# raise Exception(device_details_userid)
@@ -135,16 +142,19 @@ def deviceborrowreturn(userid):
 			mydb.commit()
 			mycursor.close()
 			mycursor = mydb.cursor()
+
+			mycursor = mydb.cursor()
 			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
 			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
-			device_name = mycursor.fetchone()
-			
+			device_name = mycursor.fetchone()	
+
 			mycursor.close()
 			flash("You have returned {}".format (device_name[0]))
+
 			mycursor.close()
 
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
@@ -175,7 +185,7 @@ def deviceborrowreturn(userid):
 			
 			mycursor.close()
 			flash("You have checked out device {}".format (device_name[0]))
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, device_name=device_name)
+			return render_template('deviceborrowreturn.html', hold_available=hold_available, userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, device_name=device_name)
 		
 	if request.method == 'POST':
 		if 'HoldNow' in request.form:
