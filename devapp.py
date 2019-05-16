@@ -95,13 +95,30 @@ def deviceborrowreturn(userid):
 	hold_devices = holddevices(user_id)
 	num_hold_device = len(hold_devices)
 
-	# mycursor.execute('SELECT device.deviceName, users.userId, checkingsystem.deviceId, device.deviceId, checkingsystem.userId, checkingsystem.holdPosition, checkingsystem.holdExpiry from checkingsystem, users, device where checkingsystem.userId = users.userId and checkingsystem.deviceId = device.deviceId and holdPosition =1 and holdExpiry is not null')
-	# hold_available = mycursor.fetchall()
-	# len_hold_available = len(hold_available)
 
+	## List of Onhold status
+	mycursor.execute('SELECT userid, deviceid FROM statusonhold')
+	user_id_Onhold = mycursor.fetchall()
+	# print(user_id_OnholdTuple)
+	# user_id_Onhold=[]
+	# for eachID in user_id_OnholdTuple:
+		# user_id_Onhold.append(eachID[0])
+	print(user_id_Onhold)
+	
+	## List of Anyhold status
+	mycursor.execute('SELECT userid, deviceid, holdPosition, holdExpiry FROM latesthold')
+	user_id_Anyhold = mycursor.fetchall()
+	# print(user_id_AnyholdTuple)
+	# user_id_Anyhold=[]
+	# for eachID in user_id_AnyholdTuple:
+		# user_id_Anyhold.append(eachID[0])
+	print(user_id_Anyhold)
+	print(user_id)
 
 	device_details = alldevicedetails()
 	mycursor.close()
+	
+
 	
 	if request.method == 'POST':
 		if 'ReturnNow' in request.form:
@@ -138,8 +155,8 @@ def deviceborrowreturn(userid):
 			flash("You have returned {}".format (device_name[0]))
 
 			mycursor.close()
-
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+
 		
 	if request.method == 'POST':
 		if 'BorrowNow' in request.form:
@@ -167,6 +184,7 @@ def deviceborrowreturn(userid):
 			mycursor.close()
 			flash("You have checked out device {}".format (device_name[0]))
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True)
+
 		
 	if request.method == 'POST':
 		if 'HoldNow' in request.form:
@@ -263,7 +281,7 @@ def deviceborrowreturn(userid):
 
 			mycursor.close()	
 
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, device_name=device_name)	
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, device_name=device_name,user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)	
 		
 		
 	if request.method == 'POST':
@@ -308,10 +326,12 @@ def deviceborrowreturn(userid):
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
 					
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
+
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 		
 
-	return render_template('deviceborrowreturn.html', hold_avai_borrow = hold_avai_borrow, item_hold_avai_borrow=item_hold_avai_borrow, over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	return render_template('deviceborrowreturn.html', hold_avai_borrow = hold_avai_borrow, item_hold_avai_borrow=item_hold_avai_borrow, over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
+
 
 
 	
