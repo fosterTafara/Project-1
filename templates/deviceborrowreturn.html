@@ -54,16 +54,18 @@
 </div>
 {% endif %}
 
-{% if item_hold_avai_borrow !=0 and not usertrue  %}
+{% if item_hold_avai_borrow !=0 %}
+	{% if not usertrue  %}
 <div class="alert alert-success mt-2" role="alert">
 	You have {{item_hold_avai_borrow}} holding item/s available to borrow:
 	<br>
 
 	{% for item in hold_avai_borrow %}
-	{{item[2]}}
+	{{item[3]}}<br>
 	{% endfor %}
 
 </div>
+{% endif %}
 {% endif %}
 
 
