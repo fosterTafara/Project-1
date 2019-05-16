@@ -92,7 +92,12 @@ def deviceborrowreturn(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
-
+	
+	## Query for holding item is available to borrow: 
+	mycursor.execute('SELECT latesthold.userid, latesthold.deviceId, latesthold.holdPosition, device.deviceName, device.deviceStatus from latesthold, device where device.deviceid = latesthold.deviceid and latesthold.userid ={} and device.deviceStatus = "On Hold" and latesthold.holdPosition = 1'.format (user_id))
+	hold_avai_borrow = mycursor.fetchall()
+	item_hold_avai_borrow = len(hold_avai_borrow)
+	
 	## Query for overdue items
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW()'.format (user_id))
 	over_due = mycursor.fetchall()
@@ -102,6 +107,7 @@ def deviceborrowreturn(userid):
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day)'.format (user_id))
 	due_soon = mycursor.fetchall()
 	item_due_soon = len(due_soon)
+	
 	# can't just use function, need to pass the value to the variables in render_template
 	loan_devices = loandevices(user_id)
 	num_device = len(loan_devices)
@@ -320,7 +326,7 @@ def deviceborrowreturn(userid):
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 		
 
-	return render_template('deviceborrowreturn.html', over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	return render_template('deviceborrowreturn.html', hold_avai_borrow = hold_avai_borrow, item_hold_avai_borrow=item_hold_avai_borrow, over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 
 	
