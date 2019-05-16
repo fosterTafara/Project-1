@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 
+
 {% block content %}
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
@@ -35,6 +36,10 @@
 				</div>
 			</form>
 	</div>
+{% else %}
+	{% for item in user_details %}     
+		<h3>Hi, {{item[1]}} {{item[2]}}!</h3>
+	{% endfor %}
 
 {% endif %}
 
@@ -45,7 +50,7 @@
 {% endif %}
 
 
-{% if items_over_due is not none and not usertrue  %}
+{% if items_over_due !=0 and not usertrue  %}
 <div class="alert alert-danger mt-2" role="alert">
 	Please return {{items_over_due}} overdue item/s 
 	<br>
@@ -59,7 +64,7 @@
 {% endif %}
 
 
-{% if items_due_soon !=0 and not usertrue %}
+{% if item_due_soon !=0 and not usertrue %}
 <div class="alert alert-warning mt-2" role="alert">
 	 You have device(s) due back very soon! 
 
@@ -167,6 +172,7 @@
 {% endif %}
 
 <div class="row mt-4">
+
 
 <h3>Devices List</h3>
 </div>

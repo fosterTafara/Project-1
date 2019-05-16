@@ -94,12 +94,11 @@ def deviceborrowreturn(userid):
 	user_details = mycursor.fetchall()
 
 	## Query for overdue items
-	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW()'.format (user_id))
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW() and returnDate is NULL'.format (user_id))
 	over_due = mycursor.fetchall()
 	items_over_due = len(over_due)
-
 	## Query for items due soon
-	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day)'.format (user_id))
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day and returnDate is NULL)'.format (user_id))
 	due_soon = mycursor.fetchall()
 	item_due_soon = len(due_soon)
 	# can't just use function, need to pass the value to the variables in render_template
@@ -364,7 +363,6 @@ def myview(userid):
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
-	
 	# can't just use function, need to pass the value to the variables in render_template
 	loan_devices = loandevices(user_id)
 	num_device = len(loan_devices)
