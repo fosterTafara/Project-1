@@ -120,13 +120,13 @@ def deviceborrowreturn(userid):
 	print(user_id_Onhold)
 	
 	## List of Anyhold status
-	mycursor.execute('SELECT userid, deviceid, holdPosition FROM latesthold')
-	user_id_anyhold = mycursor.fetchall()
-	# print(user_id_anyholdTuple)
-	# user_id_anyhold=[]
-	# for eachID in user_id_anyholdTuple:
-		# user_id_anyhold.append(eachID[0])
-	print(user_id_anyhold)
+	mycursor.execute('SELECT userid, deviceid, holdPosition, holdExpiry FROM latesthold')
+	user_id_Anyhold = mycursor.fetchall()
+	# print(user_id_AnyholdTuple)
+	# user_id_Anyhold=[]
+	# for eachID in user_id_AnyholdTuple:
+		# user_id_Anyhold.append(eachID[0])
+	print(user_id_Anyhold)
 	print(user_id)
 	
 	device_details = alldevicedetails()
@@ -168,7 +168,7 @@ def deviceborrowreturn(userid):
 			flash("You have returned {}".format (device_name[0]))
 			mycursor.close()
 
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_anyhold=user_id_anyhold)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 		
 	if request.method == 'POST':
 		if 'BorrowNow' in request.form:
@@ -293,7 +293,7 @@ def deviceborrowreturn(userid):
 
 			mycursor.close()	
 
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, device_name=device_name,user_id_Onhold=user_id_Onhold, user_id_anyhold=user_id_anyhold)	
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, device_name=device_name,user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)	
 		
 		
 	if request.method == 'POST':
@@ -338,10 +338,10 @@ def deviceborrowreturn(userid):
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
 					
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_anyhold=user_id_anyhold)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 		
 
-	return render_template('deviceborrowreturn.html', over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_anyhold=user_id_anyhold)
+	return render_template('deviceborrowreturn.html', over_due=over_due, items_over_due=items_over_due, item_due_soon=item_due_soon, due_soon=due_soon, userid=user_id,loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 
 
 	
