@@ -16,131 +16,142 @@
 		{% endif %}
 	{% endwith %}
 
-<h3>My Profile page, need to add in a table with Name, location etc</h3>
+<h3>My Profile</h3>
 <br>
 
-{% if usertrue %}
-	<div class="row">
+<form method="GET" action="/device-borrow-return/{{user_details[0][0]}}" align="right">
+	<button type="submit" value=""  class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="">Back to Device List</button>
+</form>
 
+{% if not usertrue %}
+	<div class="container-fluid">
+		<table style=" font-family: sans-serif;" class="table.table-borderless table-sm">
+										
+					<tr>
+						<td><b>My User ID:</b> {{user_details[0][0]}}</td>
+					</tr>	
+					<tr>	
+						<td><b>First Name:</b> {{user_details[0][1]}}</td>
+					</tr>	
+					<tr>	
+						<td><b>Last Name:</b> {{user_details[0][2]}}</td>
+					</tr>	
+					<tr>	
+						<td><b>Email:</b> {{user_details[0][3]}}</td>
+					</tr>	
+					<tr>	
+						<td><b>Office:</b> {{user_details[0][5]}}</td>
+					</tr>
+					
+		</table>
 
 
 	</div>
 {% endif %}
+
+</br>
+</br>
+
 {% if not usertrue %}
+	
+	{% if num_device <1 %}
+	<div class="alert alert-primary mt-2" role="alert">
+		You do not have any devices on loan.
+	</div>
+	{% else %}
+
+			<h4>{{user_details[0][1]}}'s Loan Devices</h4>
 
 
-{% if num_device <1 %}
-<div class="alert alert-info" role="alert">
-	You do not have any devices on loan.
-</div>
+			<br>
+			<form method="POST" action="" name="Device">
+				<table style=" font-family: sans-serif;" class="table table-striped">
+					<thead>
+						<tr>
+							<th>Device ID</th>
+							<th>Device Name</th>
+							<th>Device Type</th>
+							<th>Due Date</th>
+							<th> </th>
+						</tr>
+					</thead>
 
-{% else %}
-
-		<h3>{{user_details[0][1]}}'s Loan Devices</h3>
-
-		<!-- 		<h3>Your Loans</h3>		 -->
-		<br>
-		<form method="POST" action="" name="Device">
-			<table style=" font-family: sans-serif;" class="table table-striped">
-				<thead>
+					{% for device in loan_devices %}
 					<tr>
-						<th>Device ID</th>
-						<th>Device Name</th>
-						<th>Device Type</th>
-						<th>Due Date</th>
-
-						<th> </th>
-
+						<td>{{device[0]}}</td>
+						<td>{{device[1]}}</td>
+						<td>{{device[2]}}</td>
+						<td>	
+							{% if device[3] is not none %}
+								{{ device[3] .strftime('%d %B') }}
+							{% endif %}
+						</td>				
+						<form method="POST" action="">
+							<td>
+								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+							</td>
+						</form>
 					</tr>
-				</thead>
-
-				{% for device in loan_devices %}
-				<tr>
-					<td>{{device[0]}}</td>
-					<td>{{device[1]}}</td>
-					<td>{{device[2]}}</td>
-					<td>
-						{% if device[3] is not none %}
-							{{ device[3] .strftime('%d %B') }}
-						{% endif %}
-					</td>
-					<form method="POST" action="">
-						<td>
-							<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
-						</td>
-					</form>
-				</tr>
-				{% endfor %}
-
-			</table>
-
-		</form>
-
-{% endif %}
-
+					{% endfor %}
+				</table>
+			</form>
+	{% endif %}
 <br>
 
 
-{% if num_hold_device <1 %}
-<div class="alert alert-info" role="alert">
-	You do not have any devices on hold.
-</div>
+	{% if num_hold_device <1 %}
+	<div class="alert alert-primary mt-2" role="alert">
+		You do not have any devices on hold.
+	</div>
 
-{% else %}
-		<h3>{{user_details[0][1]}}'s Hold Devices</h3>
+	{% else %}
+			<h3>{{user_details[0][1]}}'s Hold Devices</h3>
 
-		<!-- 		<h3>Your Devices on Hold</h3>		 -->
-		<br>
-		<form method="POST" action="" name="Device">
-			<table style="font-family: sans-serif;" class="table table-striped">
-				<thead>
-					<tr>
-						<th>Device ID</th>
-						<th>Device Name</th>
-						<th>Device Type</th>
-						<th>Device Status</th>
-
-						<th> </th>
-
-					</tr>
-				</thead>
-
-
-				{% for device in hold_devices %}
-				<tr>
-					<td>{{device[0]}}</td>
-					<td>{{device[1]}}</td>
-					<td>{{device[2]}}</td>
-					<td>{{device[3]}}</td>
-					<td>
-						{% if device[3]=='Unavailable' %}
+			<!-- 		<h3>Your Devices on Hold</h3>		 -->
+			<br>
+			<form method="POST" action="" name="Device">
+				<table style="font-family: sans-serif;" class="table table-striped">
+					<thead>
+						<tr>
+							<th>Device ID</th>
+							<th>Device Name</th>
+							<th>Device Type</th>
+							<th>Device Status</th>
+							<th> </th>
+						</tr>
+					</thead>
+					{% for device in hold_devices %}
+						<tr>
+							<td>{{device[0]}}</td>
+							<td>{{device[1]}}</td>
+							<td>{{device[2]}}</td>
+							<td>{{device[3]}}</td>
 							<form method="POST" action="">
-									<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+								<td>
+									{% if device[3]=='On Hold' and device[4]==1 %}
+										<form method="POST" action="">
+												<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+										</form>
+									{% else %}
+										<form method="POST" action="">
+												<button disabled  type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+										</form>
+									{% endif %}
+								</td>
 							</form>
-						{% else %}
-							<form method="POST" action="">
-									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-							</form>
-						{% endif %}
+						</tr>
+					{% endfor %}
+				</table>
+			</form>
 
-					</td>
-
-				</tr>
-				{% endfor %}
-
-			</table>
-
-
-		</form>
-
+	{% endif %}
 {% endif %}
 
-<br>
+</br>
+</br>
 
-{% endif %}
-
-<form method="GET" action="/device-borrow-return/{{user_details[0][0]}}">
-	<button type="submit" value=""  class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="">Back to My Device List</button>
+<form method="GET" action="/device-borrow-return/{{user_details[0][0]}}" align="right">
+	<button type="submit" value=""  class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="">Back to Device List</button>
 </form>
 
 {% endblock %}
