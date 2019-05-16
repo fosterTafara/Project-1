@@ -2,277 +2,215 @@
 
 
 {% block content %}
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-			<div class="alert alert-primary mt-2" role="alert">
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="alert alert-primary mt-2" role="alert">
 
-				{% for message in messages %}
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-						<span aria-hidden="true" style="font-size:20px">×</span>
-					</button>
-					{{ message }}
-				{% endfor %}
-			</div>
-		{% endif %}
-	{% endwith %}
+	{% for message in messages %}
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		<span aria-hidden="true" style="font-size:20px">×</span>
+	</button>
+	{{ message }}
+	{% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 
-
+<!-- ## Populate drop down list with user emails which need to be selected before go button is activated -->
 {% if usertrue %}
-	<div class="row">
-		<div class="col-4">
-			<form method = "POST">
-				<div class="form-group" form = "Form1">
-					<select class="form-control Form1" name="userid" size='1'  id="userid"required onchange="enableButton()">
-					<option value = "">Please select your email</option> 
-					{% for item in users %}     
-					<option id="userid" name= "userid" value="{{item[0]}}">{{item[3]}}</option>
+<div class="row">
+	<div class="col-4">
+		<form method="POST">
+			<div class="form-group" form="Form1">
+				<select class="form-control Form1" name="userid" size='1' id="userid" required onchange="enableButton()">
+					<option value="">Please select your email</option>
+					{% for item in users %}
+					<option id="userid" name="userid" value="{{item[0]}}">{{item[3]}}</option>
 					{% endfor %}
-					</select> 
-				</div>
-		</div>	
-				<div class="col-1">
-				<input type="submit" id="seedoc" class="btn btn-secondary btn-block" style= "background-color: ##428bca;"  disabled value="Go">
-				</div>
-			</form>
+				</select>
+			</div>
 	</div>
+	<div class="col-1">
+		<input type="submit" id="seedoc" class="btn btn-secondary btn-block" style="background-color: ##428bca;" disabled value="Go">
+	</div>
+	</form>
+</div>
+{% else %}
+<div class="row justify-content-center align-items-center">
+	{% for item in user_details %}
+	<h3>Hi {{item[1]}}</h3>
+	{% endfor %}
+</div>
 
 {% endif %}
 
-<!-- {% if not usertrue %} -->
 
-	{% if borrow_device %}
-	<div class="alert alert-primary mt-2" role="alert">
-		You have checked out {{device_name[0]}}
-	</div>
-	{% endif %}
+<!-- ##Create front end messages for non flash alerts -->
+{% if not usertrue %}
+
+{% if borrow_device %}
+<div class="alert alert-primary mt-2" role="alert">
+	You have checked out {{device_name[0]}}
+</div>
+{% endif %}
+
+{% if item_hold_avai_borrow !=0 and not usertrue  %}
+<div class="alert alert-success mt-2" role="alert">
+	You have {{item_hold_avai_borrow}} holding item/s available to borrow:
+	<br>
+
+	{% for item in hold_avai_borrow %}
+	{{item[2]}}
+	{% endfor %}
+
+</div>
+{% endif %}
 
 
-	{% if items_over_due is not none and not usertrue  %}
-	<div class="alert alert-danger mt-2" role="alert">
-		Please return {{items_over_due}} overdue item/s 
-		<br>
+
+{% if items_over_due !=0 and not usertrue  %}
+<div class="alert alert-danger mt-2" role="alert">
+	Please return {{items_over_due}} overdue item/s
+	<br>
+
+	{% for item in over_due %}
+	{{item[2]}}
+	{% endfor %}
+
 
 		{% for item in over_due %}
 			{{item[2]}}
 			/
 		{% endfor %}
 
-	</div>
-	{% endif %}
 
+{% if item_due_soon !=0 and not usertrue %}
+<div class="alert alert-warning mt-2" role="alert">
+	You have device(s) due back very soon!
 
-	{% if items_due_soon !=0 and not usertrue %}
-	<div class="alert alert-warning mt-2" role="alert">
-		 You have device(s) due back very soon! 
-
-		{% for item in due_soon %}
-			{{item[2]}}
-		{% endfor %}
-	</div>
-	{% endif %}
-<!-- {% endif %} -->
-
-
-{% if not usertrue %} <!-- needs to not say "not" -->
-	{% if num_device <1 %}
-	<div class="alert alert-primary mt-2" role="alert">
-		You do not have any devices on loan.
-	</div>
-	{% else %}
-
-			<h3>{{user_details[0][1]}}'s Loan Devices</h3>
-
-			<!-- 		<h3>Your Loans</h3>		 -->
-			<br>
-			<form method="POST" action="" name="Device">
-				<table style=" font-family: sans-serif;" class="table table-striped">
-					<thead>
-						<tr>
-							<th>Device ID</th>
-							<th>Device Name</th>
-							<th>Device Type</th>
-							<th>Due Date</th>
-							<th> </th>
-						</tr>
-					</thead>
-
-					{% for device in loan_devices %}
-					<tr>
-						<td>{{device[0]}}</td>
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td>	
-							{% if device[3] is not none %}
-								{{ device[3] .strftime('%d %B') }}
-							{% endif %}
-						</td>				
-						<form method="POST" action="">
-							<td>
-								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
-							</td>
-						</form>
-					</tr>
-					{% endfor %}
-				</table>
-			</form>
-	{% endif %}
-<br>
-
-
-{% if num_hold_device <1 %}
-<div class="alert alert-primary mt-2" role="alert">
-	You do not have any devices on hold.
+	{% for item in due_soon %}
+	{{item[2]}}
+	/
+	{% endfor %}
 </div>
+{% endif %}
 
-{% else %}
-		<h3>{{user_details[0][1]}}'s Hold Devices</h3>
-
-		<!-- 		<h3>Your Devices on Hold</h3>		 -->
-		<br>
-		<form method="POST" action="" name="Device">
-			<table style="font-family: sans-serif;" class="table table-striped">
-				<thead>
-					<tr>
-						<th>Device ID</th>
-						<th>Device Name</th>
-						<th>Device Type</th>
-						<th>Device Status</th>
-						<th> </th>
-					</tr>
-				</thead>
-				{% for device in hold_devices %}
-					<tr>
-						<td>{{device[0]}}</td>
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td>{{device[3]}}</td>
-						<form method="POST" action="">
-							<td>
-								{% if device[3]=='On Hold' and device[4]==1 %}
-									<form method="POST" action="">
-											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-									</form>
-								{% else %}
-									<form method="POST" action="">
-											<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
-									</form>
-								{% endif %}
-							</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</form>
 
 {% endif %}
 
-<br>
 
-{% endif %}
+
 
 <div class="row mt-4">
 
+
+
 <h3>Devices List</h3>
 </div>
-<!-- This is the check box section -->
+<!-- ## Creating the checkboxes -->
+
+  
 <br>
 <form method="POST" action="" name="DeviceList">
 	<div class="row">
-	<div class="col" id="new-search-area"></div>
+		<div class="col" id="new-search-area"></div>
 
-	<div class="col"> 
-	<input type="checkbox" name="DeviceId" checked="checked"> Device Id 
-	<br>
-	<input type="checkbox" name="DeviceName" checked="checked"> Device Name 
-	<br>
-	</div>
-	<div class="col"> 
-	<input type="checkbox" name="DeviceType" checked="checked"> Device Type
-	<br>
-	<input type="checkbox" name="OSType" checked="checked">OS Type
-	</div>
-	<div class="col"> 
-	<input type="checkbox" name="OSVersion" checked="checked">OS Version
-	<br>
-	<input type="checkbox" name="CPU" checked="checked">CPU
-	<br>
-	</div>
-	<div class="col">
-	<input type="checkbox" name="Bit">Bit
-	<br>
-	<input type="checkbox" name="RAM">RAM 
-	</div>
-	<div class="col"> 
-	<input type="checkbox" name="ScreenRes">Screen Resolution
-	<br>
-	<input type="checkbox" name="Grade">Grade
-	</div>
-	<div class="col"> 
-	<input type="checkbox" name="Status" checked="checked"> Status
-	<br>
-	<input type="checkbox" name="Assigned" checked="checked"> Assigned to
-	<br>
-	<input type="checkbox" name="DueDate" checked="checked"> Due date</p>
-    </div>
-    <br>
-    <br>
+		<div class="col">
+			<input type="checkbox" name="DeviceId" checked="checked"> Device Id
+			<br>
+			<input type="checkbox" name="DeviceName" checked="checked"> Device Name
+			<br>
+		</div>
+		<div class="col">
+			<input type="checkbox" name="DeviceType" checked="checked"> Device Type
+			<br>
+			<input type="checkbox" name="OSType" checked="checked">OS Type
+		</div>
+		<div class="col">
+			<input type="checkbox" name="OSVersion" checked="checked">OS Version
+			<br>
+			<input type="checkbox" name="CPU" checked="checked">CPU
+			<br>
+		</div>
+		<div class="col">
+			<input type="checkbox" name="Bit">Bit
+			<br>
+			<input type="checkbox" name="RAM">RAM
+		</div>
+		<div class="col">
+			<input type="checkbox" name="ScreenRes">Screen Resolution
+			<br>
+			<input type="checkbox" name="Grade">Grade
+		</div>
+		<div class="col">
+			<input type="checkbox" name="Status" checked="checked"> Status
+			<br>
+			<input type="checkbox" name="Assigned" checked="checked"> Assigned to
+			<br>
+			<input type="checkbox" name="DueDate" checked="checked"> Due date</p>
+		</div>
+		<br>
+		<br>
 
-<br>
-<table id ="columnSort" class="table table-striped">
+		<br>
+		<!-- ## Creating the table -->
+		<table id="columnSort" class="table table-striped">
 
 
 
-<br>
+			<br>
+<!-- ## Creating the header rows -->
+			<thead>
+				<tr>
+					{% if not usertrue %}
+					<th></th>
+					{% endif %}
+					<th class="DeviceID">ID</th>
+					<th class="DeviceName">Device Name</th>
+					<th class="DeviceType">Device Type</th>
+					<th class="OSType">OS Type</th>
+					<th class="OSVersion">OS Version</th>
+					<th class="RAM">RAM</th>
+					<th class="CPU">CPU</th>
+					<th class="Bit">Bit</th>
+					<th class="ScreenRes">Screen Resolution</th>
+					<th class="Grade">Grade</th>
+					<th class="Status">Status</th>
+					<th class="Assigned">Assigned</th>
+					<th class="DueDate">Due</th>
+				</tr>
 
-    <thead>
-      <tr>
-      	{% if not usertrue %}
-        <th></th>
-        {% endif %}
-        <th class ="DeviceID">ID</th>
-		<th class ="DeviceName">Device Name</th>
-        <th class="DeviceType">Device Type</th>
-        <th class="OSType">OS Type</th>
-		<th class="OSVersion">OS Version</th>
-		<th class="RAM">RAM</th>
-        <th class="CPU">CPU</th>
-		<th class="Bit">Bit</th>
-		<th class="ScreenRes">Screen Resolution</th>
-		<th class="Grade">Grade</th>
-		<th class="Status">Status</th>
-        <th class="Assigned">Assigned</th>
-        <th class="DueDate">Due</th>
-      </tr>
-	
-      <tr>
-      	{% if not usertrue %}
-      	<th></th>
-      	{% endif %}
-        <th class ="DeviceID"></th>
-        <th class="DeviceName"></th>
-        <th class="DeviceType"></th>
-        <th class="OSType"></th>
-        <th class="OSVersion"></th>
-        <th class="RAM"></th>
-        <th class="CPU"></th>
-        <th class="Bit"></th>
-        <th class="ScreenRes"></th>
-        <th class="Grade"></th>
-        <th class="Status"></th>
-        <th class="Assigned"></th>
-        <th class="DueDate"></th>
-      </tr>
-	</thead>
-	<tr>
-
-	
-	{% for item in device_details %}
-		{% if not usertrue %}
-
+				<tr>
+					{% if not usertrue %}
+					<th></th>
+					{% endif %}
+					<th class="DeviceID"></th>
+					<th class="DeviceName"></th>
+					<th class="DeviceType"></th>
+					<th class="OSType"></th>
+					<th class="OSVersion"></th>
+					<th class="RAM"></th>
+					<th class="CPU"></th>
+					<th class="Bit"></th>
+					<th class="ScreenRes"></th>
+					<th class="Grade"></th>
+					<th class="Status"></th>
+					<th class="Assigned"></th>
+					<th class="DueDate"></th>
+				</tr>
+			</thead>
+			<tr>
+				{% for item in device_details %}
+				{% if not usertrue %}
+        
+<!-- ## Creating the table rows -->
 				<td>
 					{% if item[11]=='Available' %}
+
 					<form method="POST" action="">
-							<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
+						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 					</form>
+
 	
 					{% elif item[11]=='Unavailable' and item[17]== userid %}
 					<form method="POST" action="">
@@ -284,11 +222,9 @@
 					
 						{% for eachanyhold in user_id_Anyhold %}
 							{% if eachanyhold[1]==item[0] %}
-							<p>device match {{eachanyhold[1]}}=={{item[0]}}</p>
 									{% if eachanyhold[0]== userid %}
-									<p>userid match {{eachanyhold[0]}}== {{userid}}</p>
 										{% if eachanyhold[3] != None %}
-										 <p>expiry date: {{eachanyhold[3]}}</p>
+
 									
 			
 										<form method="POST" action="">
@@ -302,22 +238,24 @@
 
 										
 										{% endif %}
-									<p>after first endif</p>
 									{% endif %}
-							<p>after second endif</p>
 							{% endif %}
-							<p>after third endif</p>							
+									
 							{% endfor %}
-							<p>after endfor</p>
-						
+							
+		{% else %}
+					
+									<form method="POST" action="">
+										<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
+									</form>				
 												
 						
 					{% endif %}
 
 										
 		{% endif %}
-			
-				</td>
+
+</td>
 
 		
     	<td class = "DeviceID">{{item[0]}}</td>
@@ -355,6 +293,7 @@
 
 	{% endfor %}
 	</table>
+
 </form>
 
 {% endblock %}
