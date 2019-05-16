@@ -97,6 +97,7 @@ def deviceborrowreturn(userid):
 	mycursor.execute('SELECT latesthold.userid, latesthold.deviceId, latesthold.holdPosition, device.deviceName, device.deviceStatus from latesthold, device where device.deviceid = latesthold.deviceid and latesthold.userid ={} and device.deviceStatus = "On Hold" and latesthold.holdPosition = 1'.format (user_id))
 	hold_avai_borrow = mycursor.fetchall()
 	item_hold_avai_borrow = len(hold_avai_borrow)
+	print(item_hold_avai_borrow)
 	
 	## Query for overdue items
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW() and returnDate is NULL'.format (user_id))
