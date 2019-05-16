@@ -38,39 +38,42 @@
 
 {% endif %}
 
-{% if borrow_device %}
-<div class="alert alert-primary mt-2" role="alert">
-	You have checked out {{device_name[0]}}
-</div>
-{% endif %}
+<!-- {% if not usertrue %} -->
+
+	{% if borrow_device %}
+	<div class="alert alert-primary mt-2" role="alert">
+		You have checked out {{device_name[0]}}
+	</div>
+	{% endif %}
 
 
-{% if items_over_due is not none and not usertrue  %}
-<div class="alert alert-danger mt-2" role="alert">
-	Please return {{items_over_due}} overdue item/s 
-	<br>
+	{% if items_over_due is not none and not usertrue  %}
+	<div class="alert alert-danger mt-2" role="alert">
+		Please return {{items_over_due}} overdue item/s 
+		<br>
 
-	{% for item in over_due %}
-		{{item[2]}}
-		/
-	{% endfor %}
+		{% for item in over_due %}
+			{{item[2]}}
+			/
+		{% endfor %}
 
-</div>
-{% endif %}
-
-
-{% if items_due_soon !=0 and not usertrue %}
-<div class="alert alert-warning mt-2" role="alert">
-	 You have device(s) due back very soon! 
-
-	{% for item in due_soon %}
-		{{item[2]}}
-	{% endfor %}
-</div>
-{% endif %}
+	</div>
+	{% endif %}
 
 
-{% if not usertrue %}
+	{% if items_due_soon !=0 and not usertrue %}
+	<div class="alert alert-warning mt-2" role="alert">
+		 You have device(s) due back very soon! 
+
+		{% for item in due_soon %}
+			{{item[2]}}
+		{% endfor %}
+	</div>
+	{% endif %}
+<!-- {% endif %} -->
+
+
+{% if not usertrue %} <!-- needs to not say "not" -->
 	{% if num_device <1 %}
 	<div class="alert alert-primary mt-2" role="alert">
 		You do not have any devices on loan.
@@ -145,7 +148,7 @@
 						<td>{{device[3]}}</td>
 						<form method="POST" action="">
 							<td>
-								{% if device[3]=='Unavailable' %}
+								{% if device[3]=='On Hold' and device[4]==1 %}
 									<form method="POST" action="">
 											<button disabled type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
 									</form>
@@ -170,7 +173,7 @@
 
 <h3>Devices List</h3>
 </div>
-
+<!-- This is the check box section -->
 <br>
 <form method="POST" action="" name="DeviceList">
 	<div class="row">
@@ -260,50 +263,61 @@
       </tr>
 	</thead>
 	<tr>
-		{% for item in device_details %}
-			{% if not usertrue %}
+
+	
+	{% for item in device_details %}
+		{% if not usertrue %}
+			{% if userid in user_id_Onhold.userid %}
+			<p>Happy</p>
+			{% endif %}
+
+
 
 				<td>
 					{% if item[11]=='Available' %}
 					<form method="POST" action="">
 							<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 					</form>
-					
-					{% else %}
-
+	
+					{% elif item[11]=='Unavailable' and item[17]== userid %}
 					<form method="POST" action="">
-							<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow"> Hold </button>
-
+							<button type="submit"  value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+					</form>
 					
-						{% for device in hold_devices %}
+							
 					
-						
-							{% if item[11]=='Unavailable' and item[17]== userid %}
+					{% elif item[17]!= userid %}
+							{% for eachhold in user_id_Onhold %}
+							{% if eachhold[1]==item[0] %}
+			
 							<form method="POST" action="">
-									<button type="submit"  value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow from Hold</button>
 							</form>
-							
-							
-							{% elif item[11]=='Unavailable' and item[17]!= userid and item[0]== device[0] %}
-							<form method="POST" action="">
-									<button disabled type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
-							</form>
-							
-							{% elif item[11]=='Unavailable' and item[17] != user_id  and item[0]!= device[0] %}
-							<form method="POST" action="">
-									<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
-							</form>
-							
-							{% elif item[11]=='On Hold' and item[0]== device[0] %}
-							<form method="POST" action="">
-									<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow"> Borrow </button>
-							</form>
+							{% else %}
+							<p>Happy</p>
 							{% endif %}
+							{% endfor %}
+							{% for eachanyhold in user_id_Anyhold %}
+								{% if eachanyhold[1]==item[0] and eachanyhold[0] ==userid %}
+											
+								
+									<form method="POST" action="">
+											<button disabled type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Disable Borrow</button>
+									</form>	
+									{% endif %}								
+							{% endfor %}
+					{% else %}
+								
+								<form method="POST" action="">
+											<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
+									</form>	
 							
-						{% endfor %}
+						
+						
 					{% endif %}
-
-					{% endif %}
+										
+			{% endif %}
+			
 				</td>
 
 		
@@ -338,7 +352,7 @@
 
 			
 		</tr>
-		{% endfor %}
+	{% endfor %}
 	</table>
 </form>
 
