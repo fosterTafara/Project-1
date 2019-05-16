@@ -200,8 +200,8 @@
 				</tr>
 			</thead>
 			<tr>
-				{% for item in device_details %}
-				{% if not usertrue %}
+	{% for item in device_details %}
+		{% if not usertrue %}
         
 <!-- ## Creating the table rows -->
 				<td>
@@ -241,9 +241,9 @@
 									{% endif %}
 							{% endif %}
 									
-							{% endfor %}
+						{% endfor %}
 							
-		{% else %}
+					{% else %}
 					
 									<form method="POST" action="">
 										<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
