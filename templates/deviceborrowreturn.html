@@ -44,6 +44,7 @@
 
 {% endif %}
 
+
 <!-- ##Create front end messages for non flash alerts -->
 {% if not usertrue %}
 
@@ -64,11 +65,13 @@
 		{% endif %}
 
 
+
 		<!-- ##Message for item overdue -->
 		{% if items_over_due !=0%}
 		<div class="alert alert-danger mt-2" role="alert">
 			Please return {{items_over_due}} overdue item/s
 			<br>
+
 
 			{% for item in over_due %}
 			{{item[2]}}
@@ -89,6 +92,7 @@
 		</div>
 		{% endif %}
 
+
 {% endif %}
 
 
@@ -97,9 +101,12 @@
 <div class="row mt-4">
 
 
-	<h3>Devices List</h3>
+
+<h3>Devices List</h3>
 </div>
 <!-- ## Creating the checkboxes -->
+
+  
 <br>
 <form method="POST" action="" name="DeviceList">
 	<div class="row">
@@ -149,7 +156,7 @@
 
 
 			<br>
-
+<!-- ## Creating the header rows -->
 			<thead>
 				<tr>
 					{% if not usertrue %}
@@ -190,9 +197,10 @@
 				</tr>
 			</thead>
 			<tr>
-				{% for item in device_details %}
-				{% if not usertrue %}
-
+	{% for item in device_details %}
+		{% if not usertrue %}
+        
+<!-- ## Creating the table rows -->
 				<td>
 					{% if item[11]=='Available' %}
 
@@ -200,69 +208,89 @@
 						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Borrow</button>
 					</form>
 
-					{% if item[11]=='Unavailable' and item[17]== userid %}
+	
+					{% elif item[11]=='Unavailable' and item[17]== userid %}
 					<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+							<button type="submit"  value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
 					</form>
+					
+							
+					{% elif item[17] != userid %}
+					
+						{% for eachanyhold in user_id_Anyhold %}
+							{% if eachanyhold[1]==item[0] %}
+									{% if eachanyhold[0]== userid %}
+										{% if eachanyhold[3] != None %}
 
+									
+			
+										<form method="POST" action="">
+											<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow from Hold</button>
+										</form>
+										{% else %}	
+								
+										<form method="POST" action="">
+											<button disabled type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowNow">Disable Borrow</button>
+										</form>
 
-					{% elif item[11]=='Unavailable' and item[17]!= userid and item[0]== device[0] %}
-					<form method="POST" action="">
-						<button disabled type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
-					</form>
-
-					{% elif item[11]=='Unavailable' and item[17] != user_id  and item[0]!= device[0] %}
-					<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
-					</form>
-
-					{% elif item[11]=='On Hold' and item[0]== device[0] %}
-					<form method="POST" action="">
-						<button type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="BorrowNow"> Borrow </button>
-					</form>
-					{% endif %}
-
-					{% endif %}
-					{% endif %}
-
-				</td>
-
-
-				<td class="DeviceID">{{item[0]}}</td>
-				<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version:  RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>
-				<td class="DeviceType">{{item[2]}}</td>
-				<td class="OSType">{{item[3]}}</td>
-				<td class="OSVersion">{{item[4]}}</td>
-				<td class="RAM">{{item[5]}}</td>
-				<td class="CPU">{{item[6]}}</td>
-				<td class="Bit">{{item[7]}}</td>
-				<td class="ScreenRes">{{item[8]}}</td>
-				<td class="Grade">{{item[9]}}</td>
-				<td class="Status">{{item[11]}}</td>
-				<td class="Assigned">
-					{% if item[11]=='Available' or item[11]=='On Hold' %}
-					-
+										
+										{% endif %}
+									{% endif %}
+							{% endif %}
+									
+						{% endfor %}
+							
 					{% else %}
-					{{item[18]}} {{item[19]}}
-					<br>
-					{{item[21]}}
+					
+									<form method="POST" action="">
+										<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
+									</form>				
+												
+						
 					{% endif %}
-				</td>
-				<td class="DueDate">
-					{% if item[11]=='Available'or item[11]=='On Hold' %}
-					-
+
+										
+		{% endif %}
+
+</td>
+
+		
+    	<td class = "DeviceID">{{item[0]}}</td>
+		<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version:  RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>    	
+    	<td class = "DeviceType">{{item[2]}}</td>
+    	<td class="OSType">{{item[3]}}</td>
+     	<td class="OSVersion">{{item[4]}}</td>
+		<td class="RAM">{{item[5]}}</td>
+        <td class="CPU">{{item[6]}}</td>
+		<td class="Bit">{{item[7]}}</td>
+		<td class="ScreenRes">{{item[8]}}</td>
+		<td class="Grade">{{item[9]}}</td>
+		<td class="Status">{{item[11]}}</td>
+		<td class="Assigned"> 
+			{% if item[11]=='Available' or item[11]=='On Hold' %}
+			-
+			{% else %}
+			{{item[18]}} {{item[19]}}
+			{% endif %}
+		</td>
+		<td class="DueDate"> 
+			{% if item[11]=='Available'or item[11]=='On Hold' %}
+			-
 
 
-					{% elif item[15] is not none %}
-					{{ item[15].strftime('%d %B') }}
+			{% elif item[15] is not none %}
+				{{ item[15].strftime('%d %B') }}
 
-					{% endif %}
-				</td>
+			{% endif %}
+		</td>
 
+			
+		</tr>
+		
 
-			</tr>
-			{% endfor %}
-		</table>
+	{% endfor %}
+	</table>
+
 </form>
 
 {% endblock %}

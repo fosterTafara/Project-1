@@ -1,5 +1,4 @@
-    
---DROP DATABASE Project;
+DROP DATABASE Project;
  
 CREATE Database IF NOT EXISTS project;
 USE project;
@@ -62,6 +61,8 @@ foreign key (userId) references users (userId)
 
 CREATE VIEW latestborrow as (SELECT * FROM checkingsystem WHERE returnDate is NULL and borrowDate is not null);
 CREATE VIEW latesthold as (SELECT * FROM checkingsystem WHERE holdDate is not NULL and borrowDate is null);
+CREATE VIEW statusonhold as (SELECT * FROM checkingsystem WHERE holdposition =1 and holdexpiry is not null);
+Drop view position1hold;
 CREATE VIEW devicedetails as (select device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, deviceRam, device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, 
 latestborrow.holdDate, latestborrow.holdExpiry, latestborrow.borrowDate, latestborrow.dueDate, latestborrow.returnDate, users.userId, users.firstName, users.lastName,users.email, building.buildingAddress from device
 left outer join latestborrow on device.deviceId = latestborrow.deviceId 
