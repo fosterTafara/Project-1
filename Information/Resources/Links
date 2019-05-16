@@ -8,6 +8,36 @@ https://datatables.net/examples/api/multi_filter_select.html
 2.Accessing index in for loops:
 https://stackoverflow.com/questions/522563/accessing-the-index-in-for-loops
 
+def alldevicedetails():	
+	mycursor = mydb.cursor()
+	mycursor.execute("select * from devicedetails")	
+	device_details = mycursor.fetchall()
+option 1 to format datetime using Python
+	# for idx, item in enumerate(device_details):
+	# 	if item[15] is not None:
+	# 		the_time = item[15]
+	# 		the_time = the_time.strftime('%d %B')
+	# 		item = list(item)
+	# 		item[15] = the_time
+	# 		item = tuple(item)
+	# 		device_details[idx] = item
+
+option 2 to format datetime using Python
+	# for x in range (0,((len(device_details))+1)):
+	# 	device_details[x][17]=device_details[x][17].strftime('%d %B' )
+	# formatted = []
+	# for item in device_details:
+	# 	if item[17] is not None:
+	# 			the_time = item[17]
+	# 			the_time = the_time.strftime('%d %B')
+	# 			item = list(item)
+	# 			item[17] = the_time
+	# 			item = tuple(item)
+	# 	# 		device_details[idx] = item
+	# 	formatted.append(item)
+	mycursor.close()
+	return device_details
+
 3. Jinja if examples
 https://www.shellhacks.com/jinja2-check-if-variable-empty-exists-defined-true/
 https://stackoverflow.com/questions/19614027/jinja2-template-variable-if-none-object-set-a-default-value
