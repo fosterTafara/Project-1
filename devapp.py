@@ -107,6 +107,7 @@ def deviceborrowreturn(userid):
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day and returnDate is NULL)'.format (user_id))
 	due_soon = mycursor.fetchall()
 	item_due_soon = len(due_soon)
+
 	
 	# can't just use function, need to pass the value to the variables in render_template
 	loan_devices = loandevices(user_id)
@@ -200,7 +201,7 @@ def deviceborrowreturn(userid):
 			#DeviceDetails is a dictionary in this case.
 			device_id=DeviceDetails['BorrowNow']
 			mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Current_Time))
-			mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY) WHERE deviceID = {}".format(device_id,))
+			mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 5 DAY) WHERE deviceID = {}".format(device_id,))
 			mycursor.execute('UPDATE device SET deviceStatus = "Unavailable" WHERE deviceId = {}'.format(device_id,))
 			mydb.commit()	
 			
@@ -397,6 +398,35 @@ def myview(userid):
 	mycursor.execute('select users.userId, users.firstName, users.lastName, users.email, users.locationid, building.buildingAddress from users inner join building on users.locationid = building.locationid where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
 	
+	## Query for holding item is available to borrow: 
+	mycursor.execute('SELECT latesthold.userid, latesthold.deviceId, latesthold.holdPosition, device.deviceName, device.deviceStatus from latesthold, device where device.deviceid = latesthold.deviceid and latesthold.userid ={} and device.deviceStatus = "On Hold" and latesthold.holdPosition = 1'.format (user_id))
+	hold_avai_borrow = mycursor.fetchall()
+	item_hold_avai_borrow = len(hold_avai_borrow)
+	hold_avai_borrow_list=[]
+	
+	for item in hold_avai_borrow:
+		hold_avai_borrow_list.append(item[0])
+		
+	## Query for overdue items
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW() and returnDate is NULL'.format (user_id))
+	over_due = mycursor.fetchall()
+	items_over_due = len(over_due)
+	over_due_list=[]
+	for item in over_due:
+		over_due_list.append(item[0])
+	#print(due_soon_list)	
+	
+	## Query for items due soon
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day and returnDate is NULL)'.format (user_id))
+	due_soon = mycursor.fetchall()
+	item_due_soon = len(due_soon)
+	#print(due_soon)
+	due_soon_list=[]
+	for item in due_soon:
+		due_soon_list.append(item[0])
+	#print(due_soon_list)	
+	
+	
 	# can't just use function, need to pass the value to the variables in render_template
 	loan_devices = loandevices(user_id)
 	num_device = len(loan_devices)
@@ -490,7 +520,7 @@ def myview(userid):
 					
 			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 				
-	return render_template('myview.html', userid=user_id,loan_devices=loan_devices, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	return render_template('myview.html',over_due_list=over_due_list, hold_avai_borrow_list=hold_avai_borrow_list, due_soon_list=due_soon_list, userid=user_id,loan_devices=loan_devices, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 
 @app.route('/users/')  
