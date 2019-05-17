@@ -77,21 +77,63 @@
 					</thead>
 
 					{% for device in loan_devices %}
-					<tr>
-						<td>{{device[0]}}</td>
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td>	
-							{% if device[3] is not none %}
-								{{ device[3] .strftime('%d %B') }}
-							{% endif %}
-						</td>				
-						<form method="POST" action="">
-							<td>
-								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
-							</td>
-						</form>
-					</tr>
+						{% if device[0] in due_soon_list %}
+						<tr>
+							<td><font class="text-warning">{{device[0]}}</font></td>
+							<td><font class="text-warning">{{device[1]}}</font></td>
+							<td><font class="text-warning">{{device[2]}}</font></td>
+							<td><font class="text-warning">	
+								{% if device[3] is not none %}
+									{{ device[3] .strftime('%d %B') }}
+								{% endif %}
+								</font>
+							</td>				
+							<form method="POST" action="">
+								<td>
+									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								</td>
+							</form>
+						</tr>
+						
+						
+						{% elif device[0] in over_due_list %}
+						<tr>
+							<td><font class="text-danger">{{device[0]}}</font></td>
+							<td><font class="text-danger">{{device[1]}}</font></td>
+							<td><font class="text-danger">{{device[2]}}</font></td>
+							<td><font class="text-danger">	
+								{% if device[3] is not none %}
+									{{ device[3] .strftime('%d %B') }}
+								{% endif %}
+								</font>
+							</td>				
+							<form method="POST" action="">
+								<td>
+									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								</td>
+							</form>
+						</tr>
+						
+						{% else %}
+						<tr>
+							<td>{{device[0]}}</td>
+							<td>{{device[1]}}</td>
+							<td>{{device[2]}}</td>
+							<td>	
+								{% if device[3] is not none %}
+									{{ device[3] .strftime('%d %B') }}
+								{% endif %}
+								
+							</td>				
+							<form method="POST" action="">
+								<td>
+									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								</td>
+							</form>
+						</tr>
+						
+						{% endif %}
+			
 					{% endfor %}
 				</table>
 			</form>
@@ -121,6 +163,29 @@
 						</tr>
 					</thead>
 					{% for device in hold_devices %}
+						{% if device[0] in hold_avai_borrow_list %}
+						<tr>
+							<td><font class="text-success">{{device[0]}}</font></td>
+							<td><font class="text-success">{{device[1]}}</font></td>
+							<td><font class="text-success">{{device[2]}}</font></td>
+							<td><font class="text-success">{{device[3]}}</font></td>
+							<form method="POST" action="">
+								<td>
+									{% if device[3]=='On Hold' and device[4]==1 %}
+										<form method="POST" action="">
+												<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+										</form>
+									{% else %}
+										<form method="POST" action="">
+												<button disabled  type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+										</form>
+									{% endif %}
+								</td>
+							</form>
+						</tr>
+						
+						{% else %}
+						
 						<tr>
 							<td>{{device[0]}}</td>
 							<td>{{device[1]}}</td>
@@ -140,6 +205,8 @@
 								</td>
 							</form>
 						</tr>
+						
+						{% endif %}
 					{% endfor %}
 				</table>
 			</form>
