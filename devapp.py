@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
+  passwd="Ciucas365",
   database="project"
 )
 
@@ -86,7 +86,7 @@ def holddevices(userid):
 	
 @app.route('/device-borrow-return/<int:userid>', methods =['GET', 'POST'])
 def deviceborrowreturn(userid):
-	#if request.method == 'GET':
+		#if request.method == 'GET':
 	user_id = userid
 
 	mycursor = mydb.cursor()
@@ -98,11 +98,11 @@ def deviceborrowreturn(userid):
 	hold_avai_borrow = mycursor.fetchall()
 	item_hold_avai_borrow = len(hold_avai_borrow)
 	print(item_hold_avai_borrow)
-	
 	## Query for overdue items
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW() and returnDate is NULL'.format (user_id))
 	over_due = mycursor.fetchall()
 	items_over_due = len(over_due)
+	
 	## Query for items due soon
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day and returnDate is NULL)'.format (user_id))
 	due_soon = mycursor.fetchall()
@@ -116,7 +116,6 @@ def deviceborrowreturn(userid):
 	hold_devices = holddevices(user_id)
 	num_hold_device = len(hold_devices)
 
-	# print(num_hold_device)
 
 	## List of Onhold status
 	mycursor.execute('SELECT userid, deviceid FROM statusonhold')
@@ -137,18 +136,8 @@ def deviceborrowreturn(userid):
 	print(user_id_Anyhold)
 	print(user_id)
 
-
-	mycursor.execute('SELECT device.deviceName, users.userId, checkingsystem.deviceId, device.deviceId, checkingsystem.userId, checkingsystem.holdPosition, checkingsystem.holdExpiry from checkingsystem, users, device where checkingsystem.userId = users.userId and checkingsystem.deviceId = device.deviceId and holdPosition =1 and holdExpiry is not null')
-	hold_available = mycursor.fetchall()
-
-	
-	#flash('{} is now available. It will be held for you until {}'.format (hold_available[0][0], hold_available[0][6]))
-
-	
 	device_details = alldevicedetails()
-	# raise Exception(device_details_userid)
 	mycursor.close()
-	
 
 	
 	if request.method == 'POST':
@@ -187,7 +176,7 @@ def deviceborrowreturn(userid):
 
 			mycursor.close()
 
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 		
 	if request.method == 'POST':
 		if 'BorrowNow' in request.form:
@@ -216,7 +205,7 @@ def deviceborrowreturn(userid):
 			mycursor.close()
 			flash("You have checked out device {}".format (device_name[0]))
 
-			return render_template('deviceborrowreturn.html', hold_available=hold_available, userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, device_name=device_name, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
+			return render_template('deviceborrowreturn.html', hold_available=hold_available, userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 
 		
 	if request.method == 'POST':
@@ -263,20 +252,23 @@ def deviceborrowreturn(userid):
 					
 					if hold_position ==1:			
 						mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate,holdPosition) Values ('{}', '{}', '{}', '{}')" .format(user_id, device_id, Due_Date, hold_position))
+						flash("You have placed a hold on {}. You are number {} in the queue".format (device_name[0], hold_position))					
 
 					elif hold_position ==2:	
 						Due_Date = Due_Date + timedelta(days=5)
 						mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate,holdPosition) Values ('{}', '{}', '{}', '{}')" .format(user_id, device_id, Due_Date, hold_position))					
-						
+						flash("You have placed a hold on {}. You are number {} in the queue".format (device_name[0], hold_position))					
+
 					elif hold_position ==3:	
 						Due_Date = Due_Date + timedelta(days=10)				
 						mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, holdDate,holdPosition) Values ('{}', '{}', '{}', '{}')" .format(user_id, device_id, Due_Date, hold_position))					
-					
-						flash("You have place a hold on {}".format (device_name[0]))					
+						flash("You have placed a hold on {}. You are number {} in the queue".format (device_name[0], hold_position))					
+
 					
 					else:
 						flash('Sorry you cannot put a hold on the device now. There have been 3 holds on the device. Please check again later!')
 					
+
 					mydb.commit()
 					mycursor.close()					
 				
@@ -314,7 +306,7 @@ def deviceborrowreturn(userid):
 
 			mycursor.close()	
 
-			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, device_name=device_name,user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)	
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)	
 		
 		
 	if request.method == 'POST':
@@ -351,14 +343,17 @@ def deviceborrowreturn(userid):
 				mycursor.execute("UPDATE checkingsystem SET holdPosition = 2 WHERE deviceid={} and holdPosition =3 and borrowDate is null".format(device_id,))
 				
 				mydb.commit()		
-				mycursor.close()
 				
 			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
-					
+
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
+			mycursor.close()
+			flash("You have checked out device {}".format (device_name[0]))		
 
 			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 		
@@ -473,7 +468,7 @@ def myview(userid):
 
 			mycursor.close()
 
-			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, device_name=device_name, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 	
 		
 	if request.method == 'POST':
@@ -500,24 +495,23 @@ def myview(userid):
 			print(hold_position)
 			
 			#this function is only called when hold_position = 1, otherwise it is disabled so no other case.
-			if hold_position ==1:
-				
+			if hold_position ==1:		
 				mycursor = mydb.cursor(buffered=True)
 				mycursor.execute("UPDATE checkingsystem SET borrowDate = '{}' where userId={} and deviceid={} and borrowDate is null".format(Current_Time,user_id,device_id))
 				mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 3 DAY), holdPosition = null WHERE userId = {} and deviceid={} and borrowDate = '{}'".format(user_id,device_id,Current_Time))
 				mycursor.execute ("UPDATE device set deviceStatus = 'Unavailable' where deviceid={}".format(device_id,))
 				mycursor.execute("UPDATE checkingsystem SET holdPosition = 1 WHERE deviceid={} and holdPosition =2 and borrowDate is null".format(device_id,))
-				mycursor.execute("UPDATE checkingsystem SET holdPosition = 2 WHERE deviceid={} and holdPosition =3 and borrowDate is null".format(device_id,))
-				
-				mydb.commit()		
-				mycursor.close()
-				
+				mycursor.execute("UPDATE checkingsystem SET holdPosition = 2 WHERE deviceid={} and holdPosition =3 and borrowDate is null".format(device_id,))			
+				mydb.commit()				
 			loan_devices = loandevices(user_id)
 			num_device = len(loan_devices)
 			hold_devices = holddevices(user_id)
 			num_hold_device = len(hold_devices)
 			device_details_userid = devicedetails(user_id)
-					
+			mycursor.execute("select deviceName from device where deviceId = {}".format(device_id))
+			device_name = mycursor.fetchone()
+			mycursor.close()
+			flash("You have checked out device {}".format (device_name[0]))		
 			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 				
 	return render_template('myview.html',over_due_list=over_due_list, hold_avai_borrow_list=hold_avai_borrow_list, due_soon_list=due_soon_list, userid=user_id,loan_devices=loan_devices, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
