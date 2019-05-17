@@ -14,7 +14,9 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
+
   passwd="password",
+
   database="project"
 )
 ## Define our functions
@@ -374,7 +376,7 @@ def myview(userid):
 	hold_avai_borrow_list=[]
 	
 	for item in hold_avai_borrow:
-		hold_avai_borrow_list.append(item[0])
+		hold_avai_borrow_list.append(item[1])
 		
 	## Query for overdue items
 	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId	FROM checkingsystem, device	where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and dueDate < NOW() and returnDate is NULL'.format (user_id))
@@ -488,7 +490,7 @@ def myview(userid):
 			flash("You have checked out device {}".format (device_name[0]))		
 			return render_template('myview.html', userid=user_id, loan_devices=loan_devices, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices)
 				
-	return render_template('myview.html',over_due_list=over_due_list, hold_avai_borrow_list=hold_avai_borrow_list, due_soon_list=due_soon_list, userid=user_id,loan_devices=loan_devices, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+	return render_template('myview.html', item_due_soon=item_due_soon, due_soon=due_soon, items_over_due=items_over_due, over_due=over_due, item_hold_avai_borrow=item_hold_avai_borrow, hold_avai_borrow=hold_avai_borrow, over_due_list=over_due_list, hold_avai_borrow_list=hold_avai_borrow_list, due_soon_list=due_soon_list, userid=user_id,loan_devices=loan_devices, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 
 @app.route('/users/')  
