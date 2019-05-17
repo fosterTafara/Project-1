@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-
-
 {% block content %}
 
 	{% with messages = get_flashed_messages() %}
@@ -18,9 +16,48 @@
 
 <h3>My Profile</h3>
 <br>
+{% if item_hold_avai_borrow and item_hold_avai_borrow !=0 %}
+	<div class="alert alert-success wrap" role="alert">
+		You have {{item_hold_avai_borrow}} holding item/s available to borrow: 
+		<br>
+		{% for item in hold_avai_borrow %}
+			{{item[3]}}
+			<br>
+		{% endfor %}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true" style="font-size:20px">×</span>
+		</button>
+	</div>
+	{% endif %}
+	{% if items_over_due and items_over_due !=0 %}
+		<div class="alert alert-danger wrap" role="alert">
+			Please return {{items_over_due}} overdue item/s 
+			{% for item in over_due %}
+				<br>
+				{{item[2]}}
+				<button type="button" class="close mt-1" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true" style="font-size:20px">×</span>
+				</button>
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	{% if item_due_soon and item_due_soon !=0 %}
+		<div class="alert alert-warning wrap" role="alert">
+			 You have device(s) due back very soon! 
+			 <br>
+			{% for item in due_soon %}
+				{{item[2]}}
+				<br>
+			{% endfor %}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true" style="font-size:20px">×</span>
+			</button>
+		</div>
+	{% endif %}
 
 <form method="GET" action="/device-borrow-return/{{user_details[0][0]}}" align="right">
-	<button type="submit" value=""  class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="">Back to Device List</button>
+	<button type="submit" value=""  class="btn btn-secondary btn-xs" name="">Back to Device List</button>
 </form>
 
 {% if not usertrue %}
@@ -77,21 +114,63 @@
 					</thead>
 
 					{% for device in loan_devices %}
-					<tr>
-						<td>{{device[0]}}</td>
-						<td>{{device[1]}}</td>
-						<td>{{device[2]}}</td>
-						<td>	
-							{% if device[3] is not none %}
-								{{ device[3] .strftime('%d %B') }}
-							{% endif %}
-						</td>				
-						<form method="POST" action="">
-							<td>
-								<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
-							</td>
-						</form>
-					</tr>
+						{% if device[0] in due_soon_list %}
+						<tr>
+							<td><font class="text-warning">{{device[0]}}</font></td>
+							<td><font class="text-warning">{{device[1]}}</font></td>
+							<td><font class="text-warning">{{device[2]}}</font></td>
+							<td><font class="text-warning">	
+								{% if device[3] is not none %}
+									{{ device[3] .strftime('%d %B') }}
+								{% endif %}
+								</font>
+							</td>				
+							<form method="POST" action="">
+								<td>
+									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								</td>
+							</form>
+						</tr>
+						
+						
+						{% elif device[0] in over_due_list %}
+						<tr>
+							<td><font class="text-danger">{{device[0]}}</font></td>
+							<td><font class="text-danger">{{device[1]}}</font></td>
+							<td><font class="text-danger">{{device[2]}}</font></td>
+							<td><font class="text-danger">	
+								{% if device[3] is not none %}
+									{{ device[3] .strftime('%d %B') }}
+								{% endif %}
+								</font>
+							</td>				
+							<form method="POST" action="">
+								<td>
+									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								</td>
+							</form>
+						</tr>
+						
+						{% else %}
+						<tr>
+							<td>{{device[0]}}</td>
+							<td>{{device[1]}}</td>
+							<td>{{device[2]}}</td>
+							<td>	
+								{% if device[3] is not none %}
+									{{ device[3] .strftime('%d %B') }}
+								{% endif %}
+								
+							</td>				
+							<form method="POST" action="">
+								<td>
+									<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="ReturnNow">Return</button>
+								</td>
+							</form>
+						</tr>
+						
+						{% endif %}
+			
 					{% endfor %}
 				</table>
 			</form>
@@ -121,6 +200,29 @@
 						</tr>
 					</thead>
 					{% for device in hold_devices %}
+						{% if device[0] in hold_avai_borrow_list %}
+						<tr>
+							<td><font class="text-success">{{device[0]}}</font></td>
+							<td><font class="text-success">{{device[1]}}</font></td>
+							<td><font class="text-success">{{device[2]}}</font></td>
+							<td><font class="text-success">{{device[3]}}</font></td>
+							<form method="POST" action="">
+								<td>
+									{% if device[3]=='On Hold' and device[4]==1 %}
+										<form method="POST" action="">
+												<button type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+										</form>
+									{% else %}
+										<form method="POST" action="">
+												<button disabled  type="submit" value="{{device[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="BorrowHold">Borrow</button>
+										</form>
+									{% endif %}
+								</td>
+							</form>
+						</tr>
+						
+						{% else %}
+						
 						<tr>
 							<td>{{device[0]}}</td>
 							<td>{{device[1]}}</td>
@@ -140,6 +242,8 @@
 								</td>
 							</form>
 						</tr>
+						
+						{% endif %}
 					{% endfor %}
 				</table>
 			</form>
@@ -151,7 +255,7 @@
 </br>
 
 <form method="GET" action="/device-borrow-return/{{user_details[0][0]}}" align="right">
-	<button type="submit" value=""  class="btn btn-info btn-xs" style="background-color: #4173f4; color: white; font-family: sans-serif;" name="">Back to Device List</button>
+	<button type="submit" value=""  class="btn btn-secondary btn-xs" name="">Back to Device List</button>
 </form>
 
 {% endblock %}
