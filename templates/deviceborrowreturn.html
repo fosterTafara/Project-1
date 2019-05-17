@@ -1,11 +1,10 @@
 {% extends "base.html" %}
 
-
+<!-- ## format all flash messages  -->
 {% block content %}
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
 			<div class="alert alert-primary wrap" role="alert">
-
 				{% for message in messages %}
 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 						<span aria-hidden="true" style="font-size:20px">×</span>
@@ -125,13 +124,13 @@
 		<div class="col">
 			<input type="checkbox" name="OSVersion" checked="checked">OS Version
 			<br>
-			<input type="checkbox" name="CPU" checked="checked">CPU
+			<input type="checkbox" name="CPU" >CPU
 			<br>
 		</div>
 		<div class="col">
 			<input type="checkbox" name="Bit">Bit
 			<br>
-			<input type="checkbox" name="RAM">RAM
+			<input type="checkbox" name="RAM" checked="checked">RAM
 		</div>
 		<div class="col">
 			<input type="checkbox" name="ScreenRes">Screen Resolution
@@ -277,7 +276,7 @@
 			{% if item[11]=='Available' or item[11]=='On Hold' %}
 			-
 			{% else %}
-			{{item[18]}} {{item[19]}}
+			{{item[18]}} {{item[19]}}<br>{{item[21]}}
 			{% endif %}
 		</td>
 		<td class="DueDate"> 
