@@ -14,35 +14,16 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  password="Ciucas365",
+
+  passwd="password",
+
   database="project"
 )
-
+## Define our functions
 def alldevicedetails():	
 	mycursor = mydb.cursor()
 	mycursor.execute("select * from devicedetails")	
 	device_details = mycursor.fetchall()
-	# for idx, item in enumerate(device_details):
-	# 	if item[15] is not None:
-	# 		the_time = item[15]
-	# 		the_time = the_time.strftime('%d %B')
-	# 		item = list(item)
-
-	# 		item[15] = the_time
-	# 		item = tuple(item)
-	# 		device_details[idx] = item
-	# for x in range (0,((len(device_details))+1)):
-	# 	device_details[x][17]=device_details[x][17].strftime('%d %B' )
-	# formatted = []
-	# for item in device_details:
-	# 	if item[17] is not None:
-	# 			the_time = item[17]
-	# 			the_time = the_time.strftime('%d %B')
-	# 			item = list(item)
-	# 			item[17] = the_time
-	# 			item = tuple(item)
-	# 	# 		device_details[idx] = item
-	# 	formatted.append(item)
 	mycursor.close()
 	return device_details
 
@@ -54,11 +35,8 @@ def devicedetails(userid):
 
 	#needed to redefine the query because it still contains holding item of the user - resolved
 	#this was because of the left joins in the view which didn't allow for one device to be attached to two users.
-
-
 	
 	device_details_userid = mycursor.fetchall()
-	# raise Exception(device_details_userid)
 	mycursor.close()
 	return device_details_userid
 
@@ -66,10 +44,7 @@ def loandevices(userid):
 	user_id = userid
 	mycursor = mydb.cursor()
 	mycursor.execute("select deviceId, deviceName, deviceType, dueDate from devicedetails where userId = %s AND returnDate is NULL", (user_id,))
-	#this queries is correct now by using devicedetails view
-		
 	loan_devices = mycursor.fetchall()
-
 	mycursor.close()
 	return loan_devices
 
@@ -139,7 +114,7 @@ def deviceborrowreturn(userid):
 	device_details = alldevicedetails()
 	mycursor.close()
 
-	
+## when an item is returned check whether there is a hold and update status accordingly	
 	if request.method == 'POST':
 		if 'ReturnNow' in request.form:
 			mycursor = mydb.cursor()
@@ -187,7 +162,9 @@ def deviceborrowreturn(userid):
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
 			DeviceDetails = request.form
 			print(DeviceDetails)
+
 			#DeviceDetails is a dictionary in this case.
+
 			device_id=DeviceDetails['BorrowNow']
 			mycursor.execute("INSERT INTO checkingsystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id, device_id, Current_Time))
 			mycursor.execute("UPDATE checkingsystem SET dueDate = DATE_ADD(NOW(), INTERVAL 5 DAY) WHERE deviceID = {}".format(device_id,))
@@ -245,8 +222,7 @@ def deviceborrowreturn(userid):
 					mycursor.execute("SELECT dueDate from latestborrow where deviceId={} and borrowDate is not null".format(device_id,))					
 					Due_Date=mycursor.fetchone()	
 					
-					Due_Date=Due_Date[0]
-					#print (Due_Date)									
+					Due_Date=Due_Date[0]				
 							
 					#insert a holding record in checking system
 					
@@ -377,7 +353,7 @@ def borrowreturn():
 		mycursor.execute("select * from users")
 		user_details = mycursor.fetchall()
 		print(user_id)	
-		#studentList = request.args.get("ID")
+
 		#user_id = request.args.get("user_id")
 		device_details = alldevicedetails()
 		mycursor.close()
@@ -528,149 +504,12 @@ def users():
 		# mycursor = mydb.cursor()
 		# userDetails = request.form
 		# print(userDetails)
-		# # student_ID = courseDetails['studentId']
-		# # coursename = courseDetails['courseone']
-		# # print(student_ID)
-
 		# return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details_userid=device_details_userid, num_device=num_device,user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 	return render_template('users.html', title='Users', menu='users', users=users)
 
-
-# @app.route('/device-list', methods =['GET', 'POST'])
-# ### do we really need methods for this app.route?
-# def devicelist():
-	# ### Itemise all of the device details rather than use the asterisk so we could also add checkingsystem.userId, users.firstName, users.lastName. Then an outer join to incorporate the third table
-	# mycursor = mydb.cursor()
-	# mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-					 # "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					 # "users.firstName as mostrecentuser, users.lastName from device left outer join (SELECT deviceID, borrowDate AS mostrecentborrowDate, userID FROM checkingsystem "
-					 # "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) mostrecentborrow on device.deviceID = mostrecentborrow.deviceID "
-					 # "left outer join users on mostrecentborrow.userID = users.userID")
-	# device_details = mycursor.fetchall()
-	# mycursor = mydb.cursor()    
-	# mydb.commit()
-	# mycursor.close()
-
-	# return render_template('devicelist.html', device_details = device_details)
-
-
 	return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 		   
-
-	
-# #checking out page
-# #added a variable to the app route url which is then able to be passes as a keyword to the function. (an alternative would have been to use ARGS)
-# @app.route('/check-out/<int:deviceid>', methods=['GET', 'POST'])
-# def checkout(deviceid):
-	# device_id= deviceid
-
-	# if request.method == 'POST':
-		# # press check-out button update availability
-		# formContent = request.form
-		# email_address = formContent['item']
-		# mycursor = mydb.cursor()
-		# mycursor.execute("SELECT userId from users WHERE email = '{}';" .format(email_address))
-		# user_id = mycursor.fetchone()
-		# mycursor.execute("SELECT d.deviceName FROM Device d INNER JOIN CheckingSystem c ON d.deviceId=c.deviceId WHERE d.deviceId = '{}';".format(device_id))
-		# device_name = mycursor.fetchall()
-		# # ADD WHERE 
-		# mycursor.execute("SELECT COUNT(userId) FROM CheckingSystem WHERE borrowDate IS NOT NULL and returnDate IS NULL;")
-		# user_count = mycursor.fetchall()
-		# mycursor.close()	
-		# mycursor = mydb.cursor()
-		# current_date = datetime.now()
-		# current_date = current_date.strftime('%Y-%m-%d %H:%M:%S')
-		# mycursor.execute("INSERT INTO CheckingSystem (userId, deviceId, borrowDate) Values ('{}', '{}', '{}')" .format(user_id[0], device_id, current_date))
-		# mycursor.close()	
-		# mydb.commit()
-		# flash("You have borrowed {} and you now have {} devices!".format(device_name[0][0], user_count[0][0]))
-
-		# return redirect('/device-list')				 
-	# #select from the database (device id/name/type)	
-	# mycursor = mydb.cursor()
-	# mycursor.execute("SELECT deviceId, deviceName, deviceType from device WHERE deviceId = {};" .format(device_id))
-	# device_details = mycursor.fetchall() 
-	# # raise Exception(device_details)
-	# #select from the database (name)
-	# mycursor.execute("SELECT email, userId from users;")
-	# user_emails = mycursor.fetchall()
-	# mycursor.close()	
-	# return render_template('check-out.html', devices=device_details, emails=user_emails)	
-
- # #return device function	
-# @app.route('/return', methods=['GET', 'POST'])
-# def returndevice():
-	# mycursor = mydb.cursor()
-	# mycursor.execute("select * from users")
-	# user_list = mycursor.fetchall()	
-	# mycursor.close()
-	# NUM_USER = len(user_list)
-	
-	# if request.method == 'POST':
-		# #print(request.form)
-		# if 'NameSubmit' in request.form:
-			# # Fetch form data	
-			# NUM_USER =1
-			# UserDetails = request.form
-			# user_id = UserDetails['user']
-			# #print (user_id)		
-			# mycursor = mydb.cursor()
-			# mycursor.execute("select device.deviceId,device.deviceName, device.deviceType from device inner join checkingsystem on device.deviceId = checkingsystem.deviceId where checkingsystem.userId = %s AND checkingsystem.returnDate is NULL", (user_id,))		
-			# loan_devices = mycursor.fetchall()
-			# num_device = len(loan_devices)
-			# print(num_device)
-			# mycursor.close()
-			# return render_template('return.html', loan_devices = loan_devices,user_list = user_list,NUM_USER=NUM_USER,num_device=num_device, user_id=user_id)	
-		
-		# if 'ReturnNow' in request.form:
-			# #user_id = UserDetails['user']
-			# #print (user_id)			
-			# mycursor = mydb.cursor()
-			# SelectedDevices = request.form.getlist('selected[]')
-			# print(SelectedDevices)
-			# Current_Time = datetime.now()
-			# Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
-			# DeviceDetails = request.form
-			# for each_item in SelectedDevices:
-			# #USER_ID = SELECT(USERID IN THE CHECKING SYSTEM WHERE EACH_ITEM IS EQUAL TO DEVICEid)
-				# mycursor.execute("UPDATE checkingsystem SET returnDate = current_time WHERE deviceID = {}".format(each_item))
-				# mycursor.execute('UPDATE Device SET deviceStatus = "Available" WHERE deviceId = {}'.format(each_item))                         
-				# #print("success")
-				# mydb.commit()
-				# mycursor.close()
-	# return render_template('return.html', user_list = user_list)
-
-# @app.route('/device-list/search', methods=['POST'])
-# def searchdevices():
-	# deviceSearch = request.form
-	# device_search_term = deviceSearch['device_search_details']
-	# mycursor = mydb.cursor()
-	# #mycursor.execute("SELECT * FROM device WHERE deviceName LIKE '%{}%' OR deviceType LIKE '%{}%' "
-					# #"OR osType LIKE '%{}%' OR osVersion LIKE '%{}%' OR deviceRam LIKE '%{}%' "
-					# #"OR deviceCpu LIKE '%{}%' OR deviceBit LIKE '%{}%' OR screenRes LIKE '%{}%' "
-					# #"OR deviceGrade LIKE '%{}%'".format(device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term))
-	# mycursor.execute("SELECT device.deviceId, device.deviceName, device.deviceType, device.osType, device.osVersion, "
-					# "device.deviceCpu, device.deviceBit, device.screenRes, device.deviceGrade, device.deviceUuid, device.deviceStatus, mostrecentborrow.userID, "
-					# "users.firstName as mostrecentuser, users.lastName from Device left outer join (SELECT deviceID, borrowDate AS MostRecentBorrowDate, userID FROM checkingsystem "
-					# "AS t WHERE BorrowDate = (SELECT MAX(borrowDate) FROM checkingsystem WHERE deviceID = t.deviceID)) Mostrecentborrow on device.deviceID = Mostrecentborrow.deviceID "
-					# "left outer join Users on Mostrecentborrow.userID = Users.userID where deviceName LIKE '%{}%' OR deviceType LIKE '%{}%' "
-					# "OR osType LIKE '%{}%' OR osVersion LIKE '%{}%' OR deviceRam LIKE '%{}%' "
-					# "OR deviceCpu LIKE '%{}%' OR deviceBit LIKE '%{}%' OR screenRes LIKE '%{}%' "
-					# "OR deviceGrade LIKE '%{}%' OR users.firstName LIKE '%{}%' OR users.lastName LIKE '%{}%'".format(device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term, device_search_term))	
-	# device_details = mycursor.fetchall()
-	# mycursor.close()
-	# return render_template('devicelist.html', title='Search', device_details=device_details, is_search=True)
-##put: devicechoice = request.args.get("DevID") into the check-out definition to capture the Device ID
-
-
-###admin retrive all info	
-##@app.route('/device-list')
-##def devicelist():
-##	mycursor = mydb.cursor()
-##	mycursor.execute("select * from device")
-##	device_details = mycursor.fetchall()
-##	return render_template('admin.html', device_details = device_details)
 	
 if (__name__) == ('__main__'):
 	app.run(debug=True)

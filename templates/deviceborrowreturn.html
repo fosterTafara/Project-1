@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-
+<!-- ## format all flash messages  -->
 {% block content %}
 	{% with messages = get_flashed_messages() %}
 		{% if messages %}
@@ -276,7 +276,7 @@
 			{% if item[11]=='Available' or item[11]=='On Hold' %}
 			-
 			{% else %}
-			{{item[18]}} {{item[19]}}
+			{{item[18]}} {{item[19]}}<br>{{item[21]}}
 			{% endif %}
 		</td>
 		<td class="DueDate"> 
