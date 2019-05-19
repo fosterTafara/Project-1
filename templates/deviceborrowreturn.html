@@ -45,12 +45,13 @@
 {% endif %}
 
 
+<!-- ## Use jinja messages for the non informational buttons to vary colours -->
 {% if not usertrue %}
 
 
 	{% if item_hold_avai_borrow and item_hold_avai_borrow != 0 %}
 	<div class="alert alert-success wrap" role="alert">
-		You have {{item_hold_avai_borrow}} holding item/s available to borrow: 
+		You have {{item_hold_avai_borrow}} holding item(s) available to borrow: 
 		<br>
 		{% for item in hold_avai_borrow %}
 			{{item[3]}}
@@ -64,8 +65,12 @@
 
 	{% if items_over_due and items_over_due !=0 %}
 	<div class="alert alert-danger wrap" role="alert">
+
+		Please return {{items_over_due}} overdue item(s) 
+=======
 		Please return {{items_over_due}} overdue item/s:
 		<br>
+
 		{% for item in over_due %}
 			{{item[2]}}
 			<br>
@@ -200,6 +205,8 @@
 		{% set hs=namespace(hold = True) %}
         
 <!-- ## Creating the table rows -->
+
+<!-- ##Namespace is about setting a variable as true. Every time a button is pressed it becomes false and button is disabled -->
 				<td class="Button">
 					{% if item[11]=='Available' %}
 
@@ -249,8 +256,9 @@
 					{% if hs.hold == True %}
 					
 									<form method="POST" action="">
-										<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
+										<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; padding: 6px 20px; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
 									</form>				
+
 					{% endif %}	
 										
 		{% endif %}
