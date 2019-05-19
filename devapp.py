@@ -205,7 +205,7 @@ def deviceborrowreturn(userid):
 			mycursor.close()
 			flash("You have checked out device {}".format (device_name[0]))
 
-			return render_template('deviceborrowreturn.html', hold_available=hold_available, userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
+			return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device,user_details=user_details, num_hold_device=num_hold_device,hold_devices=hold_devices, borrow_device=True, user_id_Onhold=user_id_Onhold, user_id_Anyhold=user_id_Anyhold)
 
 		
 	if request.method == 'POST':
