@@ -25,7 +25,7 @@
 				<select class="form-control Form1" name="userid" size='1' id="userid" required onchange="enableButton()">
 					<option value="">Please select your email</option>
 					{% for item in users %}
-					<option id="userid" name="userid" value="{{item[0]}}">{{item[3]}}</option>
+					<option id="userid" name="userid" value="{{item[0]}}">{{item[1]}} {{item[2]}}: {{item[3]}}</option>
 					{% endfor %}
 				</select>
 			</div>
@@ -124,13 +124,13 @@
 		<div class="col">
 			<input type="checkbox" name="OSVersion" checked="checked">OS Version
 			<br>
-
+			<input type="checkbox" name="CPU">CPU
 			<br>
 		</div>
 		<div class="col">
 			<input type="checkbox" name="Bit">Bit
 			<br>
-			<input type="checkbox" name="RAM" checked="checked">RAM
+			<input type="checkbox" name="RAM">RAM
 		</div>
 		<div class="col">
 			<input type="checkbox" name="ScreenRes">Screen Resolution
@@ -158,9 +158,9 @@
 			<thead>
 				<tr>
 					{% if not usertrue %}
-					<th></th>
+					<th class="Button"></th>
 					{% endif %}
-					<th class="DeviceID">ID</th>
+					<th class="DeviceId">ID</th>
 					<th class="DeviceName">Device Name</th>
 					<th class="DeviceType">Device Type</th>
 					<th class="OSType">OS Type</th>
@@ -177,9 +177,9 @@
 
 				<tr>
 					{% if not usertrue %}
-					<th></th>
+					<th class="Button"></th>
 					{% endif %}
-					<th class="DeviceID"></th>
+					<th class="DeviceId"></th>
 					<th class="DeviceName"></th>
 					<th class="DeviceType"></th>
 					<th class="OSType"></th>
@@ -200,7 +200,7 @@
 		{% set hs=namespace(hold = True) %}
         
 <!-- ## Creating the table rows -->
-				<td>
+				<td class="Button">
 					{% if item[11]=='Available' %}
 
 					<form method="POST" action="">
@@ -251,17 +251,12 @@
 									<form method="POST" action="">
 										<button  type="submit" value="{{item[0]}}" class="btn btn-info btn-xs" style="background-color: #428bca; color: white; font-family: sans-serif;" name="HoldNow">Hold</button>
 									</form>				
-												
 					{% endif %}	
-					
-
 										
 		{% endif %}
 
-</td>
-
-		
-    	<td class = "DeviceID">{{item[0]}}</td>
+		</td>
+		<td class = "DeviceId">{{item[0]}}</td>
 		<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version:  RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>    	
     	<td class = "DeviceType">{{item[2]}}</td>
     	<td class="OSType">{{item[3]}}</td>
@@ -289,10 +284,9 @@
 
 			{% endif %}
 		</td>
-
 			
 		</tr>
-		
+	
 
 	{% endfor %}
 	</table>
