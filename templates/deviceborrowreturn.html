@@ -65,9 +65,13 @@
 
 	{% if items_over_due and items_over_due !=0 %}
 	<div class="alert alert-danger wrap" role="alert">
+
 		Please return {{items_over_due}} overdue item(s) 
+=======
+		Please return {{items_over_due}} overdue item/s:
+		<br>
+
 		{% for item in over_due %}
-			<br>
 			{{item[2]}}
 			<br>
 		{% endfor %}
@@ -112,7 +116,7 @@
 		<div class="col" id="new-search-area"></div>
 
 		<div class="col">
-			<input type="checkbox" name="DeviceId" checked="checked"> Device Id
+			<input type="checkbox" name="DeviceId"> Device Id
 			<br>
 			<input type="checkbox" name="DeviceName" checked="checked"> Device Name
 			<br>
@@ -125,13 +129,13 @@
 		<div class="col">
 			<input type="checkbox" name="OSVersion" checked="checked">OS Version
 			<br>
-			<input type="checkbox" name="CPU" >CPU
+			<input type="checkbox" name="CPU">CPU
 			<br>
 		</div>
 		<div class="col">
 			<input type="checkbox" name="Bit">Bit
 			<br>
-			<input type="checkbox" name="RAM" checked="checked">RAM
+			<input type="checkbox" name="RAM">RAM
 		</div>
 		<div class="col">
 			<input type="checkbox" name="ScreenRes">Screen Resolution
