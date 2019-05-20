@@ -381,6 +381,44 @@ def users():
 	return render_template('users.html', title='Users', menu='users', users=users)
 
 	return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
+
+
+@app.route('/addstaff', methods =['GET', 'POST']) 
+def addstaff():
+	mycursor = mydb.cursor()
+	mycursor.execute('select * from users')
+	user_details = mycursor.fetchall()
+	mycursor.execute("SELECT permissionId FROM users")
+	permission_permit = mycursor.fetchall()
+	permission_permit = list(dict.fromkeys(permission_permit))
+	mycursor.execute("SELECT locationId FROM users")
+	location = mycursor.fetchall()
+	location = list(dict.fromkeys(location))
+
+	if request.method == 'POST':
+		# Fetch form data
+		staffDetails = request.form
+		fName = staffDetails['firstname'].title()
+		lName = staffDetails['lastname'].title()
+		email = staffDetails['email']
+		permissionId = staffDetails['permission']
+		locationId = staffDetails['location']
+		staffId = staffDetails['staffId']
+		if fName=="" or lName=="" or email=="" or permissionId =="" or locationId =="" or staffId=="":
+			staffnotexist = ("Please enter all details - Try again.")
+			return render_template('addstaff.html', staffnotexist=staffnotexist,user_details=user_details, usertrue=True, permission_permit=permission_permit, location=location)
+		else:
+			mycursor = mydb.cursor()
+			mycursor.execute("INSERT into users (firstName, lastName, email, permissionId, locationId, userId) VALUES(%s, %s, %s, %s, %s, %s)",(fName, lName, email, permissionId, locationId, staffId))
+			mydb.commit()  # Make sure data is committed to the database
+			staffsuccessful = ("Staff Member added successfully.")
+
+			mycursor.close()
+			return render_template('addstaff.html', user_details=user_details, usertrue=True, staffsuccessful=staffsuccessful, permission_permit=permission_permit, location=location)
+        
+	return render_template('addstaff.html', user_details=user_details, usertrue=True, permission_permit=permission_permit, location=location)
+	
+
 		   
 	
 if (__name__) == ('__main__'):
