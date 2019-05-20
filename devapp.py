@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
+  passwd="Signal2019$$",
   database="project"
 )
 ## Define our functions
@@ -421,6 +421,77 @@ def addstaff(userid):
 	
 
 		   
+
+@app.route('/admin-devices/<int:userid>', methods =['GET']) 
+def admindevices(userid):
+	user_id = userid	
+	mycursor = mydb.cursor()
+	mycursor.execute('select * from users where UserId ={}'.format(user_id))
+	user_details = mycursor.fetchall()
+	device_details = alldevicedetails()
+	mycursor.close()
+	return render_template('admindevices.html', user_id=user_id, device_details=device_details, user_details = user_details)
+
+
+@app.route('/admin-devices/<int:userid>/update/<int:deviceid>', methods =['GET', 'POST']) 
+def updatedevice(userid,deviceid):
+	if request.method == 'POST':	
+		DeviceDetails = request.form
+		device_id = DeviceDetails['deviceid']
+		device_name = DeviceDetails['devicename']
+		device_type = DeviceDetails['devicetype']
+		os_type = DeviceDetails['ostype']
+		os_version = DeviceDetails['osversion']
+		device_ram = DeviceDetails['deviceram']
+		device_cpu = DeviceDetails['devicecpu']
+		device_bit = DeviceDetails['devicebit']
+		screen_res = DeviceDetails['screenres']
+		device_grade = DeviceDetails['devicegrade']
+		device_uuid = DeviceDetails['deviceuuid']
+		mycursor = mydb.cursor()
+		mycursor.execute("Update device SET deviceName = '{}' , deviceType = '{}', osType = '{}', osVersion = '{}', deviceRam='{}', deviceCpu='{}', deviceBit='{}', screenRes='{}', deviceGrade='{}', deviceUuid='{}' where deviceId = '{}' ".format(device_name,device_type,os_type,os_version,device_ram,device_cpu,device_bit,screen_res,device_grade,device_uuid,device_id))
+		mydb.commit()
+		
+		flash("You have successfully updated device {}.".format (device_name))
+	
+	user_id = userid
+	device_id = deviceid
+	mycursor = mydb.cursor()
+	mycursor.execute('select * from device where deviceId ={}'.format(device_id))
+	device_details =  mycursor.fetchall()	
+	mycursor.execute('select * from users where UserId ={}'.format(user_id))
+	user_details = mycursor.fetchall()		
+	mycursor.close()	
+	return render_template('deviceupdate.html', user_id=user_id, device_details=device_details, user_details = user_details)
+
+@app.route('/admin-devices/<int:userid>/add-new/', methods =['GET', 'POST']) 
+def adddevice(userid):		
+	if request.method == 'POST':	
+		DeviceDetails = request.form
+		device_id = DeviceDetails['deviceid']
+		device_name = DeviceDetails['devicename']
+		device_type = DeviceDetails['devicetype']
+		os_type = DeviceDetails['ostype']
+		os_version = DeviceDetails['osversion']
+		device_ram = DeviceDetails['deviceram']
+		device_cpu = DeviceDetails['devicecpu']
+		device_bit = DeviceDetails['devicebit']
+		screen_res = DeviceDetails['screenres']
+		device_grade = DeviceDetails['devicegrade']
+		device_uuid = DeviceDetails['deviceuuid']
+		status = 'Available'
+		mycursor = mydb.cursor()
+		mycursor.execute("INSERT INTO device (deviceId,deviceName, deviceType, osType, osVersion, deviceRam, deviceCpu, deviceBit, screenRes, deviceGrade, deviceUuid, deviceStatus) Values ('{}', '{}', '{}','{}', '{}','{}', '{}','{}', '{}','{}', '{}','{}')" .format(device_id,device_name,device_type,os_type,os_version,device_ram,device_cpu,device_bit,screen_res,device_grade,device_uuid, status))
+		mydb.commit()
+		
+		flash("You have successfully added a new device {}.".format (device_name))
+	user_id = userid
+	mycursor = mydb.cursor()
+	mycursor.execute('select * from users where UserId ={}'.format(user_id))
+	user_details = mycursor.fetchall()	
+	mycursor.close()
+	return render_template('deviceadd.html', user_id=user_id, user_details = user_details)
+
 	
 if (__name__) == ('__main__'):
 	app.run(debug=True)
