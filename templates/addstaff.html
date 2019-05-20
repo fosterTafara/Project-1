@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+
+
+    <title>
+        Alter Staff Details
+    </title>
+
+<div class="container">
+ <div class="row justify-content-center">
+	<div class="col-md-8">
+<h4>Add New Staff Member</h4>
+
+{% if staffsuccessful %}
+	<div class="alert alert-success wrap" role="alert">
+	{{staffsuccessful}}
+	</div>
+	{% endif %}
+	
+
+  <form action="" method = "post">
+       	
+	<div class="form row mt-4 mb-2">
+
+  <div class="col">
+		<label for="firstname">First Name</label>
+      <input type="text" class="form-control" placeholder="" name = "firstname" id = "firstname">
+    </div>
+    <div class="col">
+	<label for="lastname">Last Name</label> 
+      <input type="text" class="form-control" placeholder="" name = "lastname" id = "lastname">
+    </div>
+   </div>
+  
+  <div class="form row mt-4 mb-2">
+     <div class="col">
+      <label for="email">Email Address</label>
+	  <input type="text" class="form-control" placeholder="" name = "email" id = "email">
+    </div>
+    <div class="col">
+      <label for="location">Staff Office Location</label>
+	  <div class="dropdown">
+            <select class="form-control" name ="location" id = "location">
+			<option value = ""></option>
+            {% for item in location %}
+            <option name ='location'>{{item[0]}}</option>
+            {% endfor %}
+            </select>
+	</div>
+	</div>
+	</div>
+	 
+	<div class="form row mt-4 mb-2">
+     <div class="col">
+      <label for="permission">User's Access Permission</label>
+	  <div class="dropdown">
+            <select class="form-control" name ="permission" id = "permission">
+            {% for item in permission_permit %}
+            <option name ='permission'>{{item[0]}}</option>
+            {% endfor %}
+            </select>
+    </div>
+	</div>
+
+    <div class="col">
+      <label for="staffId">Staff ID Number</label>
+	  <input type="number" class="form-control" placeholder="" name = "staffId" min="1" max="200" id = "staffId">
+    </div>
+	</div>
+	<br>
+	<div>
+    <input type="submit" name = "Addstaff" download = "addstaff" class="btn btn-secondary btn-block" align = "right" value = "Submit"></input>
+	</div>
+   
+   
+   <hr>
+ 
+
+   </form>
+</div>    
+  
+</div>
+</div>
+  
+{% endblock %}
