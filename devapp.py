@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="Signal2019$$",
+  passwd="password",
   database="project"
 )
 ## Define our functions
@@ -387,7 +387,7 @@ def users():
 def addstaff(userid):
 	user_id=userid
 	mycursor = mydb.cursor()
-	mycursor.execute('select * from users')
+	mycursor.execute('select * from users where userId = {}'.format(user_id))
 	user_details = mycursor.fetchall()
 	mycursor.execute("SELECT permissionId FROM users")
 	permission_permit = mycursor.fetchall()
@@ -395,7 +395,7 @@ def addstaff(userid):
 	mycursor.execute("SELECT locationId FROM users")
 	location = mycursor.fetchall()
 	location = list(dict.fromkeys(location))
-
+	
 	if request.method == 'POST':
 		# Fetch form data
 		staffDetails = request.form
@@ -405,8 +405,13 @@ def addstaff(userid):
 		permissionId = staffDetails['permission']
 		locationId = staffDetails['location']
 		staffId = staffDetails['staffId']
+		print("first")
+		print(user_id)
+		print(user_details)
 		if fName=="" or lName=="" or email=="" or permissionId =="" or locationId =="" or staffId=="":
 			staffnotexist = ("Please enter all details - Try again.")
+			print("first")
+			print(user_id)
 			return render_template('addstaff.html', staffnotexist=staffnotexist,user_details=user_details, usertrue=True, permission_permit=permission_permit, location=location)
 		else:
 			mycursor = mydb.cursor()
@@ -415,8 +420,14 @@ def addstaff(userid):
 			staffsuccessful = ("Staff Member added successfully.")
 
 			mycursor.close()
+			print("third")
+			print(user_id)
 			return render_template('addstaff.html', user_details=user_details, usertrue=True, staffsuccessful=staffsuccessful, permission_permit=permission_permit, location=location)
-        
+
+			
+	print("fourth")
+	print(user_id)
+	print(user_details)
 	return render_template('addstaff.html', user_details=user_details, usertrue=True, permission_permit=permission_permit, location=location)
 	
 
