@@ -132,7 +132,8 @@ INSERT INTO users (userId, firstName, lastName, email, locationId, permissionId)
 ("2", "Sonam", "Jones", "sonam.jones@gamer.com", "O1", "User"),
 ("3", "Amol", "Downey", "amol.downey@gamer.com", "O2", "User"),
 ("4", "Jennifer", "Foster", "jennifer.foster@gamer.com", "O1", "User"),
-("5", "Andi", "Teo", "andi.teo@gamer.com", "O2", "User")
+("5", "Andi", "Teo", "andi.teo@gamer.com", "O2", "User"),
+("6", "Nhan", "Happy", "nhan.happy@gamer.com", "O2", "Admin")
 ;
 INSERT INTO checkingsystem (userId, deviceId, holdDate, holdPosition, holdExpiry, borrowDate, dueDate, returnDate) VALUES
 ("1","1000",NULL,NULL,NULL,'2019-05-14 10:48:10',"2019-05-17 10:48:10",NULL),
