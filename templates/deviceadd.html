@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content %}
+
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<div class="alert alert-primary wrap" role="alert">
+				{% for message in messages %}
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true" style="font-size:20px">×</span>
+					</button>
+					{{ message }}
+				{% endfor %}
+			</div>
+		{% endif %}
+	{% endwith %}
+
+
+
+<div class="row justify-content-center align-items-center">
+	<h3>Add A New Device </h3>
+</div>
+	
+    <title>
+        Add New Devices
+    </title>
+
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+	
+    <form action="" method = "POST">
+           	
+    	<div class="form row mt-4 mb-2">
+      <div class="col">
+    		<label for="deviceid">Device Id</label>
+          <input type="text" class="form-control" placeholder="" name = "deviceid" id = "deviceid">
+        </div>
+        <div class="col">
+    	<label for="devicecpu">Device CPU</label> 
+          <input type="text" class="form-control" placeholder="" name = "devicecpu" id = "devicecpu">
+        </div>
+       </div>
+
+      <div class="form row mt-4 mb-2">
+      <div class="col">
+        <label for="devicename">Device Name</label>
+          <input type="text" class="form-control" placeholder="" name = "devicename" id = "devicename">
+        </div>
+        <div class="col">
+      <label for="devicebit">Device Bit</label> 
+          <input type="text" class="form-control" placeholder="" name = "devicebit" id = "devicebit">
+        </div>
+       </div>
+
+        <div class="form row mt-4 mb-2">
+      <div class="col">
+        <label for="devicetype">Device Type</label>
+          <input type="text" class="form-control" placeholder="" name = "devicetype" id = "devicetype">
+        </div>
+        <div class="col">
+      <label for="screenres">Screen Res</label> 
+          <input type="text" class="form-control" placeholder="" name = "screenres" id = "screenres">
+        </div>
+       </div>
+
+          <div class="form row mt-4 mb-2">
+      <div class="col">
+        <label for="ostype">OS Type</label>
+          <input type="text" class="form-control" placeholder="" name = "ostype" id = "ostype">
+        </div>
+        <div class="col">
+      <label for="devicegrade">Device Grade</label> 
+          <input type="text" class="form-control" placeholder="" name = "devicegrade" id = "devicegrade">
+        </div>
+       </div>
+
+          <div class="form row mt-4 mb-2">
+      <div class="col">
+        <label for="osversion">OS Version</label>
+          <input type="text" class="form-control" placeholder="" name = "osversion" id = "osversion">
+        </div>
+        <div class="col">
+      <label for="deviceuuid">Device UUID</label> 
+          <input type="text" class="form-control" placeholder="" name = "deviceuuid" id = "deviceuuid">
+        </div>
+
+       </div>
+          <div class="form row mt-4 mb-2">
+      <div class="col">
+        <label for="deviceram">Device RAM</label>
+          <input type="text" class="form-control" placeholder="" name = "deviceram" id = "deviceram">
+        </div>
+      
+       </div>
+      
+      
+	  </br>
+	  </br>
+
+    	<div>
+			<input type="submit" name = "Addstaff" download = "addstaff" class="btn btn-secondary btn-block" align = "right" value = "Submit"></input>
+    	</div>
+       
+       
+       <hr>
+     
+
+    </form>
+  </div>    
+    
+  </div>
+  </div>
+  
+{% endblock %}
