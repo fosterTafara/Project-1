@@ -258,6 +258,7 @@ def borrowreturn():
 ## used <int:userid> could have used args
 @app.route('/myview/<int:userid>', methods =['GET', 'POST'])
 def myview(userid):
+	user_id = userid	
 	if request.method == 'POST':
 		if 'ReturnNow' in request.form:
 			mycursor = mydb.cursor()
@@ -328,7 +329,6 @@ def myview(userid):
 
 
 #if request.method == 'GET':
-	user_id = userid
 	mycursor = mydb.cursor()
 	mycursor.execute('select users.userId, users.firstName, users.lastName, users.email, users.locationid, building.buildingAddress from users inner join building on users.locationid = building.locationid where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
