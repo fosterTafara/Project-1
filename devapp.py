@@ -383,8 +383,9 @@ def users():
 	return render_template('deviceborrowreturn.html', userid=user_id, loan_devices=loan_devices, device_details=device_details, num_device=num_device, user_details=user_details,num_hold_device=num_hold_device,hold_devices=hold_devices)
 
 
-@app.route('/addstaff', methods =['GET', 'POST']) 
-def addstaff():
+@app.route('/addstaff/<int:userid>', methods =['GET', 'POST'])
+def addstaff(userid):
+	user_id=userid
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from users')
 	user_details = mycursor.fetchall()
