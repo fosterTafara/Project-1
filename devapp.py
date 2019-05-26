@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = '0190f0f484f4c59d491ca93129dc63d2'
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
-  passwd="password",
+  passwd="Ciucas365",
   database="project"
 )
 ## Define our functions
@@ -330,7 +330,7 @@ def myview(userid):
 
 #if request.method == 'GET':
 	mycursor = mydb.cursor()
-	mycursor.execute('select users.userId, users.firstName, users.lastName, users.email, users.locationid, building.buildingAddress from users inner join building on users.locationid = building.locationid where UserId ={}'.format(user_id))
+	mycursor.execute('select users.userId, users.firstName, users.lastName, users.email, users.locationid, users.permissionId, building.buildingAddress from users inner join building on users.locationid = building.locationid where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()
 	
 	## Query for holding item is available to borrow: 
@@ -395,7 +395,6 @@ def addstaff(userid):
 	mycursor.execute("SELECT locationId FROM users")
 	location = mycursor.fetchall()
 	location = list(dict.fromkeys(location))
-	
 	if request.method == 'POST':
 		# Fetch form data
 		staffDetails = request.form
@@ -405,14 +404,12 @@ def addstaff(userid):
 		permissionId = staffDetails['permission']
 		locationId = staffDetails['location']
 		staffId = staffDetails['staffId']
-		print("first")
-		print(user_id)
-		print(user_details)
+	
 		if fName=="" or lName=="" or email=="" or permissionId =="" or locationId =="" or staffId=="":
 			staffnotexist = ("Please enter all details - Try again.")
 			print("first")
 			print(user_id)
-			return render_template('addstaff.html', staffnotexist=staffnotexist,user_details=user_details, usertrue=True, permission_permit=permission_permit, location=location)
+			return render_template('addstaff.html', userid=user_id, staffnotexist=staffnotexist,user_details=user_details, permission_permit=permission_permit, location=location)
 		else:
 			mycursor = mydb.cursor()
 			mycursor.execute("INSERT into users (firstName, lastName, email, permissionId, locationId, userId) VALUES(%s, %s, %s, %s, %s, %s)",(fName, lName, email, permissionId, locationId, staffId))
@@ -422,13 +419,11 @@ def addstaff(userid):
 			mycursor.close()
 			print("third")
 			print(user_id)
-			return render_template('addstaff.html', user_details=user_details, usertrue=True, staffsuccessful=staffsuccessful, permission_permit=permission_permit, location=location)
+			return render_template('addstaff.html', userid=user_id, user_details=user_details, staffsuccessful=staffsuccessful, permission_permit=permission_permit, location=location)
 
-			
-	print("fourth")
-	print(user_id)
-	print(user_details)
-	return render_template('addstaff.html', user_details=user_details, usertrue=True, permission_permit=permission_permit, location=location)
+	mycursor.close()
+	
+	return render_template('addstaff.html', user_details=user_details, permission_permit=permission_permit, location=location, userid=user_id)
 	
 
 		   
@@ -441,11 +436,12 @@ def admindevices(userid):
 	user_details = mycursor.fetchall()
 	device_details = alldevicedetails()
 	mycursor.close()
-	return render_template('admindevices.html', user_id=user_id, device_details=device_details, user_details = user_details)
+	return render_template('admindevices.html', userid=user_id, device_details=device_details, user_details = user_details)
 
 
 @app.route('/admin-devices/<int:userid>/update/<int:deviceid>', methods =['GET', 'POST']) 
 def updatedevice(userid,deviceid):
+	user_id = userid
 	if request.method == 'POST':	
 		DeviceDetails = request.form
 		device_id = DeviceDetails['deviceid']
@@ -464,8 +460,8 @@ def updatedevice(userid,deviceid):
 		mydb.commit()
 		
 		flash("You have successfully updated device {}.".format (device_name))
-	
 	user_id = userid
+
 	device_id = deviceid
 	mycursor = mydb.cursor()
 	mycursor.execute('select * from device where deviceId ={}'.format(device_id))
@@ -473,7 +469,7 @@ def updatedevice(userid,deviceid):
 	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()		
 	mycursor.close()	
-	return render_template('deviceupdate.html', user_id=user_id, device_details=device_details, user_details = user_details)
+	return render_template('deviceupdate.html', userid=user_id, device_details=device_details, user_details = user_details)
 
 @app.route('/admin-devices/<int:userid>/add-new/', methods =['GET', 'POST']) 
 def adddevice(userid):		
@@ -501,7 +497,7 @@ def adddevice(userid):
 	mycursor.execute('select * from users where UserId ={}'.format(user_id))
 	user_details = mycursor.fetchall()	
 	mycursor.close()
-	return render_template('deviceadd.html', user_id=user_id, user_details = user_details)
+	return render_template('deviceadd.html', userid=user_id, user_details = user_details)
 
 	
 if (__name__) == ('__main__'):

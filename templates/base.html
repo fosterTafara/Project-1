@@ -107,11 +107,10 @@
 							{% elif user_details[0][5]=='Admin' %}
 							<a class="nav-item nav-link" href="/myview/{{userid}}">My Devices</a>
 
-								<a class="nav-item nav-link" href="/addstaff/{{userid}}">Add Staff Member</a>
+							<a class="nav-item nav-link" href="/addstaff/{{userid}}">Add Staff Member</a>
 
-								<a class="nav-item nav-link" href="/admin-devices/{{userid}}">Add/Remove Device</a>							
+							<a class="nav-item nav-link" href="/admin-devices/{{userid}}">Add/Remove Device</a>	
 
-					
 							{% endif %}
 						{% endif %}
 					</div>
@@ -145,7 +144,8 @@
 
 	$("input:checkbox").click(function(){
     var column = "table ." + $(this).attr("name");
-    $(column).toggle();}); </script>
+    $(column).toggle();}); 
+	</script>
 
 </body>
 

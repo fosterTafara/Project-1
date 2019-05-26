@@ -133,7 +133,7 @@
 		<div class="col">
 			<input type="checkbox" name="Bit">Bit
 			<br>
-			<input type="checkbox" name="RAM">RAM
+			<input type="checkbox" name="RAM" checked="checked">RAM
 		</div>
 		<div class="col">
 			<input type="checkbox" name="ScreenRes">Screen Resolution
@@ -262,9 +262,9 @@
 		{% endif %}
 
 		</td>
-		<td class = "DeviceId">{{item[0]}}</td>
+		<td class ="DeviceId">{{item[0]}}</td>
 		<td class="DeviceName"><a href="#" data-toggle="tooltip" data-placement="right" title="OS version:  RAM: {{item[5]}}, CPU: {{item[6]}}, Bit:{{item[7]}}, Screen Res: {{item[8]}}, Grade: {{item[9]}}">{{item[1]}}</a></td>    	
-    	<td class = "DeviceType">{{item[2]}}</td>
+    	<td class ="DeviceType">{{item[2]}}</td>
     	<td class="OSType">{{item[3]}}</td>
      	<td class="OSVersion">{{item[4]}}</td>
 		<td class="RAM">{{item[5]}}</td>
