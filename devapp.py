@@ -96,6 +96,8 @@ def deviceborrowreturn(userid):
 			mycursor = mydb.cursor()
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			print(type(Current_Time))
+
 			DeviceDetails = request.form
 
 			device_id=DeviceDetails['BorrowNow']
@@ -204,7 +206,7 @@ def deviceborrowreturn(userid):
 	items_over_due = len(over_due)
 	
 	## Query for items due soon
-	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day and returnDate is NULL)'.format (user_id))
+	mycursor.execute('SELECT checkingsystem.deviceId, checkingsystem.dueDate, device.deviceName, checkingsystem.userId FROM checkingsystem, device where device.deviceId = checkingsystem.deviceId and checkingsystem.userId= {} and (dueDate > NOW() AND dueDate <= NOW() + interval 1 day) and returnDate is NULL'.format (user_id))
 	due_soon = mycursor.fetchall()
 	item_due_soon = len(due_soon)
 
@@ -264,6 +266,8 @@ def myview(userid):
 			mycursor = mydb.cursor()
 			Current_Time = datetime.now()
 			Current_Time = Current_Time.strftime('%Y-%m-%d %H:%M:%S')
+			print(type(Current_Time))
+
 			DeviceDetails = request.form
 			device_id=DeviceDetails['ReturnNow']
 			mycursor = mydb.cursor()

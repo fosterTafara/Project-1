@@ -138,7 +138,9 @@
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
  	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-	<script> $("input:checkbox:not(:checked)").each(function() {
+	<script> 
+
+		$("input:checkbox:not(:checked)").each(function() {
     var column = "table ." + $(this).attr("name");
     $(column).hide();});
 
